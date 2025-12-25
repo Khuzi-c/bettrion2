@@ -39,7 +39,7 @@ router.get('/google/callback',
                 id: user.id,
                 username: user.name,
                 email: user.email,
-                role: 'user', // Normal user
+                role: user.role || 'user', // Respect DB Role
                 avatar: user.avatar
             },
             process.env.JWT_SECRET || 'bettrion_jwt_secret_v2',
