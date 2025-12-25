@@ -347,22 +347,13 @@
         };
 
         // Google
-        async function handleGoogleLogin() {
-            if (!window.firebase) return alert("Firebase Error");
-            try {
-                const res = await firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider());
-                const body = { idToken: await res.user.getIdToken(), referralCode: document.getElementById('referral-code').value };
-                const apiRes = await fetch('/api/auth/google', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(body)
-                }).then(r => r.json());
-
-                if (apiRes.success) {
-                    localStorage.setItem('user_token', apiRes.token);
-                    window.location.href = '/';
-                } else alert(apiRes.message);
-            } catch (e) { console.error(e); alert("Login Failed"); }
+        // Google (Passport-based)
+        function handleGoogleLogin() {
+            const ref = document.getElementById('referral-code').value;
+            // Pass referral code as state or query param if supported by backend, otherwise just redirect
+            // For now, simple redirect. If managing ref code in oauth is needed, we'd add ?state=ref_code
+            const url = ref ? `/api/auth/google?ref=${ref}` : '/api/auth/google';
+            window.location.href = url;
         }
     </script>
 </body>
