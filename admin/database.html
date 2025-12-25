@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Database Editor - Admin</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="/assets/css/admin-layout.css">
+    <script src="/assets/js/admin-auth.js"></script>
+    <style>
+        .db-container {
+            display: flex;
+            height: calc(100vh - 100px);
+            gap: 20px;
+        }
+
+        .tables-list {
+            width: 200px;
+            background: var(--bg-card);
+            padding: 10px;
+            overflow-y: auto;
+            border-radius: 8px;
+        }
+
+        .tables-list h3 {
+            margin-top: 0;
+            font-size: 1rem;
+            color: var(--accent-gold);
+        }
+
+        .table-item {
+            display: block;
+            padding: 8px;
+            color: #fff;
+            text-decoration: none;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-bottom: 2px;
+        }
+
+        .table-item:hover,
+        .table-item.active {
+            background: var(--primary);
+        }
+
+        .query-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .query-editor {
+            height: 100px;
+            background: #111;
+            color: #0f0;
+            border: 1px solid #333;
+            padding: 10px;
+            font-family: monospace;
+            resize: vertical;
+        }
+
+        .results-area {
+            flex: 1;
+            overflow: auto;
+            background: var(--bg-card);
+            padding: 0;
+            border-radius: 8px;
+        }
+
+        .db-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        .db-table th {
+            position: sticky;
+            top: 0;
+            background: #333;
+            color: white;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .db-table td {
+            padding: 4px 8px;
+            border-bottom: 1px solid #333;
+            border-right: 1px solid #333;
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .db-table tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-layout">
+        <aside class="sidebar" id="sidebar"></aside>
+
+        <main class="admin-content">
+            <h1>🗄️ Database Editor</h1>
+
+            <div class="db-container">
+                <div class="tables-list">
+                    <h3>Tables</h3>
+                    <div id="table-list-content">Loading...</div>
+                </div>
+
+                <div class="query-area">
+                    <div class="toolbar" style="display:flex; justify-content:space-between;">
+                        <div>
+                            <span id="current-file" style="color:gray;">Select a table</span>
+                        </div>
+                        <div>
+                            <!-- Future: Toggle RAW SQL mode -->
+                        </div>
+                    </div>
+
+                    <div class="results-area">
+                        <table class="db-table">
+                            <thead id="res-head"></thead>
+                            <tbody id="res-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/assets/js/utils.js"></script>
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/admin.js"></script>
+    <script>
+        // Init
+        Admin.loadSidebar();
+
+        async function loadTables() {
+            const res = await api.get('/admin/db/tables');
+            const list = document.getElementById('table-list-content');
+            if (res.success) {
+                list.innerHTML = res.data.map(t =>
+                    `<div class="table-item" onclick="selectTable('${t}')">${t}</div>`
+                ).join('');
+            } else {
+                list.innerHTML = `<div style="color:red; padding:10px;">Error: ${res.error || 'Failed to load'}</div>`;
+            }
+        }
+
+        async function selectTable(table) {
+            document.querySelectorAll('.table-item').forEach(i => i.classList.remove('active'));
+            event.target.classList.add('active');
+
+            document.getElementById('current-file').innerText = `Table: ${table}`;
+            document.getElementById('res-body').innerHTML = '<tr><td>Loading...</td></tr>';
+
+            const res = await api.post('/admin/db/query', {
+                queryType: 'select',
+                table: table
+            });
+
+            if (res.success) {
+                renderTable(res.data);
+            } else {
+                alert('Error: ' + res.error);
+            }
+        }
+
+        function renderTable(data) {
+            const thead = document.getElementById('res-head');
+            const tbody = document.getElementById('res-body');
+            thead.innerHTML = '';
+            tbody.innerHTML = '';
+
+            if (!data || data.length === 0) {
+                tbody.innerHTML = '<tr><td>No records found</td></tr>';
+                return;
+            }
+
+            const keys = Object.keys(data[0]);
+
+            // Header
+            let headHtml = '<tr>';
+            keys.forEach(k => headHtml += `<th>${k}</th>`);
+            headHtml += '</tr>';
+            thead.innerHTML = headHtml;
+
+            // Body
+            data.forEach(row => {
+                let tr = '<tr>';
+                keys.forEach(k => {
+                    let val = row[k];
+                    if (typeof val === 'object') val = JSON.stringify(val);
+                    tr += `<td title="${val}">${val}</td>`;
+                });
+                tr += '</tr>';
+                tbody.appendChild(document.createElement('tr')).innerHTML = tr; // slightly hacky but works for quick render
+            });
+            // Fix loop append logic for pure string
+            tbody.innerHTML = data.map(row => {
+                let r = '<tr>';
+                keys.forEach(k => {
+                    let val = row[k];
+                    if (val === null) val = 'NULL';
+                    if (typeof val === 'object') val = JSON.stringify(val);
+                    r += `<td title="${val}">${val}</td>`;
+                });
+                r += '</tr>';
+                return r;
+            }).join('');
+        }
+
+        loadTables();
+    </script>
+</body>
+
+</html>

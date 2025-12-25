@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support Tickets - Bettrion Admin</title>
+    <link rel="stylesheet" href="/assets/css/admin-v2.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <main class="admin-main">
+        <h1 class="page-title">Support Tickets</h1>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Subject</th>
+                        <th>User/Email</th>
+                        <th>Priority</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <tr>
+                        <td colspan="6" style="text-align:center;">Loading tickets...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/admin-v2.js"></script>
+    <script>
+        async function load() {
+            try {
+                const res = await api.get('/tickets'); // Assuming specific tickets endpoint
+                const tbody = document.getElementById('table-body');
+                tbody.innerHTML = '';
+
+                if ((res.success && res.data && res.data.length > 0) || (Array.isArray(res) && res.length > 0)) {
+                    const data = Array.isArray(res) ? res : res.data;
+                    data.forEach(t => {
+                        const tr = document.createElement('tr');
+                        const statusColor = (t.status === 'OPEN' || t.status === 'new') ? 'badge-active' : (t.status === 'CLOSED' || t.status === 'resolved') ? 'badge-inactive' : 'badge-silver';
+
+                        tr.innerHTML = `
+                            <td><strong>${t.subject || 'No Subject'}</strong></td>
+                            <td>${t.guest_email || 'User'}</td>
+                            <td>${t.priority || 'Normal'}</td>
+                            <td><span class="badge ${statusColor}">${t.status || 'NEW'}</span></td>
+                            <td>${new Date(t.created_at || Date.now()).toLocaleDateString()}</td>
+                            <td>
+                                <a href="/admin/ticket-detail.html?id=${t.id}" class="btn btn-sm btn-primary">View</a>
+                                <button onclick="deleteTicket('${t.id}')" class="btn btn-sm btn-delete">Delete</button>
+                            </td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No tickets found.</td></tr>';
+                }
+            } catch (e) {
+                console.error(e);
+                document.getElementById('table-body').innerHTML = '<tr><td colspan="6" style="color:red; text-align:center;">Error loading tickets.</td></tr>';
+            }
+        }
+
+        async function deleteTicket(id) {
+            if (!confirm('Delete this ticket permanently?')) return;
+            const res = await api.delete(`/tickets/${id}`);
+            if (res.success) {
+                load(); // Reload
+            } else {
+                alert('Error deleting ticket: ' + (res.error || 'Unknown error'));
+            }
+        }
+
+        window.addEventListener('load', load);
+    </script>
+</body>
+
+</html>

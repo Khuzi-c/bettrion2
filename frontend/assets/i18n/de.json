@@ -1,0 +1,45 @@
+{
+    "nav": {
+        "home": "Startseite",
+        "casinos": "Casinos",
+        "slots": "Slots",
+        "news": "Nachrichten",
+        "support": "Unterstützung",
+        "login": "Anmelden"
+    },
+    "home": {
+        "title": "Top Casinos",
+        "subtitle": "Verifizierte Bewertungen, exklusive Boni und vertrauenswürdige Plattformen.",
+        "browse": "Alle Casinos durchsuchen",
+        "featured": "Empfohlene Plattformen",
+        "loading": "Empfohlene Casinos werden geladen...",
+        "noResults": "Keine Casinos gefunden. Schauen Sie später vorbei!"
+    },
+    "footer": {
+        "rights": "Alle Rechte vorbehalten.",
+        "terms": "Bedingungen",
+        "privacy": "Datenschutz",
+        "support": "Unterstützung"
+    },
+    "popup": {
+        "tosTitle": "Wichtiger Hinweis",
+        "tosText": "Indem Sie fortfahren, stimmen Sie unseren",
+        "tosLink": "Nutzungsbedingungen",
+        "and": "und",
+        "privacyLink": "Datenschutzrichtlinie",
+        "cookieText": "Wir verwenden Cookies, um Ihre Erfahrung zu verbessern.",
+        "warningText": "Online-Glücksspiel kann in Ihrer Gerichtsbarkeit eingeschränkt oder illegal sein. Bitte überprüfen Sie die örtlichen Gesetze, bevor Sie fortfahren.",
+        "accept": "Ich akzeptiere",
+        "decline": "Ablehnen",
+        "ageTitle": "Altersüberprüfung",
+        "ageText": "Sie müssen 18 Jahre oder älter sein, um auf diese Website zuzugreifen.",
+        "ageQuestion": "Sind Sie 18 Jahre oder älter?",
+        "yes18": "Ja, ich bin 18+",
+        "no": "Nein"
+    },
+    "casino": {
+        "rating": "Bewertung",
+        "playNow": "Jetzt spielen",
+        "details": "Details"
+    }
+}

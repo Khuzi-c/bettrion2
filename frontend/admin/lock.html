@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Locked</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #050505;
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .lock-container {
+            background: #111;
+            padding: 40px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid #222;
+            width: 100%;
+            max-width: 350px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+        }
+
+        .lock-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+
+        h1 {
+            margin: 0 0 10px;
+            font-weight: 800;
+        }
+
+        p {
+            color: #888;
+            margin-bottom: 30px;
+            font-size: 0.9rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            background: #222;
+            border: 1px solid #333;
+            color: white;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #e50914;
+            /* Primary Red */
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #e50914;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            background: #f40612;
+        }
+
+        .error {
+            color: #e74c3c;
+            font-size: 0.85rem;
+            margin-top: 15px;
+            min-height: 1.2em;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="lock-container">
+        <div class="lock-icon">🔒</div>
+        <h1>Admin Locked</h1>
+        <p>Verify your identity to proceed.</p>
+
+        <form id="unlock-form">
+            <input type="email" id="email" placeholder="Admin Email" required>
+            <input type="password" id="password" placeholder="Admin Password (Key)" required>
+            <button type="submit">UNLOCK PANEL > </button>
+        </form>
+        <div class="error" id="msg"></div>
+    </div>
+
+    <script src="/assets/js/api.js"></script>
+    <script>
+        // Check if already unlocked, redirect back
+        if (sessionStorage.getItem('admin_unlocked') === 'true') {
+            const redirect = new URLSearchParams(window.location.search).get('return') || '/admin/dashboard.html';
+            window.location.href = redirect;
+        }
+
+        document.getElementById('unlock-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const msg = document.getElementById('msg');
+
+            msg.innerText = 'Verifying...';
+
+            try {
+                const res = await api.post('/admin/unlock', { email, password });
+                if (res.success) {
+                    msg.style.color = '#46d369';
+                    msg.innerText = 'Access Granted.';
+                    sessionStorage.setItem('admin_unlocked', 'true');
+                    sessionStorage.setItem('admin_role', res.role);
+
+                    const redirect = new URLSearchParams(window.location.search).get('return') || '/admin/dashboard.html';
+                    setTimeout(() => window.location.href = redirect, 500);
+                } else {
+                    msg.style.color = '#e74c3c';
+                    msg.innerText = res.message || 'Access Denied';
+                }
+            } catch (err) {
+                msg.innerText = 'Connection Error';
+            }
+        });
+    </script>
+</body>
+
+</html>

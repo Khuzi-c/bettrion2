@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ads Manager - Bettrion Admin</title>
+    <link rel="stylesheet" href="/assets/css/admin-v2.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        .preview-img {
+            width: 80px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 1px solid #333;
+        }
+    </style>
+</head>
+
+<body>
+    <main class="admin-main">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h1 class="page-title">Ads Manager</h1>
+            <button onclick="openModal()" class="btn btn-primary">+ New Ad</button>
+        </div>
+
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Position</th>
+                        <th>Title / Link</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="ads-table-body">
+                    <tr>
+                        <td colspan="5" style="text-align:center;">Loading...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <!-- Modal -->
+    <div id="modal-overlay" class="modal-overlay" style="display:none;">
+        <div class="modal-content">
+            <h2 style="margin-top:0;">Create New Ad</h2>
+            <form id="ad-form">
+                <div class="form-group">
+                    <label>Position</label>
+                    <select id="position" class="form-control" required>
+                        <option value="sidebar">Sidebar (Square)</option>
+                        <option value="home_banner">Home Banner (Wide)</option>
+                        <option value="footer">Footer</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Title (Internal)</label>
+                    <input type="text" id="title" class="form-control" placeholder="e.g. Welcome Bonus Promo">
+                </div>
+                <div class="form-group">
+                    <label>Image URL</label>
+                    <div style="display:flex; gap:10px;">
+                        <input type="text" id="image_url" class="form-control" placeholder="https://..." required>
+                        <button type="button" onclick="window.open('/admin/images.html','_blank')"
+                            class="btn btn-outline" style="padding:5px 10px;">🖼️</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Redirect Link</label>
+                    <input type="text" id="link_url" class="form-control" placeholder="https://...">
+                </div>
+                <div style="display:flex; gap:10px; margin-top:20px;">
+                    <button type="submit" class="btn btn-primary" style="flex:1;">Create Ad</button>
+                    <button type="button" onclick="closeModal()" class="btn btn-outline" style="flex:1;">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/admin-v2.js"></script>
+    <script>
+        async function loadAds() {
+            try {
+                const res = await api.get('/admin/ads');
+                const tbody = document.getElementById('ads-table-body');
+
+                if (!res || !Array.isArray(res)) { // Helper handles .success wrapping typically, but lets be safe if direct array
+                    // If api.js returns data directly for some endpoints (legacy), handle it.
+                    // Current api.js returns {success, data} usually.
+                    // The previous code used API.get which returned body directly. My new api.js returns parsed.
+                    // Let's assume standard {success:true, data: []} or check
+                }
+
+                // My api.js usually returns object. Let's inspect via usage assumption or just handle both.
+                let ads = Array.isArray(res) ? res : (res.data || []);
+
+                if (ads.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#888;">No ads found.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = ads.map(ad => `
+                    <tr>
+                        <td><img src="${ad.image_url}" class="preview-img"></td>
+                        <td><span class="badge badge-inactive" style="background:#333;">${ad.position}</span></td>
+                        <td>
+                            <div style="font-weight:600;">${ad.title || '-'}</div>
+                            <div style="font-size:0.8rem; color:#666;">${ad.link_url || 'No Link'}</div>
+                        </td>
+                        <td>
+                            <button onclick="toggleAd('${ad.id}', ${!ad.is_active})" class="btn btn-sm ${ad.is_active ? 'btn-active' : 'btn-delete'}" style="width:80px;">
+                                ${ad.is_active ? 'Active' : 'Disabled'}
+                            </button>
+                        </td>
+                        <td>
+                            <button onclick="deleteAd('${ad.id}')" class="btn btn-sm btn-delete">Delete</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (e) {
+                console.error(e);
+                document.getElementById('ads-table-body').innerHTML = `<tr><td colspan="5" style="color:red;">Error loading ads</td></tr>`;
+            }
+        }
+
+        async function createAd(e) {
+            e.preventDefault();
+            const payload = {
+                position: document.getElementById('position').value,
+                title: document.getElementById('title').value,
+                image_url: document.getElementById('image_url').value,
+                link_url: document.getElementById('link_url').value
+            };
+
+            const res = await api.post('/admin/ads', payload);
+            if (res.success || res.id) {
+                closeModal();
+                loadAds();
+                e.target.reset();
+            } else {
+                alert('Error: ' + (res.message || 'Failed'));
+            }
+        }
+
+        async function deleteAd(id) {
+            if (!confirm('Delete this ad?')) return;
+            await api.delete(`/admin/ads/${id}`);
+            loadAds();
+        }
+
+        async function toggleAd(id, status) {
+            await api.put(`/admin/ads/${id}/toggle`, { status });
+            loadAds();
+        }
+
+        // Modal
+        const modal = document.getElementById('modal-overlay');
+        function openModal() { modal.style.display = 'flex'; }
+        function closeModal() { modal.style.display = 'none'; }
+        document.getElementById('ad-form').addEventListener('submit', createAd);
+
+        window.addEventListener('load', loadAds);
+    </script>
+</body>
+
+</html>

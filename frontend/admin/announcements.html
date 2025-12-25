@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Announcements - Bettrion Admin</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="/assets/css/admin-layout.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <script src="/assets/js/admin-auth.js"></script>
+    <style>
+        .announcement-preview {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+            font-weight: bold;
+            animation: scroll 15s linear infinite;
+        }
+
+        @keyframes scroll {
+            0% {
+                transform: translateX(100%);
+            }
+
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            color: white;
+            border-radius: 4px;
+        }
+
+        .color-picker {
+            width: 80px;
+            height: 40px;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .table th,
+        .table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .table th {
+            background: var(--bg-card);
+            color: var(--accent-gold);
+        }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .badge-active {
+            background: var(--accent-green);
+        }
+
+        .badge-inactive {
+            background: #666;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-layout">
+        <aside class="sidebar">
+            <a href="/" class="brand" style="display: flex; align-items: center; gap: 10px;">
+                <img src="/assets/images/bettrion-logo_notxt.webp" alt="Bettrion" style="height: 35px;">
+                <span style="font-size: 1.5rem; font-weight: 800; color: var(--accent-gold);">Bettrion</span>
+            </a>
+            <nav>
+                <a href="/admin/dashboard">Dashboard</a>
+                <a href="/admin/platform-edit">Add Casino</a>
+                <a href="/admin/add-slot">Add Slot</a>
+                <a href="/admin/platforms">Manage Casinos</a>
+                <a href="/admin/articles">Manage Articles</a>
+                <a href="/admin/article-edit">Write Article</a>
+                <a href="/admin/tickets">Support Tickets</a>
+                <a href="/admin/staff-time">Staff Hours</a>
+                <a href="/admin/backups">Backups</a>
+                <a href="/admin/images">Image Manager</a>
+                <a href="/admin/users">Users</a>
+                <a href="/admin/announcements" class="active">Announcements</a>
+                <a href="/admin/settings">Settings</a>
+            </nav>
+            <div style="padding: 20px;">
+                <button onclick="adminLogout()" class="btn"
+                    style="width:100%; background:var(--accent-red);">Logout</button>
+            </div>
+        </aside>
+
+        <main class="admin-content">
+            <h1>Announcement Banner</h1>
+            <p style="color: var(--text-secondary);">Create scrolling announcements that appear below the header on all
+                pages.</p>
+
+            <div class="card" style="max-width: 800px; margin-top: 30px;">
+                <h2>Create New Announcement</h2>
+                <form id="announcement-form">
+                    <div class="form-group">
+                        <label>Message</label>
+                        <input type="text" name="message" required placeholder="Enter announcement message...">
+                    </div>
+
+                    <div style="display: flex; gap: 20px;">
+                        <div class="form-group" style="flex: 1;">
+                            <label>Background Color</label>
+                            <input type="color" name="background_color" value="#dc2626" class="color-picker">
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label>Text Color</label>
+                            <input type="color" name="text_color" value="#ffffff" class="color-picker">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Preview</label>
+                        <div id="preview" class="announcement-preview" style="background: #dc2626; color: #ffffff;">
+                            Your announcement will appear here...
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Create Announcement</button>
+                    <div id="msg" style="margin-top: 10px;"></div>
+                </form>
+            </div>
+
+            <div class="card" style="margin-top: 30px;">
+                <h2>All Announcements</h2>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Message</th>
+                            <th>Colors</th>
+                            <th>Status</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="announcements-table">
+                        <tr>
+                            <td colspan="5">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <script src="/assets/js/api.js"></script>
+    <script>
+        // Live preview
+        const form = document.getElementById('announcement-form');
+        const preview = document.getElementById('preview');
+
+        form.message.addEventListener('input', () => {
+            preview.innerText = form.message.value || 'Your announcement will appear here...';
+        });
+
+        form.background_color.addEventListener('input', () => {
+            preview.style.background = form.background_color.value;
+        });
+
+        form.text_color.addEventListener('input', () => {
+            preview.style.color = form.text_color.value;
+        });
+
+        // Submit form
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+            data.created_by = 'Admin';
+
+            const res = await api.post('/admin/announcements', data);
+            const msg = document.getElementById('msg');
+
+            if (res.success) {
+                msg.innerHTML = '<span style="color: green;">✅ Announcement created!</span>';
+                e.target.reset();
+                preview.innerText = 'Your announcement will appear here...';
+                preview.style.background = '#dc2626';
+                preview.style.color = '#ffffff';
+                loadAnnouncements();
+            } else {
+                msg.innerHTML = `<span style="color: red;">❌ Error: ${res.error}</span>`;
+            }
+        });
+
+        // Load announcements
+        async function loadAnnouncements() {
+            const res = await api.get('/admin/announcements');
+            const tbody = document.getElementById('announcements-table');
+            tbody.innerHTML = '';
+
+            if (res.success && res.data.length > 0) {
+                res.data.forEach(ann => {
+                    const tr = document.createElement('tr');
+                    const statusBadge = ann.is_active
+                        ? '<span class="badge badge-active">Active</span>'
+                        : '<span class="badge badge-inactive">Inactive</span>';
+
+                    tr.innerHTML = `
+                        <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis;">${ann.message}</td>
+                        <td>
+                            <div style="display: flex; gap: 5px;">
+                                <div style="width: 30px; height: 30px; background: ${ann.background_color}; border: 1px solid #666; border-radius: 4px;"></div>
+                                <div style="width: 30px; height: 30px; background: ${ann.text_color}; border: 1px solid #666; border-radius: 4px;"></div>
+                            </div>
+                        </td>
+                        <td>${statusBadge}</td>
+                        <td>${new Date(ann.created_at).toLocaleDateString()}</td>
+                        <td>
+                            <div style="display: flex; gap: 8px;">
+                                <button onclick="toggleAnnouncement('${ann.id}', ${!ann.is_active})" class="btn btn-sm">${ann.is_active ? 'Deactivate' : 'Activate'}</button>
+                                <button onclick="deleteAnnouncement('${ann.id}')" class="btn btn-sm" style="background: var(--accent-red);">Delete</button>
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } else {
+                tbody.innerHTML = '<tr><td colspan="5">No announcements yet.</td></tr>';
+            }
+        }
+
+        async function toggleAnnouncement(id, isActive) {
+            const res = await api.patch(`/admin/announcements/${id}/toggle`, { is_active: isActive });
+            if (res.success) {
+                loadAnnouncements();
+            }
+        }
+
+        async function deleteAnnouncement(id) {
+            if (!confirm('Delete this announcement?')) return;
+            const res = await api.delete(`/admin/announcements/${id}`);
+            if (res.success) {
+                loadAnnouncements();
+            }
+        }
+
+        window.addEventListener('load', loadAnnouncements);
+    </script>
+</body>
+
+</html>

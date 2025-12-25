@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Casinos - Bettrion Admin</title>
+    <link rel="stylesheet" href="/assets/css/admin-v2.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <main class="admin-main">
+        <div
+            style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px; border-bottom:1px solid var(--border); padding-bottom:15px;">
+            <h1 style="margin:0; font-size:2rem; color:white;">Casinos</h1>
+            <a href="/admin/platform-edit.html" class="btn btn-primary">＋ Add New Casino</a>
+        </div>
+
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th style="width:50px;">Rank</th>
+                        <th>Casino Name</th>
+                        <th>Rating</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <tr>
+                        <td colspan="5">Loading...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/admin-v2.js"></script>
+    <script>
+        async function load() {
+            try {
+                const res = await api.get('/admin/platforms');
+                // Controller returns raw array OR {data:[]} depending on version. Handle both.
+                // Public page handles this well.
+                let list = [];
+                if (Array.isArray(res)) {
+                    list = res;
+                } else if (res && Array.isArray(res.data)) {
+                    list = res.data;
+                } else if (res && res.success && Array.isArray(res.data)) {
+                    // Standard api wrap
+                    list = res.data;
+                }
+
+                const tbody = document.getElementById('table-body');
+                if (list.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No casinos found.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = list.map(c => `
+                    <tr>
+                        <td style="font-weight:bold; color:var(--accent);">#${c.ranking || '-'}</td>
+                        <td>
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <img src="${c.logo || '/assets/img/default.png'}" style="width:32px; height:32px; border-radius:6px; object-fit:contain; background:white;">
+                                <span style="font-weight:600;">${c.name}</span>
+                                ${c.is_exclusive ? '<span class="badge badge-gold" style="font-size:0.6rem; margin-left:5px;">EXCL</span>' : ''}
+                            </div>
+                        </td>
+                        <td>⭐ ${c.rating}</td>
+                        <td>
+                            <span class="badge ${c.is_active ? 'badge-active' : 'badge-inactive'}">
+                                ${c.is_active ? 'Active' : 'Inactive'}
+                            </span>
+                        </td>
+                        <td style="display:flex; gap:10px;">
+                            <a href="/admin/platform-edit.html?id=${c.id}" class="btn btn-sm btn-outline">Edit</a>
+                            <button onclick="del('${c.id}')" class="btn btn-sm btn-delete">Delete</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (e) {
+                console.error(e);
+                document.getElementById('table-body').innerHTML = '<tr><td colspan="5" style="color:red; text-align:center;">Error loading casinos.</td></tr>';
+            }
+        }
+
+        async function del(id) {
+            if (confirm('Delete this casino?')) {
+                const res = await api.delete('/admin/platforms/' + id);
+                if (res.success) load();
+                else alert(res.error);
+            }
+        }
+
+        window.addEventListener('load', load);
+    </script>
+</body>
+
+</html>

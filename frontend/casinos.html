@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Top Crypto Casinos - Bettrion</title>
+    <link rel="icon" type="image/webp" href="/assets/img/logo.webp">
+
+    <!-- SEO -->
+    <meta name="description"
+        content="Compare the best crypto casinos of 2025. Exclusive bonuses, fast payouts, and trusted reviews.">
+    <meta property="og:title" content="Top Crypto Casinos - Bettrion">
+    <meta property="og:description"
+        content="Compare the best crypto casinos of 2025. Exclusive bonuses, fast payouts, and trusted reviews.">
+    <meta property="og:image" content="https://bettrion.com/assets/img/logo.webp">
+    <meta property="og:url" content="https://bettrion.com/casinos">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        .page-header {
+            margin-top: 100px;
+            /* Space for fixed header */
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .search-container {
+            max-width: 600px;
+            margin: 0 auto 40px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 15px 25px;
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1.1rem;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .search-input:focus {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(229, 9, 20, 0.3);
+        }
+
+        /* Grid Layout matching Index */
+        .platforms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .platform-card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 16px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .platform-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border-color: var(--primary);
+        }
+
+        .platform-logo {
+            height: 60px;
+            width: auto;
+            max-width: 100%;
+            object-fit: contain;
+            align-self: flex-start;
+        }
+
+        .rating-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--accent);
+            color: black;
+            font-weight: 800;
+            padding: 5px 10px;
+            border-radius: 6px;
+        }
+
+        .platform-desc {
+            color: #aaa;
+            font-size: 0.9em;
+            line-height: 1.5;
+            flex: 1;
+        }
+
+        .btn-view {
+            background: var(--primary);
+            color: white;
+            text-align: center;
+            padding: 12px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+            margin-top: auto;
+        }
+
+        .btn-view:hover {
+            background: var(--primary-hover);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="header-placeholder"></div>
+
+    <main class="container">
+        <div class="page-header">
+            <h1 class="gradient-text">All Casinos</h1>
+            <p style="color:#888;">Explore our verified list of trusted crypto gambling platforms</p>
+        </div>
+
+        <div class="search-container">
+            <input type="text" id="search" class="search-input" placeholder="🔍 Search by name or tag..."
+                oninput="search()">
+        </div>
+
+        <!-- Ad Spot -->
+        <div id="casino-ads" style="margin-bottom:40px;"></div>
+
+        <div id="casino-grid" class="platforms-grid">
+            <div style="grid-column:1/-1; text-align:center; padding:50px;">
+                <div class="loader"></div> Loading Casinos...
+            </div>
+        </div>
+    </main>
+
+    <div style="height:100px;"></div>
+
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/router.js"></script>
+    <script src="/assets/js/components.js"></script>
+    <script>
+        let allCasinos = [];
+
+        async function load() {
+            try {
+                const res = await api.get('/platforms');
+                if (res.success || Array.isArray(res.data) || Array.isArray(res)) {
+                    allCasinos = res.data || res || [];
+                    render(allCasinos);
+                } else {
+                    document.getElementById('casino-grid').innerHTML = '<p style="text-align:center; color:red;">Failed to load data.</p>';
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function render(list) {
+            const grid = document.getElementById('casino-grid');
+            if (!list.length) {
+                grid.innerHTML = '<p style="text-align:center; grid-column:1/-1; color:#777;">No casinos found.</p>';
+                return;
+            }
+
+            grid.innerHTML = list.map(c => {
+                const img = c.logo || (c.images && c.images[0]) || '/assets/img/default_logo.png';
+                const slug = c.slug || c.id;
+                return `
+                <div class="platform-card">
+                    <div class="rating-badge">★ ${c.rating || 5.0}</div>
+                    <img src="${img}" class="platform-logo" alt="${c.name}">
+                    <h2 style="margin:0; font-size:1.4rem;">${c.name}</h2>
+                    <p class="platform-desc">${c.short_description || 'Exclusive crypto casino with great bonuses.'}</p>
+                    <a href="/casinos/${slug}" class="btn-view">View Details</a>
+                </div>
+                `;
+            }).join('');
+        }
+
+        function search() {
+            const q = document.getElementById('search').value.toLowerCase();
+            const filtered = allCasinos.filter(c =>
+                c.name.toLowerCase().includes(q) ||
+                (c.tags && c.tags.some(t => t.toLowerCase().includes(q)))
+            );
+            render(filtered);
+        }
+
+        window.addEventListener('load', load);
+    </script>
+    <!-- AI Chatbot -->
+    <script src="https://elfsightcdn.com/platform.js" async></script>
+    <div class="elfsight-app-9d38424e-e3ae-4b5f-adaa-db397cca9d5f" data-elfsight-app-lazy></div>
+</body>
+
+</html>

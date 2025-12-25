@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Casino Review - Bettrion</title>
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --glass-bg: rgba(20, 20, 20, 0.8);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: #050505;
+            overflow-x: hidden;
+        }
+
+        /* Hero Section */
+        .review-hero {
+            position: relative;
+            height: 60vh;
+            min-height: 500px;
+            display: flex;
+            align-items: flex-end;
+            padding-bottom: 60px;
+            overflow: hidden;
+        }
+
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-size: cover;
+            background-position: center;
+            opacity: 0.6;
+            mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 100%);
+            transition: transform 10s ease;
+        }
+
+        .hero-bg.animate {
+            transform: scale(1.1);
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(0deg, #050505 0%, rgba(5, 5, 5, 0.8) 50%, rgba(5, 5, 5, 0.4) 100%);
+        }
+
+        .review-content {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            gap: 40px;
+            align-items: flex-end;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideUp 0.8s ease forwards 0.3s;
+        }
+
+        .casino-logo-large {
+            width: 180px;
+            height: 180px;
+            background: white;
+            border-radius: 24px;
+            padding: 10px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            object-fit: contain;
+            border: 4px solid var(--gold);
+        }
+
+        .casino-info {
+            flex: 1;
+            margin-bottom: 10px;
+        }
+
+        .casino-title {
+            font-size: 4rem;
+            font-weight: 900;
+            margin: 0;
+            background: linear-gradient(45deg, #fff, #bbb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            line-height: 1;
+        }
+
+        .review-rating {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .rating-badge {
+            background: var(--accent-gold);
+            color: black;
+            font-weight: 900;
+            padding: 5px 15px;
+            border-radius: 50px;
+            font-size: 1.2rem;
+        }
+
+        .review-meta {
+            color: #888;
+            font-size: 1.1rem;
+        }
+
+        .cta-group {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .btn-play-large {
+            background: var(--accent-gold);
+            color: black;
+            font-weight: 900;
+            padding: 20px 60px;
+            border-radius: 12px;
+            font-size: 1.5rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.2);
+        }
+
+        .btn-play-large:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.4);
+        }
+
+        /* Detail Grid */
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 40px;
+            max-width: 1200px;
+            margin: 60px auto;
+            padding: 0 20px;
+        }
+
+        .detail-card {
+            background: #111;
+            border: 1px solid #222;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+        }
+
+        .section-heading {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 30px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .pros-cons-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .pc-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .pc-list li {
+            margin-bottom: 15px;
+            padding-left: 30px;
+            position: relative;
+            color: #ccc;
+        }
+
+        .pc-list.pros li::before {
+            content: '✓';
+            color: #0f0;
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        .pc-list.cons li::before {
+            content: '✕';
+            color: #f00;
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .info-table td {
+            padding: 15px 0;
+            border-bottom: 1px solid #222;
+            color: #ccc;
+        }
+
+        .info-table td:first-child {
+            font-weight: bold;
+            color: #fff;
+            width: 40%;
+        }
+
+        @keyframes slideUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="header-placeholder"></div>
+
+    <!-- Hero Section -->
+    <section class="review-hero">
+        <div class="hero-bg" id="hero-bg"></div>
+        <div class="hero-overlay"></div>
+        <div class="review-content">
+            <img src="" alt="Casino" class="casino-logo-large" id="c-logo">
+            <div class="casino-info">
+                <h1 class="casino-title" id="c-name">Loading...</h1>
+                <div class="review-rating">
+                    <div class="rating-badge" id="c-rating">0.0</div>
+                    <div class="review-meta">/ 5.0 Rating • <span id="c-votes">0</span> Votes</div>
+                </div>
+            </div>
+            <div class="cta-group">
+                <a href="#" class="btn-play-large" id="c-play" target="_blank">PLAY NOW</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Content -->
+    <div class="detail-grid">
+        <div class="main-col">
+            <div class="detail-card">
+                <h2 class="section-heading">Overview</h2>
+                <div id="c-desc" style="line-height: 1.8; color: #ccc;"></div>
+            </div>
+
+            <div class="detail-card">
+                <h2 class="section-heading">Pros & Cons</h2>
+                <div class="pros-cons-grid">
+                    <div>
+                        <h3 style="color:#0f0; margin-bottom:20px;">Pros</h3>
+                        <ul class="pc-list pros" id="c-pros"></ul>
+                    </div>
+                    <div>
+                        <h3 style="color:#f00; margin-bottom:20px;">Cons</h3>
+                        <ul class="pc-list cons" id="c-cons"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-col">
+            <div class="detail-card">
+                <h3 class="section-heading" style="font-size:1.5rem;">Casino Info</h3>
+                <table class="info-table">
+                    <tr>
+                        <td>Website</td>
+                        <td><a href="#" id="c-link" target="_blank" style="color:var(--accent-gold);">Visit Site</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Established</td>
+                        <td>2024</td>
+                    </tr>
+                    <tr>
+                        <td>License</td>
+                        <td>Curacao</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="/assets/js/utils.js"></script>
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/router.js"></script>
+    <script src="/assets/js/components.js"></script><!-- Header Injection -->
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const slug = window.location.pathname.split('/')[2]; // /casinos/slug (index 2)
+            try {
+                // Use unified public API endpoint
+                const casino = await API.get(`/platforms/${slug}`);
+
+                if (!casino) {
+                    document.body.innerHTML = '<h1 style="color:white;text-align:center;margin-top:100px;">Casino Not Found</h1>';
+                    return;
+                }
+
+                // Render
+                document.title = `${casino.name} Review - Bettrion`;
+
+                // Meta Description Update
+                let metaDesc = document.querySelector('meta[name="description"]');
+                if (!metaDesc) {
+                    metaDesc = document.createElement('meta');
+                    metaDesc.name = 'description';
+                    document.head.appendChild(metaDesc);
+                }
+                metaDesc.content = `Read our honest review of ${casino.name}. Rating: ${casino.rating}/5. ${casino.short_description || ''}`;
+
+                // Background & Logo
+                const bg = casino.banner_image || (casino.images && casino.images.length > 1 ? casino.images[1] : '/assets/img/hero-bg.jpg');
+                document.getElementById('hero-bg').style.backgroundImage = `url('${bg}')`;
+                setTimeout(() => document.getElementById('hero-bg').classList.add('animate'), 100);
+
+                document.getElementById('c-logo').src = casino.logo || (casino.images ? casino.images[0] : '');
+                document.getElementById('c-name').innerText = casino.name;
+                document.getElementById('c-rating').innerText = casino.rating;
+                document.getElementById('c-votes').innerText = casino.clicks || 0; // fallback to clicks as votes proxy
+                document.getElementById('c-desc').innerHTML = casino.description; // HTML allowed
+
+                // --- NEW: Full Banner Injection ---
+                if (casino.banner_image) {
+                    const bannerImg = document.createElement('img');
+                    bannerImg.src = casino.banner_image;
+                    bannerImg.alt = `${casino.name} Screenshot`;
+                    bannerImg.style.width = '100%';
+                    bannerImg.style.borderRadius = '12px';
+                    bannerImg.style.marginBottom = '30px';
+                    bannerImg.style.boxShadow = '0 10px 30px rgba(0,0,0,0.5)';
+                    bannerImg.style.border = '1px solid #333';
+
+                    const descContainer = document.getElementById('c-desc');
+                    descContainer.parentNode.insertBefore(bannerImg, descContainer);
+                }
+                // ----------------------------------
+
+                // Links (Use slug redirect if desired, or direct)
+                // Using Direct Affiliate Link for Play Button
+                document.getElementById('c-play').href = casino.affiliate_link;
+                document.getElementById('c-link').href = casino.affiliate_link;
+
+                // Pros/Cons (Arrays in DB)
+                const renderList = (id, items) => {
+                    if (items && Array.isArray(items)) {
+                        document.getElementById(id).innerHTML = items.map(i => `<li>${i}</li>`).join('');
+                    }
+                };
+                renderList('c-pros', casino.pros);
+                renderList('c-cons', casino.cons);
+
+            } catch (e) {
+                console.error('Error loading casino:', e);
+            }
+        });
+    </script>
+</body>
+
+</html>

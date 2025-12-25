@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ticket Detail - Bettrion Admin</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="/assets/css/admin-layout.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <script src="/assets/js/admin-auth.js"></script>
+    <style>
+        .ticket-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .msg-container {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 400px;
+            overflow-y: auto;
+            background: var(--bg-card);
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .msg {
+            padding: 10px 15px;
+            border-radius: 6px;
+            max-width: 80%;
+        }
+
+        .msg.USER {
+            background: #333;
+            align-self: flex-start;
+        }
+
+        .msg.ADMIN {
+            background: var(--accent-blue);
+            align-self: flex-end;
+            text-align: right;
+        }
+
+        .msg-meta {
+            font-size: 0.75rem;
+            color: #aaa;
+            margin-bottom: 4px;
+        }
+
+        .quick-replies {
+            background: var(--bg-card);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .quick-replies h3 {
+            margin-top: 0;
+            color: var(--accent-gold);
+        }
+
+        .quick-btn {
+            padding: 8px 12px;
+            margin: 5px;
+            background: var(--bg-sidebar);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .quick-btn:hover {
+            background: var(--accent-gold);
+            color: #000;
+        }
+
+        .status-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-layout">
+        <aside class="sidebar">
+            <a href="/" class="brand" style="display: flex; align-items: center; gap: 10px;">
+                <img src="/assets/images/bettrion-logo_notxt.webp" alt="Bettrion" style="height: 35px;">
+                <span style="font-size: 1.5rem; font-weight: 800; color: var(--accent-gold);">Bettrion</span>
+            </a>
+            <nav>
+                <a href="/admin/dashboard">Dashboard</a>
+                <a href="/admin/platform-edit">Add Platform</a>
+                <a href="/admin/add-slot">Add Slot</a>
+                <a href="/admin/platforms">Manage Platforms</a>
+                <a href="/admin/articles">Manage Articles</a>
+                <a href="/admin/article-edit">Write Article</a>
+                <a href="/admin/tickets" class="active">Support Tickets</a>
+                <a href="/admin/staff-time">Staff Hours</a>
+                <a href="/admin/backups">Backups</a>
+                <a href="/admin/images">Image Manager</a>
+                <a href="/admin/users">Users</a>
+                <a href="/admin/settings">Settings</a>
+            </nav>
+            <div style="padding: 20px;">
+                <button onclick="adminLogout()" class="btn"
+                    style="width:100%; background:var(--accent-red);">Logout</button>
+            </div>
+        </aside>
+
+        <main class="admin-content">
+            <div class="ticket-header">
+                <div>
+                    <h1 id="t-subject">Ticket Detail</h1>
+                    <p id="t-info" style="color: var(--text-secondary);">Loading...</p>
+                </div>
+                <div class="status-controls">
+                    <select id="status-select"
+                        style="padding: 8px; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-primary); border-radius: 4px;">
+                        <option value="OPEN">Open</option>
+                        <option value="IN_PROGRESS">In Progress</option>
+                        <option value="CLOSED">Closed</option>
+                    </select>
+                    <button onclick="updateStatus()" class="btn btn-sm">Update Status</button>
+                    <button onclick="deleteTicket()" class="btn btn-sm" style="background: var(--accent-red);">Delete
+                        Ticket</button>
+                </div>
+            </div>
+
+            <div class="quick-replies">
+                <h3>⚡ Quick Replies</h3>
+                <button class="quick-btn"
+                    onclick="insertQuickReply('Thank you for contacting us. We are looking into your issue and will get back to you shortly.')">🔍
+                    Checking...</button>
+                <button class="quick-btn" onclick="insertQuickReply('Please give us a moment to check this for you.')">⏳
+                    Give us a moment</button>
+                <button class="quick-btn"
+                    onclick="insertQuickReply('Could you please provide more details about your issue?')">❓ Need more
+                    info</button>
+                <button class="quick-btn"
+                    onclick="insertQuickReply('Your issue has been resolved. Please let us know if you need further assistance.')">✅
+                    Resolved</button>
+                <button class="quick-btn"
+                    onclick="insertQuickReply('We have forwarded your request to the appropriate team.')">📤
+                    Forwarded</button>
+                <button class="quick-btn" onclick="requestEmail()">📧 Request Email</button>
+            </div>
+
+            <div class="msg-container" id="msg-box"></div>
+
+            <div class="card">
+                <h3>Reply</h3>
+                <textarea id="reply-text" rows="4"
+                    style="width:100%; background:#111; color:white; border:1px solid #333; padding:10px; margin-bottom:10px; border-radius: 4px;"></textarea>
+                <button id="send-btn" class="btn btn-primary">Send Reply</button>
+            </div>
+        </main>
+    </div>
+
+    <script src="/assets/js/api.js"></script>
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const ticketId = params.get('id');
+        let currentTicket = null;
+
+        async function load() {
+            const res = await api.get(`/tickets/${ticketId}/messages`);
+            if (res.success) {
+                const box = document.getElementById('msg-box');
+                box.innerHTML = '';
+                res.data.forEach(m => {
+                    const div = document.createElement('div');
+                    div.className = `msg ${m.sender_role}`;
+                    div.innerHTML = `
+                        <div class="msg-meta">${m.sender_role} - ${new Date(m.created_at).toLocaleString()}</div>
+                        <div>${m.content}</div>
+                    `;
+                    box.appendChild(div);
+                });
+                box.scrollTop = box.scrollHeight;
+            }
+
+            // Load ticket info
+            const ticketsRes = await api.get('/tickets');
+            if (ticketsRes.success) {
+                currentTicket = ticketsRes.data.find(t => t.id === ticketId);
+                if (currentTicket) {
+                    document.getElementById('t-subject').innerText = currentTicket.subject || 'No Subject';
+                    document.getElementById('t-info').innerText = `From: ${currentTicket.guest_email || 'Unknown'} | Priority: ${currentTicket.priority} | Status: ${currentTicket.status}`;
+                    document.getElementById('status-select').value = currentTicket.status;
+                }
+            }
+        }
+
+        function insertQuickReply(text) {
+            document.getElementById('reply-text').value = text;
+        }
+
+        function requestEmail() {
+            const emailForm = `Please provide your email address so we can assist you better:\n\nEmail: _______________\n\nThank you!`;
+            document.getElementById('reply-text').value = emailForm;
+        }
+
+        async function updateStatus() {
+            const newStatus = document.getElementById('status-select').value;
+            const res = await api.put(`/tickets/${ticketId}/status`, { status: newStatus });
+            if (res.success) {
+                alert('Status updated successfully');
+                load();
+            } else {
+                alert('Error updating status: ' + res.error);
+            }
+        }
+
+        async function deleteTicket() {
+            if (!confirm('Delete this ticket permanently? This cannot be undone.')) return;
+            const res = await api.delete(`/tickets/${ticketId}`);
+            if (res.success) {
+                alert('Ticket deleted successfully');
+                window.location.href = '/admin/tickets';
+            } else {
+                alert('Error deleting ticket: ' + res.error);
+            }
+        }
+
+        document.getElementById('send-btn').onclick = async () => {
+            const content = document.getElementById('reply-text').value;
+            if (!content) return alert('Please enter a message');
+
+            const res = await api.post('/messages', {
+                ticket_id: ticketId,
+                sender_role: 'ADMIN',
+                content: content
+            });
+
+            if (res.success) {
+                document.getElementById('reply-text').value = '';
+                load();
+            } else {
+                alert('Error sending message: ' + res.error);
+            }
+        };
+
+        window.addEventListener('load', load);
+    </script>
+</body>
+
+</html>

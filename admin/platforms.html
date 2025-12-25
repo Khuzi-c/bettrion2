@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Platforms - Bettrion Admin</title>
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="stylesheet" href="/assets/css/components.css">
+    <link rel="stylesheet" href="/assets/css/admin.css">
+</head>
+
+<body>
+    <div class="main-content">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h1>Platforms</h1>
+            <a href="/admin/edit-platform.html" class="btn">Add New</a>
+        </div>
+
+        <table style="margin-top: 20px;">
+            <thead>
+                <tr>
+                    <th>Icon</th>
+                    <th>Name</th>
+                    <th>Rating</th>
+                    <th>Views</th>
+                    <th>Clicks</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="platforms-table"></tbody>
+        </table>
+    </div>
+
+    <script src="/assets/js/utils.js"></script>
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/admin.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const platforms = await API.get('/platforms'); // This gets everything for now
+            const tbody = document.getElementById('platforms-table');
+
+            tbody.innerHTML = platforms.map(p => `
+                <tr>
+                    <td><img src="${p.logo || '/assets/img/default-item.png'}" width="30"></td>
+                    <td>${p.name}</td>
+                    <td>${p.rating}</td>
+                    <td>${p.views || 0}</td>
+                    <td>${p.clicks || 0}</td>
+                    <td class="actions">
+                        <a href="/admin/edit-platform.html?id=${p.id}" class="btn" style="background:#f39c12">Edit</a>
+                        <button onclick="deletePlatform('${p.id}')" class="btn" style="background:#c0392b">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        });
+
+        async function deletePlatform(id) {
+            if (confirm('Are you sure?')) {
+                await API.delete(`/platforms/${id}`);
+                location.reload();
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Status - Bettrion</title>
+    <link rel="icon" type="image/webp" href="/assets/img/logo.webp">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/main.css?v=8">
+    <style>
+        body {
+            background: #0d0d0d;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .status-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .status-pulse {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin-bottom: 30px;
+            box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.7);
+            animation: pulse 2s infinite;
+        }
+
+        .status-operational {
+            background: #2ecc71;
+            box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.7);
+            animation: pulse-green 2s infinite;
+        }
+
+        .status-issues {
+            background: #f1c40f;
+            box-shadow: 0 0 0 0 rgba(241, 196, 15, 0.7);
+            animation: pulse-yellow 2s infinite;
+        }
+
+        .status-down {
+            background: #e74c3c;
+            box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7);
+            animation: pulse-red 2s infinite;
+        }
+
+        @keyframes pulse-green {
+            0% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.7);
+            }
+
+            70% {
+                transform: scale(1);
+                box-shadow: 0 0 0 20px rgba(46, 204, 113, 0);
+            }
+
+            100% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(46, 204, 113, 0);
+            }
+        }
+
+        @keyframes pulse-yellow {
+            0% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(241, 196, 15, 0.7);
+            }
+
+            70% {
+                transform: scale(1);
+                box-shadow: 0 0 0 20px rgba(241, 196, 15, 0);
+            }
+
+            100% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(241, 196, 15, 0);
+            }
+        }
+
+        @keyframes pulse-red {
+            0% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7);
+            }
+
+            70% {
+                transform: scale(1);
+                box-shadow: 0 0 0 20px rgba(231, 76, 60, 0);
+            }
+
+            100% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(231, 76, 60, 0);
+            }
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        p.message {
+            font-size: 1.2rem;
+            color: #aaa;
+            max-width: 600px;
+            line-height: 1.6;
+        }
+
+        .quote {
+            margin-top: 30px;
+            font-style: italic;
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+    <header id="header"></header>
+
+    <div class="status-container">
+        <div id="status-icon" class="status-pulse status-operational"></div>
+        <h1 id="status-title">All Systems Operational</h1>
+        <p id="status-message" class="message">The betting platforms and payment gateways are running smoothly.</p>
+        <p class="quote">"Devs are working everything will be Back up Soon DW" - Team Bettrion (if issues occur)</p>
+    </div>
+
+    <script src="/assets/js/utils.js?v=4"></script>
+    <script src="/assets/js/api.js?v=3"></script>
+    <script src="/assets/js/router.js?v=3"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const res = await api.get('/settings/all'); // Assuming api endpoint exists
+            if (res.success || res) {
+                // api.js usually returns object directly if success? No, api.get returns body?
+                // Let's check api.js behavior or assume res.data or res itself.
+                // Looking at admin-auth.js usage: const res = await api.get...; if(res.success)...
+
+                const settings = res.data || res;
+                const status = settings.system_status || 'operational';
+                const message = settings.system_status_message || 'All systems operational.';
+
+                const icon = document.getElementById('status-icon');
+                const title = document.getElementById('status-title');
+                const msg = document.getElementById('status-message');
+
+                // Reset classes
+                icon.className = 'status-pulse';
+
+                if (status === 'operational') {
+                    icon.classList.add('status-operational');
+                    title.innerText = 'All Systems Operational';
+                    title.style.color = '#2ecc71';
+                } else if (status === 'issues') {
+                    icon.classList.add('status-issues');
+                    title.innerText = 'Experiencing Issues';
+                    title.style.color = '#f1c40f';
+                } else {
+                    icon.classList.add('status-down');
+                    title.innerText = 'Service Outage';
+                    title.style.color = '#e74c3c';
+                }
+
+                msg.innerText = message;
+            }
+        });
+    </script>
+</body>
+
+</html>

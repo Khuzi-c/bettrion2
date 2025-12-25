@@ -1,0 +1,73 @@
+<!-- Welcome / Age & Country Modal -->
+<div id="welcome-modal" class="modal-overlay"
+    style="display:flex; justify-content:center; align-items:center; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.95); z-index:99999; backdrop-filter:blur(8px);">
+    <div class="modal-content"
+        style="background:#111; border:1px solid #333; padding:40px; border-radius:12px; width:100%; max-width:500px; text-align:center; position:relative; box-shadow: 0 0 50px rgba(0,0,0,0.8);">
+
+        <!-- Step 1: Country Selection -->
+        <div id="step-country">
+            <h2 style="color:var(--primary, #ffd700); margin-bottom:15px; font-size:1.8rem;">Select Your Region</h2>
+            <p style="color:#aaa; margin-bottom:25px;">Please confirm your country of residence to continue.</p>
+
+            <div class="custom-select-wrapper" style="text-align:left; margin-bottom:25px;">
+                <div id="welcome-country-select" class="custom-select"
+                    style="background:#222; border:1px solid #444; padding:12px; border-radius:6px; cursor:pointer; color:white; display:flex; justify-content:space-between; align-items:center;">
+                    <span id="welcome-select-text">Select Country</span>
+                    <span style="font-size:0.8rem;">▼</span>
+                </div>
+                <!-- Dropdown Options (Hidden) -->
+                <div id="welcome-options"
+                    style="display:none; position:absolute; width:100%; top:100%; left:0; max-height:250px; overflow-y:auto; background:#1a1a1e; border:1px solid #444; z-index:100; margin-top:5px; border-radius:6px; box-shadow:0 10px 30px rgba(0,0,0,0.5);">
+                    <input type="text" id="welcome-search" placeholder="Search..."
+                        style="width:100%; padding:10px; background:#111; border:none; border-bottom:1px solid #333; color:white; outline:none;">
+                    <div id="welcome-list">
+                        <!-- JS Injected Countries -->
+                    </div>
+                </div>
+            </div>
+
+            <button id="btn-next-step" disabled
+                style="background:#444; color:#888; border:none; padding:12px 30px; border-radius:6px; font-weight:bold; cursor:not-allowed; transition:0.3s; width:100%;">Next</button>
+        </div>
+
+        <!-- Step 2: Age & TOS -->
+        <div id="step-age" style="display:none;">
+            <h2 style="color:white; margin-bottom:15px;">Age Verification</h2>
+            <img src="/assets/img/18-plus.png" onerror="this.src='/assets/img/logo.webp'" alt="18+"
+                style="height:60px; margin-bottom:20px; filter: grayscale(100%);">
+            <p style="color:#ccc; margin-bottom:25px; line-height:1.5;">
+                You must be 18 years or older to access this website. We are committed to responsible gambling.
+            </p>
+
+            <label
+                style="display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:25px; cursor:pointer;">
+                <input type="checkbox" id="check-age" style="width:20px; height:20px; accent-color:#ffd700;">
+                <span style="color:#fff; text-align:left;">I am 18+ and accept the <a href="/terms" target="_blank"
+                        style="color:#ffd700;">TOS</a> & <a href="/privacy" target="_blank"
+                        style="color:#ffd700;">Privacy Policy</a>.</span>
+            </label>
+
+            <button id="consent-accept" disabled
+                style="background:#444; color:#888; border:none; padding:12px 30px; border-radius:6px; font-weight:bold; cursor:not-allowed; transition:0.3s; width:100%;">Enter
+                Site</button>
+        </div>
+
+    </div>
+</div>
+<style>
+    .welcome-option {
+        padding: 10px 15px;
+        cursor: pointer;
+        border-bottom: 1px solid #2a2a2e;
+        transition: 0.2s;
+    }
+
+    .welcome-option:hover {
+        background: #333;
+        color: #ffd700;
+    }
+
+    .welcome-option:last-child {
+        border-bottom: none;
+    }
+</style>

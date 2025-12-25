@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Manager - Bettrion Admin</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="/assets/css/admin-layout.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <script src="/assets/js/admin-auth.js"></script>
+    <style>
+        .upload-area {
+            border: 2px dashed var(--border-color);
+            padding: 40px;
+            text-align: center;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            border-color: var(--accent-gold);
+        }
+
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .image-card {
+            position: relative;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .image-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .image-info {
+            padding: 10px;
+            background: var(--bg-card);
+        }
+
+        .image-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-layout">
+        <aside class="sidebar">
+            <a href="/" class="brand" style="display: flex; align-items: center; gap: 10px;">
+                <img src="/assets/images/bettrion-logo_notxt.webp" alt="Bettrion" style="height: 35px;">
+                <span style="font-size: 1.5rem; font-weight: 800; color: var(--accent-gold);">Bettrion</span>
+            </a>
+            <nav>
+                <a href="/admin/dashboard">Dashboard</a>
+                <a href="/admin/platform-edit">Add Platform</a>
+                <a href="/admin/add-slot">Add Slot</a>
+                <a href="/admin/platforms">Manage Platforms</a>
+                <a href="/admin/articles">Manage Articles</a>
+                <a href="/admin/article-edit">Write Article</a>
+                <a href="/admin/tickets">Support Tickets</a>
+                <a href="/admin/staff-time">Staff Hours</a>
+                <a href="/admin/backups">Backups</a>
+                <a href="/admin/images" class="active">Image Manager</a>
+                <a href="/admin/users">Users</a>
+                <a href="/admin/settings">Settings</a>
+            </nav>
+            <div style="padding: 20px;">
+                <button onclick="adminLogout()" class="btn"
+                    style="width:100%; background:var(--accent-red);">Logout</button>
+            </div>
+        </aside>
+
+        <main class="admin-content">
+            <h1>Image Manager</h1>
+
+            <div class="upload-area" onclick="document.getElementById('file-input').click()">
+                <input type="file" id="file-input" accept="image/*" style="display:none;" onchange="uploadImage(event)">
+                <h3>📤 Click to Upload Image</h3>
+                <p style="color: var(--text-secondary);">Supports: JPG, PNG, GIF, WEBP (Max 10MB)</p>
+            </div>
+
+            <div id="msg" style="margin-bottom: 20px;"></div>
+
+            <h2>Uploaded Images</h2>
+            <div id="image-grid" class="image-grid">
+                <p>Loading images...</p>
+            </div>
+        </main>
+    </div>
+
+    <script src="/assets/js/api.js"></script>
+    <script>
+        async function loadImages() {
+            const res = await api.get('/uploads/list');
+            const grid = document.getElementById('image-grid');
+            grid.innerHTML = '';
+
+            if (res.success && res.data.length > 0) {
+                res.data.forEach(img => {
+                    const card = document.createElement('div');
+                    card.className = 'image-card';
+                    card.innerHTML = `
+                        <img src="${img.file_url}" alt="${img.original_name}">
+                        <div class="image-info">
+                            <div style="font-size: 0.85rem; color: var(--text-secondary);">
+                                ${img.original_name}<br>
+                                ${img.file_size_kb} KB
+                            </div>
+                            <div class="image-actions">
+                                <button onclick="copyUrl('${img.file_url}')" class="btn btn-sm">Copy URL</button>
+                                <button onclick="deleteImage('${img.id}')" class="btn btn-sm" style="background: var(--accent-red);">Delete</button>
+                            </div>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+            } else {
+                grid.innerHTML = '<p>No images uploaded yet.</p>';
+            }
+        }
+
+        async function uploadImage(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const msg = document.getElementById('msg');
+            msg.innerHTML = '<span style="color: var(--accent-blue);">Uploading...</span>';
+
+            const formData = new FormData();
+            formData.append('image', file);
+
+            try {
+                const res = await api.upload('/uploads', formData);
+                if (res.success) {
+                    msg.innerHTML = `<span style="color: green;">✅ Uploaded! URL: ${res.data.url}</span>`;
+                    loadImages();
+                } else {
+                    msg.innerHTML = `<span style="color: red;">❌ Error: ${res.error}</span>`;
+                }
+            } catch (err) {
+                msg.innerHTML = `<span style="color: red;">❌ Upload failed: ${err.message}</span>`;
+            }
+
+            event.target.value = '';
+        }
+
+        function copyUrl(url) {
+            const fullUrl = window.location.origin + url;
+            navigator.clipboard.writeText(fullUrl);
+            alert('URL copied to clipboard!');
+        }
+
+        async function deleteImage(id) {
+            if (!confirm('Delete this image?')) return;
+            const res = await api.delete(`/uploads/${id}`);
+            if (res.success) loadImages();
+        }
+
+        window.addEventListener('load', loadImages);
+    </script>
+</body>
+
+</html>

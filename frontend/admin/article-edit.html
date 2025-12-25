@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Write Article - Bettrion Admin</title>
+    <link rel="stylesheet" href="/assets/css/admin-v2.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <main class="admin-main">
+        <h1 class="page-title">Write New Article</h1>
+        <div class="form-card">
+            <form id="article-form">
+                <div class="form-group">
+                    <label>Title</label>
+                    <input type="text" name="title" required placeholder="Article Title">
+                </div>
+
+                <div class="form-group">
+                    <label>Cover Image URL</label>
+                    <div style="display:flex; gap:10px;">
+                        <input type="text" name="image" placeholder="https://..." id="img-url">
+                        <button type="button" class="btn btn-outline"
+                            onclick="window.open('/admin/images.html', '_blank')">Select Image</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Content</label>
+
+                    <!-- Toolbar -->
+                    <div style="margin-bottom:10px; display:flex; gap:10px;">
+                        <select id="casino-inserter" class="form-control" style="width:auto;">
+                            <option value="">-- Select Casino to Link --</option>
+                        </select>
+                        <button type="button" class="btn btn-sm btn-outline" onclick="insertCasinoLink()">+ Insert "Play
+                            Now" Button</button>
+                    </div>
+
+                    <textarea name="content" id="content-area" rows="15"
+                        placeholder="Write your article content here (HTML supported)..."></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Publish Article</button>
+                <div id="msg" style="margin-top: 20px; font-weight:bold;"></div>
+            </form>
+        </div>
+    </main>
+
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/admin-v2.js"></script>
+    <script>
+        document.getElementById('article-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+
+            const msg = document.getElementById('msg');
+            msg.innerHTML = '<span style="color:var(--accent);">Publishing...</span>';
+
+            const res = await api.post('/articles', data);
+
+            if (res.success) {
+                msg.innerHTML = '<span style="color: green;">✅ Article published successfully!</span>';
+                e.target.reset();
+            } else {
+                msg.innerHTML = `<span style="color: red;">❌ Error: ${res.error}</span>`;
+            }
+        });
+
+        // Load Casinos for Inserter
+        (async () => {
+            try {
+                const res = await api.get('/admin/platforms');
+                if (res.success) {
+                    const select = document.getElementById('casino-inserter');
+                    res.data.forEach(c => {
+                        const opt = document.createElement('option');
+                        opt.value = c.affiliate_link; // or c.slug
+                        opt.dataset.name = c.name;
+                        opt.innerText = c.name;
+                        select.appendChild(opt);
+                    });
+                }
+            } catch (e) { console.error(e); }
+        })();
+
+        function insertCasinoLink() {
+            const select = document.getElementById('casino-inserter');
+            const url = select.value;
+            const name = select.options[select.selectedIndex].dataset.name;
+            const area = document.getElementById('content-area');
+
+            if (!url) return alert('Select a casino first');
+
+            // Insert a styled button shortcode or HTML
+            const html = `<div style="text-align:center; margin:20px 0;">
+    <a href="${url}" target="_blank" class="btn-green" style="display:inline-block; width:auto; padding:15px 40px; font-size:1.2rem;">Play at ${name} ></a>
+</div>`;
+
+            // Allow inserting at cursor position (simple append for textarea)
+            const start = area.selectionStart;
+            const end = area.selectionEnd;
+            const text = area.value;
+            area.value = text.substring(0, start) + html + text.substring(end);
+        }
+    </script>
+</body>
+
+</html>

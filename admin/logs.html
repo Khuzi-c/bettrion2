@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Server Logs - Admin</title>
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="stylesheet" href="/assets/css/admin.css">
+</head>
+
+<body class="admin-body">
+
+    <!-- Sidebar Inject -->
+
+    <div class="main-content">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h1>Server Logs</h1>
+            <button onclick="fetchLogs()" class="btn-primary">Refresh</button>
+        </div>
+
+        <div class="card"
+            style="margin-top:20px; background:#000; color:#0f0; font-family:monospace; padding:20px; height:500px; overflow-y:scroll;"
+            id="logs-container">
+            Loading logs...
+        </div>
+    </div>
+
+    <script src="/assets/js/utils.js"></script>
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/admin.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', fetchLogs);
+
+        async function fetchLogs() {
+            const container = document.getElementById('logs-container');
+            try {
+                const res = await API.get('/admin/logs');
+                if (res && res.logs) {
+                    container.innerHTML = res.logs.map(line => `<div>${line}</div>`).join('');
+                    // Scroll to bottom
+                    container.scrollTop = container.scrollHeight;
+                } else {
+                    container.innerHTML = 'No logs found.';
+                }
+            } catch (e) {
+                container.innerHTML = 'Error fetching logs: ' + e.message;
+            }
+        }
+    </script>
+</body>
+
+</html>

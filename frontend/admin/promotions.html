@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Promotions Manager - Bettrion Admin</title>
+    <link rel="stylesheet" href="/assets/css/admin-v2.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        .preview-img {
+            width: 100px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 1px solid #333;
+        }
+
+        .badge-type {
+            background: #e50914;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+        }
+    </style>
+</head>
+
+<body>
+    <main class="admin-main">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h1 class="page-title">Promotions</h1>
+            <button onclick="openModal()" class="btn btn-primary">+ New Promotion</button>
+        </div>
+
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Banner</th>
+                        <th>Title / Code</th>
+                        <th>Details</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="promo-table-body">
+                    <tr>
+                        <td colspan="5" style="text-align:center;">Loading...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <!-- Modal -->
+    <div id="modal-overlay" class="modal-overlay" style="display:none;">
+        <div class="modal-content">
+            <h2 style="margin-top:0;">Create Promotion</h2>
+            <form id="promo-form">
+                <div class="form-group">
+                    <label>Title</label>
+                    <input type="text" id="title" class="form-control" required placeholder="Ex: Summer Giveaway">
+                </div>
+                <div class="form-group">
+                    <label>Promo Code (Optional)</label>
+                    <input type="text" id="code" class="form-control" placeholder="Ex: SUMMER2025">
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="description" class="form-control" rows="3" placeholder="Brief rules..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Banner Image URL</label>
+                    <div style="display:flex; gap:10px;">
+                        <input type="text" id="image_url" class="form-control" required>
+                        <button type="button" onclick="window.open('/admin/images.html','_blank')"
+                            class="btn btn-outline" style="padding:5px 10px;">🖼️</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Affiliate/Action Link</label>
+                    <input type="text" id="link" class="form-control" placeholder="https://...">
+                </div>
+                <div class="form-group">
+                    <label>Expiry Date</label>
+                    <input type="date" id="expiry" class="form-control">
+                </div>
+
+                <div style="display:flex; gap:10px; margin-top:20px;">
+                    <button type="submit" class="btn btn-primary" style="flex:1;">Save Promotion</button>
+                    <button type="button" onclick="closeModal()" class="btn btn-outline" style="flex:1;">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/admin-v2.js"></script>
+    <script>
+        // Check API routes
+        // api.js uses /admin/promotions for POST/GET
+
+        async function loadPromos() {
+            try {
+                const res = await api.get('/admin/promotions');
+                const tbody = document.getElementById('promo-table-body');
+                const list = res.data || (Array.isArray(res) ? res : []);
+
+                if (list.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#888;">No active promotions.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = list.map(p => `
+                    <tr>
+                        <td><img src="${p.image_url}" class="preview-img"></td>
+                        <td>
+                            <div style="font-weight:600;">${p.title}</div>
+                            ${p.code ? `<div style="font-family:monospace; color:var(--accent); background:#222; display:inline-block; padding:2px 4px; border-radius:4px;">${p.code}</div>` : ''}
+                        </td>
+                        <td style="font-size:0.85rem; color:#aaa;">
+                            <div>${p.description ? p.description.substring(0, 50) + '...' : ''}</div>
+                            ${p.link ? `<a href="${p.link}" target="_blank" style="color:var(--primary);"> Link ↗</a>` : ''}
+                        </td>
+                        <td>
+                            <span class="badge ${p.is_active ? 'badge-active' : 'badge-inactive'}">
+                                ${p.is_active ? 'Active' : 'Inactive'}
+                            </span>
+                        </td>
+                        <td>
+                            <button onclick="del('${p.id}')" class="btn btn-sm btn-delete">Delete</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        async function createPromo(e) {
+            e.preventDefault();
+            const payload = {
+                title: document.getElementById('title').value,
+                code: document.getElementById('code').value,
+                description: document.getElementById('description').value,
+                image_url: document.getElementById('image_url').value,
+                link: document.getElementById('link').value,
+                expiry_date: document.getElementById('expiry').value || null,
+                is_active: true
+            };
+
+            const res = await api.post('/admin/promotions', payload);
+            if (res.success || res.id) {
+                closeModal();
+                loadPromos();
+                e.target.reset();
+            } else {
+                alert('Error: ' + res.message);
+            }
+        }
+
+        async function del(id) {
+            if (!confirm('Delete this promotion?')) return;
+            await api.delete('/admin/promotions/' + id);
+            loadPromos();
+        }
+
+        const modal = document.getElementById('modal-overlay');
+        function openModal() { modal.style.display = 'flex'; }
+        function closeModal() { modal.style.display = 'none'; }
+        document.getElementById('promo-form').addEventListener('submit', createPromo);
+        window.addEventListener('load', loadPromos);
+    </script>
+</body>
+
+</html>

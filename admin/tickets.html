@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support Tickets - Bettrion Admin</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="/assets/css/admin-layout.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <script src="/assets/js/admin-auth.js"></script>
+    <style>
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .table th,
+        .table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .table th {
+            background: var(--bg-card);
+            color: var(--accent-gold);
+        }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-layout">
+        <aside class="sidebar">
+            <a href="/" class="brand" style="display: flex; align-items: center; gap: 10px;">
+                <img src="/assets/images/bettrion-logo_notxt.webp" alt="Bettrion" style="height: 35px;">
+                <span style="font-size: 1.5rem; font-weight: 800; color: var(--accent-gold);">Bettrion</span>
+            </a>
+            <nav>
+                <a href="/admin/dashboard">Dashboard</a>
+                <a href="/admin/platform-edit">Add Platform</a>
+                <a href="/admin/add-slot">Add Slot</a>
+                <a href="/admin/platforms">Manage Platforms</a>
+                <a href="/admin/articles">Manage Articles</a>
+                <a href="/admin/article-edit">Write Article</a>
+                <a href="/admin/tickets" class="active">Support Tickets</a>
+                <a href="/admin/staff-time">Staff Hours</a>
+                <a href="/admin/backups">Backups</a>
+                <a href="/admin/images">Image Manager</a>
+                <a href="/admin/users">Users</a>
+                <a href="/admin/settings">Settings</a>
+            </nav>
+            <div style="padding: 20px;">
+                <button onclick="adminLogout()" class="btn"
+                    style="width:100%; background:var(--accent-red);">Logout</button>
+            </div>
+        </aside>
+
+        <main class="admin-content">
+            <h1>Support Tickets</h1>
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Subject</th>
+                        <th>User/Email</th>
+                        <th>Priority</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <tr>
+                        <td colspan="6">Loading tickets...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </main>
+    </div>
+
+    <script src="/assets/js/api.js"></script>
+    <script>
+        async function load() {
+            const res = await api.get('/tickets');
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = '';
+
+            if (res.success && res.data.length > 0) {
+                res.data.forEach(t => {
+                    const tr = document.createElement('tr');
+                    const statusColor = t.status === 'OPEN' ? 'green' : t.status === 'CLOSED' ? '#666' : 'orange';
+
+                    tr.innerHTML = `
+                        <td style="font-weight: bold;">${t.subject || 'No Subject'}</td>
+                        <td>${t.guest_email || 'User'}</td>
+                        <td>${t.priority}</td>
+                        <td><span class="badge" style="background:${statusColor}">${t.status}</span></td>
+                        <td>${new Date(t.created_at).toLocaleDateString()}</td>
+                        <td>
+                            <div class="btn-group">
+                                <a href="/admin/ticket-detail?id=${t.id}" class="btn btn-sm">View</a>
+                                <button onclick="deleteTicket('${t.id}')" class="btn btn-sm" style="background: var(--accent-red);">Delete</button>
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } else {
+                tbody.innerHTML = '<tr><td colspan="6">No tickets found.</td></tr>';
+            }
+        }
+
+        async function deleteTicket(id) {
+            if (!confirm('Delete this ticket permanently?')) return;
+            const res = await api.delete(`/tickets/${id}`);
+            if (res.success) {
+                alert('Ticket deleted successfully');
+                load();
+            } else {
+                alert('Error deleting ticket: ' + res.error);
+            }
+        }
+
+        window.addEventListener('load', load);
+    </script>
+</body>
+
+</html>

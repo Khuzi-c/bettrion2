@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Platforms - Bettrion</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="stylesheet" href="/assets/css/components.css">
+    <style>
+        .filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .filter-select {
+            background: #2f2f2f;
+            border: 1px solid #444;
+            color: #fff;
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container main-content">
+        <h1>All Platforms</h1>
+
+        <div class="filters">
+            <select id="category-filter" class="filter-select">
+                <option value="">All Categories</option>
+                <!-- Filled dynamically -->
+            </select>
+            <input type="text" id="search-input" placeholder="Search casinos..." class="filter-select"
+                style="min-width: 200px;">
+        </div>
+
+        <div id="platforms-grid" class="platforms-grid">
+            <div class="loader"></div>
+        </div>
+    </div>
+
+    <script src="/assets/js/utils.js"></script>
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/render.js"></script>
+    <script src="/assets/js/router.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const container = document.getElementById('platforms-grid');
+            const catFilter = document.getElementById('category-filter');
+            const searchInput = document.getElementById('search-input');
+            let allPlatforms = [];
+
+            // Load Categories
+            try {
+                const cats = await API.get('/categories?type=platform');
+                catFilter.innerHTML = '<option value="">All Categories</option>' +
+                    cats.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+            } catch (e) { console.error('Error loading categories:', e); }
+
+            // Load Platforms
+            try {
+                allPlatforms = await API.get('/platforms');
+                renderList(allPlatforms);
+            } catch (err) {
+                container.innerHTML = '<p>Error loading platforms.</p>';
+                console.error(err);
+            }
+
+            // Filter Logic
+            function renderList(platforms) {
+                if (!platforms.length) {
+                    container.innerHTML = '<p style="text-align:center; padding: 20px;">No platforms found.</p>';
+                    return;
+                }
+                container.innerHTML = platforms.map((p, index) => Render.platformListItem(p, index)).join('');
+            }
+
+            function filterPlatforms() {
+                const cat = catFilter.value;
+                const term = searchInput.value.toLowerCase();
+
+                const filtered = allPlatforms.filter(p => {
+                    const matchesCat = !cat || (p.category_id === cat); // Assuming category_id or array checks
+                    const matchesSearch = p.name.toLowerCase().includes(term);
+                    return matchesCat && matchesSearch;
+                });
+                renderList(filtered);
+            }
+
+            catFilter.addEventListener('change', filterPlatforms);
+            searchInput.addEventListener('input', Utils.throttle(filterPlatforms, 300));
+        });
+    </script>
+</body>
+
+</html>

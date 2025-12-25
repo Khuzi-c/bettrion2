@@ -1,0 +1,185 @@
+/* --- NEW PREMIUM HEADER & SIDEBAR --- */
+
+/* Header Container */
+header {
+    background: #0a0a0a;
+    /* Pure Dark */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    height: 70px;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.header-container {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Left Section: Hamburger + Logo */
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+/* Hamburger Button */
+.hamburger-btn {
+    background: #1a1a1a;
+    border: 1px solid #333;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    transition: 0.2s;
+}
+
+.hamburger-btn span {
+    display: block;
+    width: 20px;
+    height: 2px;
+    background: #fff;
+    border-radius: 2px;
+}
+
+.hamburger-btn:hover {
+    background: var(--primary);
+    border-color: var(--primary);
+}
+
+/* Brand Logo */
+.brand-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+}
+
+.brand-logo {
+    height: 32px;
+    filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.4));
+}
+
+.brand-name {
+    font-family: 'Inter', sans-serif;
+    font-weight: 800;
+    font-size: 1.5rem;
+    color: var(--gold);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Right Section */
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+/* Language Selector */
+.lang-selector {
+    position: relative;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #fff;
+}
+
+.lang-selector:hover {
+    border-color: #555;
+}
+
+.lang-selector select {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+/* Auth Buttons override */
+.btn-login-plain {
+    color: white;
+    font-weight: 600;
+    text-decoration: none;
+    margin-right: 10px;
+}
+
+.btn-signup {
+    background: var(--primary);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.9rem;
+    box-shadow: 0 4px 15px rgba(229, 9, 20, 0.3);
+}
+
+.btn-signup:hover {
+    background: var(--primary-hover);
+    transform: translateY(-1px);
+}
+
+/* Sidebar Specifics */
+.sidebar {
+    background: #0d0d0d;
+}
+
+.sidebar .sidebar-header {
+    background: #050505;
+    border-bottom: 1px solid #222;
+}
+
+.sidebar-title {
+    color: #666;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    margin: 25px 0 10px 15px;
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 12px 20px;
+    color: #ccc;
+    text-decoration: none;
+    font-weight: 500;
+    transition: 0.2s;
+    border-left: 3px solid transparent;
+}
+
+.sidebar-link .icon {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+}
+
+.sidebar-link:hover,
+.sidebar-link.active {
+    background: rgba(255, 255, 255, 0.03);
+    color: white;
+    border-left-color: var(--primary);
+}

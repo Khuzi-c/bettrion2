@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Manager - Bettrion Admin</title>
+    <link rel="stylesheet" href="/assets/css/admin-v2.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        .upload-area {
+            border: 2px dashed var(--border);
+            padding: 40px;
+            text-align: center;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            cursor: pointer;
+            background: var(--bg-card);
+            transition: 0.2s;
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary);
+            background: #1a1a1a;
+        }
+
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .image-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .image-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            background: #000;
+        }
+
+        .image-info {
+            padding: 15px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .image-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: auto;
+            padding-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <main class="admin-main">
+        <h1 class="page-title">Image Manager</h1>
+
+        <div class="upload-area" onclick="document.getElementById('file-input').click()">
+            <input type="file" id="file-input" accept="image/*" style="display:none;" onchange="uploadImage(event)">
+            <h3 style="margin:0 0 10px 0;">📤 Click to Upload Image</h3>
+            <p style="color: #666; margin:0;">Supports: JPG, PNG, GIF, WEBP (Max 10MB)</p>
+        </div>
+
+        <div id="msg" style="margin-bottom: 20px; font-weight:bold;"></div>
+
+        <h2 style="color:var(--text); margin-bottom:20px;">Gallery</h2>
+        <div id="image-grid" class="image-grid">
+            <p style="color:#666;">Loading images...</p>
+        </div>
+    </main>
+
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/admin-v2.js"></script>
+    <script>
+        async function loadImages() {
+            try {
+                const res = await api.get('/uploads/list');
+                const grid = document.getElementById('image-grid');
+                grid.innerHTML = '';
+
+                if (res.success && res.data.length > 0) {
+                    res.data.forEach(img => {
+                        const card = document.createElement('div');
+                        card.className = 'image-card';
+                        card.innerHTML = `
+                            <img src="${img.file_url}" alt="${img.original_name}">
+                            <div class="image-info">
+                                <div style="font-size: 0.85rem; color:#aaa; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; margin-bottom:5px;">
+                                    ${img.original_name}
+                                </div>
+                                <div style="font-size: 0.75rem; color:#666; margin-bottom:10px;">
+                                    ${img.file_size_kb} KB
+                                </div>
+                                <div class="image-actions">
+                                    <button onclick="copyUrl('${img.file_url}')" class="btn btn-sm btn-outline" style="flex:1;">Copy</button>
+                                    <button onclick="deleteImage('${img.id}')" class="btn btn-sm btn-delete">Delete</button>
+                                </div>
+                            </div>
+                        `;
+                        grid.appendChild(card);
+                    });
+                } else {
+                    grid.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:#666;">No images uploaded yet.</p>';
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        async function uploadImage(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const msg = document.getElementById('msg');
+            msg.innerHTML = '<span style="color: var(--accent);">Uploading...</span>';
+
+            const formData = new FormData();
+            formData.append('image', file);
+
+            try {
+                const res = await api.upload('/uploads', formData);
+                if (res.success) {
+                    msg.innerHTML = `<span style="color: green;">✅ Uploaded! URL: ${res.data.url}</span>`;
+                    loadImages();
+                } else {
+                    msg.innerHTML = `<span style="color: red;">❌ Error: ${res.error}</span>`;
+                }
+            } catch (err) {
+                msg.innerHTML = `<span style="color: red;">❌ Upload failed: ${err.message}</span>`;
+            }
+
+            event.target.value = '';
+        }
+
+        function copyUrl(url) {
+            const fullUrl = window.location.origin + url;
+            navigator.clipboard.writeText(fullUrl);
+            alert('URL copied to clipboard!');
+        }
+
+        async function deleteImage(id) {
+            if (!confirm('Delete this image?')) return;
+            const res = await api.delete(`/uploads/${id}`);
+            if (res.success) loadImages();
+        }
+
+        window.addEventListener('load', loadImages);
+    </script>
+</body>
+
+</html>

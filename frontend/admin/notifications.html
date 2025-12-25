@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Notification Manager - Bettrion Admin</title>
+    <link rel="stylesheet" href="/assets/css/admin-v2.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <script src="/assets/js/admin-auth.js"></script>
+</head>
+
+<body>
+    <div class="admin-wrapper">
+        <main class="admin-main">
+            <h1 class="page-title">Notification Bar Manager</h1>
+
+            <div class="card">
+                <h2>Add New Notification</h2>
+                <form id="add-notif-form">
+                    <div class="form-group">
+                        <label>Title (Optional)</label>
+                        <input type="text" name="title" placeholder="e.g. FLASH SALE">
+                    </div>
+                    <div class="form-group">
+                        <label>Message</label>
+                        <input type="text" name="message" required placeholder="e.g. 50% Deposit Bonus this weekend!">
+                    </div>
+
+                    <div style="display: flex; gap: 20px;">
+                        <div class="form-group" style="flex: 1;">
+                            <label>Context Color</label>
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <input type="color" name="color" value="#3498db" style="height: 40px; width: 60px;">
+                                <select onchange="document.querySelector('[name=color]').value = this.value"
+                                    style="flex:1;">
+                                    <option value="#3498db">Blue (Info)</option>
+                                    <option value="#2ecc71">Green (Success)</option>
+                                    <option value="#e74c3c">Red (Alert)</option>
+                                    <option value="#f1c40f">Yellow (Warning)</option>
+                                    <option value="#9b59b6">Purple (Promo)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label>Type</label>
+                            <select name="type">
+                                <option value="info">Info</option>
+                                <option value="success">Success</option>
+                                <option value="warning">Warning</option>
+                                <option value="danger">Danger</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 20px;">
+                        <div class="form-group" style="flex: 1;">
+                            <label>Link Text (Call to Action)</label>
+                            <input type="text" name="link_text" placeholder="e.g. CLICK ME">
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label>Link URL</label>
+                            <input type="text" name="link_url" placeholder="/promotions">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Add Notification</button>
+                    <div id="msg" style="margin-top: 10px;"></div>
+                </form>
+            </div>
+
+            <div class="card">
+                <h2>Active Notifications</h2>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Color</th>
+                            <th>Message</th>
+                            <th>Link</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="notif-table-body">
+                        <!-- JS Loaded -->
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/admin-v2.js"></script>
+    <script>
+        async function loadNotifs() {
+            try {
+                const res = await api.get('/admin/announcements');
+                const tbody = document.getElementById('notif-table-body');
+                tbody.innerHTML = '';
+
+                if (res.success && res.data) {
+                    res.data.forEach(n => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td><div style="width:20px; height:20px; border-radius:50%; background:${n.background_color || '#3498db'};"></div></td>
+                            <td>${n.message}</td>
+                            <td>${n.link_url ? `<a href="${n.link_url}" target="_blank">Link</a>` : '-'}</td>
+                            <td>${n.is_active ? '<span class="status-badge" style="background:#2ecc71;">Active</span>' : '<span class="status-badge" style="background:#7f8c8d;">Inactive</span>'}</td>
+                            <td>
+                                <button class="btn-sm" onclick="toggle('${n.id}', ${!n.is_active})">${n.is_active ? 'Pause' : 'Activate'}</button>
+                                <button class="btn-sm btn-danger" onclick="del('${n.id}')">Delete</button>
+                            </td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        document.getElementById('add-notif-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+
+            // Map form fields to backend expectations
+            // Frontend: color, message
+            // Backend: background_color, message
+            data.background_color = data.color;
+
+            const res = await api.post('/admin/announcements', data);
+            if (res.success) {
+                document.getElementById('msg').innerHTML = '<span style="color:green">Added!</span>';
+                e.target.reset();
+                loadNotifs();
+            } else {
+                document.getElementById('msg').innerHTML = '<span style="color:red">Error: ' + (res.error || 'Failed') + '</span>';
+            }
+        });
+
+        async function toggle(id, status) {
+            await api.patch(`/admin/announcements/${id}/toggle`, { is_active: status });
+            loadNotifs();
+        }
+
+        async function del(id) {
+            if (confirm('Delete?')) {
+                await api.delete(`/admin/announcements/${id}`);
+                loadNotifs();
+            }
+        }
+
+        loadNotifs();
+    </script>
+    <style>
+        .btn-sm {
+            padding: 4px 8px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            margin-right: 5px;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+    </style>
+</body>
+
+</html>

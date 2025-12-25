@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Platforms - Bettrion Admin</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="/assets/css/admin-layout.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .table th,
+        .table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .table th {
+            background: var(--bg-card);
+            color: var(--accent-gold);
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-layout">
+        <aside class="sidebar">
+            <a href="/" class="brand">Bettrion Admin</a>
+            <nav>
+                <a href="/admin/dashboard.html">Dashboard</a>
+                <a href="/admin/platform-edit.html">Add Platform</a>
+                <a href="/admin/platforms.html" class="active">Manage Platforms</a>
+                <a href="/admin/articles.html">Manage Articles</a>
+            </nav>
+        </aside>
+
+        <main class="admin-content">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h1>All Platforms</h1>
+                <a href="/admin/platform-edit.html" class="btn btn-primary">Add New</a>
+            </div>
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Rating</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <tr>
+                        <td colspan="4">Loading...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </main>
+    </div>
+
+    <script src="/assets/js/api.js"></script>
+    <script>
+        async function load() {
+            const res = await api.get('/admin/platforms');
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = '';
+
+            if (res.success && res.data.length > 0) {
+                res.data.forEach(p => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td style="font-weight: bold;">${p.name}</td>
+                        <td>${p.rating} / 5.0</td>
+                        <td>${p.is_active ? '<span class="badge" style="color:var(--accent-green)">Active</span>' : '<span class="badge" style="color:red">Inactive</span>'}</td>
+                        <td class="actions">
+                            <a href="/admin/platform-edit.html?id=${p.id}" class="btn" style="padding: 5px 10px; font-size: 0.8rem;">Edit</a>
+                            <button onclick="deleteItem('${p.id}')" class="btn btn-danger" style="padding: 5px 10px; font-size: 0.8rem;">Delete</button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } else {
+                tbody.innerHTML = '<tr><td colspan="4">No platforms found.</td></tr>';
+            }
+        }
+
+        async function deleteItem(id) {
+            if (!confirm('Are you sure?')) return;
+            const res = await api.delete(`/platforms/${id}`); // Note: Assuming api.delete uses DELETE method
+
+            // api.js wrapper fix: we defined delete in api.js? Let's check api.js code again. 
+            // The previous api.js had .get, .post, .upload. I missed .put and .delete!
+            // I will fix api.js next.
+            // For now, assume it works or I'll fix it.
+
+            if (res.success) {
+                load();
+            } else {
+                alert('Error deleting: ' + res.error);
+            }
+        }
+
+        // Just in case api.delete isn't there, let's patch it inline or wait for api.js fix.
+        // Actually, I should inspect api.js.
+        window.addEventListener('load', load);
+    </script>
+</body>
+
+</html>

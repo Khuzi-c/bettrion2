@@ -1,0 +1,30 @@
+<!-- Language Selector Component -->
+<div class="language-selector" style="position: relative; display: inline-block;">
+    <select id="lang-selector" onchange="changeLang(this.value)"
+        style="padding: 8px 12px; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-primary); border-radius: 4px; cursor: pointer;">
+        <option value="en">🇬🇧 English</option>
+        <option value="ar">🇸🇦 العربية</option>
+        <option value="nl">🇳🇱 Nederlands</option>
+        <option value="de">🇩🇪 Deutsch</option>
+        <option value="fr">🇫🇷 Français</option>
+        <option value="es">🇪🇸 Español</option>
+        <option value="it">🇮🇹 Italiano</option>
+        <option value="pt">🇵🇹 Português</option>
+    </select>
+</div>
+
+<script>
+    function changeLang(lang) {
+        if (window.i18n) {
+            window.i18n.setLocale(lang);
+        }
+    }
+
+    // Set current language on load
+    window.addEventListener('load', () => {
+        if (window.i18n) {
+            const currentLang = window.i18n.getLocale();
+            document.getElementById('lang-selector').value = currentLang;
+        }
+    });
+</script>

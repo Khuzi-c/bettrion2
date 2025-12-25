@@ -1,0 +1,60 @@
+<div class="header-container">
+    <!-- LEFT: Menu & Logo -->
+    <div class="header-left">
+        <button id="menu-toggle" class="menu-btn" style="background:none; border:none; cursor:pointer;">
+            <img src="/assets/img/icon-menu.png" alt="Menu"
+                style="width:24px; vertical-align:middle; filter: invert(1);">
+        </button>
+        <a href="/" class="brand-link">
+            <img src="/assets/img/logo.webp" onerror="this.src='/assets/img/2666-casino-chip.png'" alt="Bettrion"
+                class="brand-logo" style="height: 36px; width: auto; object-fit: contain;">
+            <span class="brand-name">Bettrion</span>
+        </a>
+    </div>
+
+    <!-- RIGHT: Language & Auth -->
+    <div class="header-right">
+        <!-- GTranslate Wrapper -->
+        <div class="gtranslate_wrapper"></div>
+        <div id="auth-container">
+            <!-- Auth content injected via JS -->
+            <div class="auth-loading" style="display:none;">...</div>
+        </div>
+    </div>
+</div>
+
+<!-- Announcement Banner (Below Header) -->
+<div id="announcement-bar"
+    style="background:#000; color:white; border-bottom:1px solid #222; height:40px; display:flex; align-items:center; justify-content:center; overflow:hidden; position:relative; z-index:90;">
+    <div id="annc-content" style="font-weight:bold; font-size:0.9rem; opacity:0; transition: opacity 0.5s ease-in-out;">
+        <!-- JS Injected -->
+    </div>
+</div>
+
+<script>
+    (function () {
+        const announcements = [
+            "Are You The Creator? tscl.fun",
+            "Welcome to Bettrion! Exclusive Bonuses Available!",
+            "Join our Discord for Daily Giveaways!"
+        ];
+
+        let currentIndex = 0;
+        const el = document.getElementById('annc-content');
+
+        function showNext() {
+            if (!el) return;
+            el.style.opacity = '0';
+            setTimeout(() => {
+                el.innerText = announcements[currentIndex];
+                el.style.opacity = '1';
+                currentIndex = (currentIndex + 1) % announcements.length;
+            }, 500);
+        }
+
+        if (announcements.length > 0) {
+            showNext();
+            setInterval(showNext, 5000);
+        }
+    })();
+</script>

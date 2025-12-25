@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Bettrion Admin</title>
+    <link rel="stylesheet" href="/assets/css/admin-v2.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <main class="admin-main">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h1 class="page-title">Dashboard Overview</h1>
+            <button onclick="nukeVisitors()" class="btn btn-delete">🗑️ Clear Visitor History</button>
+        </div>
+
+        <div class="grid-stats">
+            <div class="stat-card">
+                <span class="stat-label">Total Casinos</span>
+                <span class="stat-value" id="s-casinos">...</span>
+                <img src="/assets/img/2666-casino-chip.png"
+                    style="position:absolute; right:15px; top:15px; width:40px; opacity:0.5;">
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Registered Users</span>
+                <span class="stat-value" id="s-users">...</span>
+                <img src="/assets/img/44014-msp-elite-vip.png"
+                    style="position:absolute; right:15px; top:15px; width:40px; opacity:0.5;">
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Open Tickets</span>
+                <span class="stat-value" id="s-tickets" style="color:var(--primary);">...</span>
+                <img src="/assets/img/18502-beta-pogo-os.png"
+                    style="position:absolute; right:15px; top:15px; width:40px; opacity:0.5;">
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Active Visitors</span>
+                <span class="stat-value" id="s-active">...</span>
+                <img src="/assets/img/1881-ping.png"
+                    style="position:absolute; right:15px; top:15px; width:40px; opacity:0.5;">
+            </div>
+        </div>
+
+        <h2 style="margin-bottom:20px; color:white;">Recent Activity</h2>
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>IP Address</th>
+                        <th>Country</th>
+                        <th>Page Visited</th>
+                        <th>Time</th>
+                    </tr>
+                </thead>
+                <tbody id="analytics-body">
+                    <tr>
+                        <td colspan="4">Loading...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:10px;">
+            <a href="/admin/logs.html" class="btn btn-outline">View Full Server Logs</a>
+            <a href="/admin/database.html" class="btn btn-primary">🗄️ Manage Database</a>
+        </div>
+    </main>
+
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/admin-v2.js"></script>
+    <script src="/assets/js/sudo.js"></script> <!-- Security Lock -->
+    <script>
+        async function load() {
+            // Stats
+            try {
+                const stats = await api.get('/admin/stats');
+                if (stats.success) {
+                    document.getElementById('s-casinos').innerText = stats.data.casinos || 0;
+                    document.getElementById('s-users').innerText = stats.data.users || 0;
+                    document.getElementById('s-tickets').innerText = stats.data.tickets || 0;
+                    document.getElementById('s-active').innerText = stats.data.active || 0;
+                }
+
+                // Recent Activity (Analytics)
+                const logs = await api.get('/admin/analytics?limit=8');
+                const tbody = document.getElementById('analytics-body');
+                if (logs.success && logs.data.length > 0) {
+                    tbody.innerHTML = logs.data.map(l => `
+                        <tr>
+                            <td>${l.ip_address || l.ip || 'Unknown'}</td>
+                            <td>${l.country || '-'}</td>
+                            <td style="color:var(--accent);">${l.page_url || l.path || '/'}</td>
+                            <td>${new Date(l.created_at).toLocaleTimeString()}</td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="4">No recent activity found</td></tr>';
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        async function nukeVisitors() {
+            if (!confirm('Are you sure you want to DELETE ALL Visitor History? This cannot be undone.')) return;
+            const res = await api.delete('/admin/visitors');
+            if (res.success) { alert('History Cleared'); load(); }
+            else alert(res.error);
+        }
+
+        window.addEventListener('load', load);
+    </script>
+</body>
+
+</html>

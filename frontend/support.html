@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6753511493243956"
+        crossorigin="anonymous"></script>
+    <title>Support Ticket - Bettrion</title>
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <style>
+        .support-container {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+            background: var(--bg-card);
+            border-radius: 12px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--text-secondary);
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            background: #222;
+            border: 1px solid #444;
+            color: white;
+            border-radius: 6px;
+        }
+
+        .btn {
+            width: 100%;
+        }
+
+        .ticket-list {
+            margin-top: 30px;
+        }
+
+        .ticket-item {
+            background: #111;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            border: 1px solid #333;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .status-badge {
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        .status-OPEN {
+            background: #2ecc71;
+            color: black;
+        }
+
+        .status-CLOSED {
+            background: #7f8c8d;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="header-placeholder"></div>
+
+    <div class="support-container">
+        <!-- CONTACT BANNER -->
+        <div style="margin-bottom: 20px; border-radius: 12px; overflow: hidden;">
+            <img src="/assets/banners/contactus.png" alt="Contact Us" style="width: 100%; display: block;">
+        </div>
+
+        <h1>Open a Support Ticket</h1>
+        <p style="color:#aaa; margin-bottom:20px;">Describe your issue below. Our team will respond shortly.</p>
+
+        <div
+            style="background: linear-gradient(90deg, #5865F2 0%, #4752c4 100%); color: white; padding: 15px 20px; border-radius: 8px; margin-bottom: 30px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 15px rgba(88, 101, 242, 0.3);">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <!-- Discord Icon SVG -->
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.772-.6083 1.1588a18.4045 18.4045 0 00-6.1955 0c-.1636-.3936-.4058-.7835-.617-1.1588a.0771.0771 0 00-.0785-.0371 19.7363 19.7363 0 00-4.8852 1.5152.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1892.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.1023.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.419-2.1568 2.419zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.419-2.1568 2.419z" />
+                </svg>
+                <div>
+                    <strong style="font-size:1.1rem;">Need faster support?</strong><br>
+                    <span style="opacity:0.9; font-size:0.9rem;">Join our Discord for live chat!</span>
+                </div>
+            </div>
+            <a href="https://discord.gg/bett" target="_blank"
+                style="background: white; color: #5865F2; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: bold; transition: transform 0.2s;"
+                onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">Join
+                Now</a>
+        </div>
+
+        <form id="ticket-form">
+            <div class="form-group">
+                <label>Subject</label>
+                <input type="text" id="subject" required placeholder="e.g. Deposit Issue">
+            </div>
+            <div class="form-group">
+                <label>Priority</label>
+                <select id="priority">
+                    <option value="low">Low</option>
+                    <option value="medium" selected>Medium</option>
+                    <option value="high">High</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Message</label>
+                <textarea id="message" rows="5" required placeholder="Provide details..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit Ticket</button>
+            <p id="msg" style="margin-top:10px; text-align:center;"></p>
+        </form>
+
+        <div class="ticket-list">
+            <h3>Your Recent Tickets</h3>
+            <div id="my-tickets">Loading...</div>
+        </div>
+    </div>
+
+    <script src="/assets/js/utils.js"></script>
+    <!-- api.js now exposes window.api = API -->
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/router.js"></script>
+    <script>
+        // Check Auth
+        const token = localStorage.getItem('user_token');
+        if (!token) {
+            document.querySelector('.support-container').innerHTML = `
+                <div style="text-align:center; padding:40px;">
+                    <h2>Please Login</h2>
+                    <p>You must be logged in to open a support ticket.</p>
+                    <a href="/login" class="btn btn-primary" style="display:inline-block; margin-top:20px;">Login</a>
+                </div>
+            `;
+        } else {
+            loadMyTickets();
+        }
+
+        document.getElementById('ticket-form')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const subject = document.getElementById('subject').value;
+            const priority = document.getElementById('priority').value;
+            const message = document.getElementById('message').value;
+            const msg = document.getElementById('msg');
+
+            const token = localStorage.getItem('user_token');
+            let user_id = null;
+            if (token) {
+                try {
+                    const payload = JSON.parse(atob(token.split('.')[1]));
+                    user_id = payload.id;
+                } catch (e) { }
+            }
+
+            msg.innerText = "Submitting...";
+
+            try {
+                // Correct Endpoint: /tickets/create
+                const res = await api.post('/tickets/create', {
+                    user_id,
+                    guest_email: null,
+                    subject,
+                    category: 'General',
+                    priority,
+                    initial_message: message
+                });
+
+                if (res.success) {
+                    msg.style.color = 'lime';
+                    msg.innerText = "Ticket Created!";
+                    document.getElementById('ticket-form').reset();
+
+                    // SAVE TO LOCAL HISTORY (Ensures guest visibility)
+                    const myTickets = JSON.parse(localStorage.getItem('my_tickets') || '[]');
+                    myTickets.unshift(res.data); // Add new ticket to top
+                    localStorage.setItem('my_tickets', JSON.stringify(myTickets));
+
+                    loadMyTickets();
+                } else {
+                    msg.style.color = 'red';
+                    msg.innerText = res.message || "Failed to create ticket";
+                }
+            } catch (e) {
+                msg.innerText = "Error: " + e.message;
+            }
+        });
+
+        async function loadMyTickets() {
+            try {
+                // 1. Load Local History
+                let localTickets = JSON.parse(localStorage.getItem('my_tickets') || '[]');
+
+                // 2. Load API Tickets (if logged in)
+                const token = localStorage.getItem('user_token');
+                if (token) {
+                    try {
+                        const payload = JSON.parse(atob(token.split('.')[1]));
+                        const res = await api.get(`/tickets?user_id=${payload.id}`);
+                        if (res.success && Array.isArray(res.data)) {
+                            // Merge: Add server tickets that aren't in local (server source of truth for status)
+                            // Or better: Use server ticket if exists (updated status), else local
+                            const serverMap = new Map(res.data.map(t => [t.id, t]));
+                            localTickets.forEach(t => {
+                                if (!serverMap.has(t.id)) serverMap.set(t.id, t);
+                            });
+                            localTickets = Array.from(serverMap.values()).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                        }
+                    } catch (e) { console.error('API Ticket Load Error', e); }
+                }
+
+                const container = document.getElementById('my-tickets');
+                if (localTickets.length > 0) {
+                    container.innerHTML = localTickets.map(t => `
+                        <div class="ticket-item">
+                            <div>
+                                <strong>#${t.short_id || '---'} - ${t.subject}</strong><br>
+                                <small>${new Date(t.created_at).toLocaleDateString()}</small>
+                            </div>
+                            <span class="status-badge status-${t.status}">${t.status}</span>
+                        </div>
+                    `).join('');
+                } else {
+                    container.innerHTML = '<p style="color:#666;">No tickets found.</p>';
+                }
+            } catch (e) {
+                console.error(e);
+                document.getElementById('my-tickets').innerText = 'Failed to load tickets.';
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Promotions - Admin</title>
+    <link rel="stylesheet" href="/assets/css/admin.css">
+    <link rel="stylesheet" href="/assets/css/sidebar.css">
+</head>
+
+<body>
+    <div class="admin-container">
+        <aside class="sidebar" id="sidebar-container"></aside>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <h1>Promotions Manager</h1>
+                <div class="user-info">admin</div>
+            </header>
+
+            <div class="content-wrapper">
+                <!-- Create Form -->
+                <div class="card" style="margin-bottom: 30px;">
+                    <h3>Add New Promotion</h3>
+                    <form id="create-form">
+                        <div class="form-group">
+                            <label>Title</label>
+                            <input type="text" id="title" required placeholder="Ex: 50% Welcome Bonus">
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea id="description" rows="3" placeholder="Details..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Image URL</label>
+                            <input type="text" id="image_url" placeholder="/uploads/...">
+                        </div>
+                        <div class="form-group">
+                            <label>Bonus Code</label>
+                            <input type="text" id="bonus_code" placeholder="WELCOME50">
+                        </div>
+                        <div class="form-group">
+                            <label>Link</label>
+                            <input type="text" id="link" placeholder="https://...">
+                        </div>
+                        <div class="form-group">
+                            <label>Start/End Date</label>
+                            <div style="display:flex; gap:10px;">
+                                <input type="date" id="start_date">
+                                <input type="date" id="end_date">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Create Promotion</button>
+                    </form>
+                    <p id="msg"></p>
+                </div>
+
+                <!-- List -->
+                <div class="card">
+                    <h3>Active Promotions</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Code</th>
+                                <th>Dates</th>
+                                <th>Active</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="list-body">
+                            <!-- JS populated -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/assets/js/admin-sidebar.js"></script>
+    <script src="/assets/js/utils.js"></script>
+    <script src="/assets/js/api.js"></script>
+    <script>
+        async function loadList() {
+            try {
+                const res = await API.get('/admin/promotions');
+                const tbody = document.getElementById('list-body');
+                tbody.innerHTML = res.data.map(p => `
+                    <tr>
+                        <td>
+                            <div style="font-weight:bold">${p.title}</div>
+                            <div style="font-size:0.8rem; color:#888">${p.link || ''}</div>
+                        </td>
+                        <td><code>${p.bonus_code || '-'}</code></td>
+                        <td>${formatDate(p.start_date)} - ${formatDate(p.end_date)}</td>
+                        <td>${p.is_active ? '✅' : '❌'}</td>
+                        <td>
+                            <button onclick="del('${p.id}')" class="btn-sm btn-danger">Delete</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (e) { console.error(e); }
+        }
+
+        document.getElementById('create-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = {
+                title: document.getElementById('title').value,
+                description: document.getElementById('description').value,
+                image_url: document.getElementById('image_url').value,
+                bonus_code: document.getElementById('bonus_code').value,
+                link: document.getElementById('link').value,
+                start_date: document.getElementById('start_date').value,
+                end_date: document.getElementById('end_date').value,
+                is_active: true
+            };
+
+            try {
+                await API.post('/admin/promotions', data);
+                document.getElementById('create-form').reset();
+                loadList();
+            } catch (err) { alert(err.message); }
+        });
+
+        async function del(id) {
+            if (!confirm('Delete?')) return;
+            await API.delete(`/admin/promotions/${id}`);
+            loadList();
+        }
+
+        function formatDate(d) {
+            if (!d) return '-';
+            return new Date(d).toLocaleDateString();
+        }
+
+        loadList();
+    </script>
+</body>
+
+</html>

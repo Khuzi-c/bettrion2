@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Top 10 Casinos - Bettrion</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        .search-bar {
+            width: 100%;
+            padding: 15px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: white;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+
+        .casino-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.2s;
+            overflow: hidden;
+        }
+
+        .casino-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-gold);
+        }
+
+        .casino-card img {
+            width: 120px;
+            height: 120px;
+            object-fit: contain;
+            background: white;
+            border-radius: 8px;
+            padding: 10px;
+            margin: 0 auto 15px;
+            display: block;
+        }
+
+        .casino-card h3 {
+            margin: 10px 0;
+            color: var(--accent-gold);
+            font-size: 1.3rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .casino-card .rating {
+            color: var(--accent-gold);
+            font-size: 1.2rem;
+            margin: 10px 0;
+        }
+
+        .casino-card p {
+            color: var(--text-secondary);
+            margin: 15px 0;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            height: 60px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+        }
+
+        .casino-card .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: var(--accent-gold);
+            color: #000;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .casino-card .btn:hover {
+            background: #ffd700;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="header-placeholder"></div>
+
+    <main class="container" style="padding: 40px 0;">
+        <h1 style="margin-bottom: 20px;">🏆 Top 10 Best Casinos</h1>
+
+        <div id="casino-grid"
+            style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; margin-top: 30px;">
+            <p style="text-align: center; color: var(--text-secondary);">Loading Top 10...</p>
+        </div>
+    </main>
+
+    <footer
+        style="background: var(--bg-sidebar); border-top: 1px solid var(--border-color); padding: 40px 0; margin-top: 60px; text-align: center; color: var(--text-secondary);">
+        <p>&copy; 2025 Bettrion. All rights reserved.</p>
+    </footer>
+
+    <script src="/assets/js/utils.js"></script>
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/router.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', load);
+
+        async function load() {
+            try {
+                const res = await api.get('/platforms/top-lists');
+
+                if (res && res.top10) {
+                    render(res.top10);
+                } else {
+                    document.getElementById('casino-grid').innerHTML = '<p style="color: red; text-align: center;">No Top 10 list configured.</p>';
+                }
+            } catch (err) {
+                console.error(err);
+                document.getElementById('casino-grid').innerHTML = '<p style="color: red; text-align: center;">Error loading Top 10.</p>';
+            }
+        }
+
+        function render(casinos) {
+            const grid = document.getElementById('casino-grid');
+            grid.innerHTML = '';
+
+            if (casinos && casinos.length > 0) {
+                casinos.forEach(casino => {
+                    const card = document.createElement('div');
+                    card.className = 'casino-card';
+                    const logo = casino.logo || (casino.images && casino.images[0]) || '/assets/img/default-provider.png';
+                    const slug = casino.slug || casino.id;
+                    const description = (casino.short_description || casino.description || '').substring(0, 100) + '...';
+
+                    card.innerHTML = `
+                        <img src="${logo}" alt="${casino.name}">
+                        <h3>${casino.name}</h3>
+                        <div class="rating">★ ${casino.rating || '5.0'} / 5.0</div>
+                        <p>${description}</p>
+                        <a href="/casinos/${slug}" class="btn" style="width: 100%; padding: 12px 20px;">View Details →</a>
+                    `;
+                    grid.appendChild(card);
+                });
+            } else {
+                grid.innerHTML = '<p>No active casinos in Top 10.</p>';
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Casino Review - Bettrion</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <a href="/" class="logo">Bettrion</a>
+            <nav>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/platforms.html">Casinos</a></li>
+                    <li><a href="/slots.html">Slots</a></li>
+                    <li><a href="/articles.html">News</a></li>
+                    <li><a href="/support.html">Support</a></li>
+                </ul>
+            </nav>
+            <div>
+                <a href="#" class="btn btn-primary">Login</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container" style="margin-top: 40px;">
+        <div id="loading">Loading review...</div>
+
+        <div id="content" style="display: none;">
+            <div class="card" style="display: flex; gap: 30px; align-items: center; margin-bottom: 40px;">
+                <img id="p-logo" src="" style="width: 200px; height: 100px; object-fit: cover; border-radius: 4px;">
+                <div style="flex: 1;">
+                    <h1 id="p-name" style="margin: 0 0 10px;">-</h1>
+                    <div style="color: var(--accent-gold); font-size: 1.2rem; margin-bottom: 15px;">★ <span
+                            id="p-rating">-</span> / 5.0</div>
+                    <p id="p-short">-</p>
+                </div>
+                <div>
+                    <a id="p-link" href="#" class="btn btn-primary" style="font-size: 1.2rem; padding: 15px 40px;">Play
+                        Now</a>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 40px;">
+                <div>
+                    <h2>Full Review</h2>
+                    <div id="p-desc" class="card" style="line-height: 1.6;"></div>
+                </div>
+
+                <div>
+                    <h3>Pros & Cons</h3>
+                    <div class="card" style="margin-bottom: 20px;">
+                        <h4 style="color: var(--accent-green); margin-top: 0;">Pros</h4>
+                        <ul id="p-pros" style="list-style: none; padding: 0;"></ul>
+
+                        <h4 style="color: var(--accent-red); margin-top: 20px;">Cons</h4>
+                        <ul id="p-cons" style="list-style: none; padding: 0;"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer
+        style="background: var(--bg-sidebar); border-top: 1px solid var(--border-color); padding: 40px 0; margin-top: 60px; text-align: center; color: var(--text-secondary);">
+        <p>&copy; 2025 Bettrion. All rights reserved.</p>
+        <div style="margin-top:20px;">
+            <a href="/privacy.html" style="color:var(--text-secondary); margin:0 10px;">Privacy</a>
+            <a href="/terms.html" style="color:var(--text-secondary); margin:0 10px;">Terms</a>
+            <a href="/support.html" style="color:var(--text-secondary); margin:0 10px;">Support</a>
+        </div>
+    </footer>
+    <script src="/assets/js/support-widget.js"></script>
+
+    <script src="/assets/js/api.js"></script>
+    <script>
+        async function load() {
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get('id');
+
+            if (!id) {
+                document.getElementById('loading').innerText = 'Casino not found.';
+                return;
+            }
+
+            // Note: We need getPlatformById in contentController (already implemented)
+            // But we didn't explicitly implement the route for public detail if different from admin.
+            // Let's check api.js: user /platforms/:id for getPlatformById. It works.
+
+            const res = await api.get(`/platforms/${id}`);
+
+            if (res.success && res.data) {
+                const p = res.data;
+                document.title = p.name + ' Review - Bettrion';
+
+                const logo = p.images && p.images.length > 0 ? p.images[0] : 'https://via.placeholder.com/200x100';
+                document.getElementById('p-logo').src = logo;
+                document.getElementById('p-name').innerText = p.name;
+                document.getElementById('p-rating').innerText = p.rating;
+                document.getElementById('p-short').innerText = p.short_description || '';
+                document.getElementById('p-link').href = p.affiliate_link || '#';
+                document.getElementById('p-desc').innerHTML = p.description || 'No detailed review available.';
+
+                const prosContainer = document.getElementById('p-pros');
+                if (p.bonuses && p.bonuses.pros) {
+                    // Check if it's a string (legacy) or array
+                    let pros = p.bonuses.pros;
+                    if (typeof pros === 'string') pros = pros.split('\n');
+                    if (Array.isArray(pros)) {
+                        pros.forEach(item => {
+                            if (item.trim()) prosContainer.innerHTML += `<li>✓ ${item}</li>`;
+                        });
+                    }
+                }
+
+                const consContainer = document.getElementById('p-cons');
+                if (p.bonuses && p.bonuses.cons) {
+                    let cons = p.bonuses.cons;
+                    if (typeof cons === 'string') cons = cons.split('\n');
+                    if (Array.isArray(cons)) {
+                        cons.forEach(item => {
+                            if (item.trim()) consContainer.innerHTML += `<li>✗ ${item}</li>`;
+                        });
+                    }
+                }
+
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('content').style.display = 'block';
+            } else {
+                document.getElementById('loading').innerText = 'Casino not found.';
+            }
+        }
+        window.addEventListener('load', load);
+    </script>
+</body>
+
+</html>

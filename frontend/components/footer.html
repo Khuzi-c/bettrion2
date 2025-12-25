@@ -1,0 +1,214 @@
+<footer class="site-footer">
+    <div class="footer-container">
+        <!-- Brand & Socials -->
+        <div class="footer-column brand-section">
+            <img src="/assets/img/logo.webp" alt="Bettrion" class="footer-logo-img">
+            <p class="footer-tagline">Exclusive Casino Bonuses & Reviews</p>
+            <div class="social-icons">
+                <a href="/discord" target="_blank" aria-label="Discord">
+                    <img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/discord.svg" alt="">
+                </a>
+                <a href="/instagram" target="_blank" aria-label="Instagram">
+                    <img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/instagram.svg" alt="">
+                </a>
+                <a href="/youtube" target="_blank" aria-label="YouTube">
+                    <img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/youtube.svg" alt="">
+                </a>
+            </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="footer-column">
+            <h4 class="footer-heading">Platform</h4>
+            <nav class="footer-nav">
+                <a href="/about.html">About Us</a>
+                <a href="/contact">Contact</a>
+                <a href="/sitemap.xml">Sitemap</a>
+            </nav>
+        </div>
+
+        <!-- Legal/Safety -->
+        <div class="footer-column">
+            <h4 class="footer-heading">Safety</h4>
+            <nav class="footer-nav">
+                <a href="/responsible-gambling">Responsible Gambling</a>
+                <a href="/legal">Terms & Privacy</a>
+            </nav>
+        </div>
+
+        <!-- Newsletter -->
+        <div class="footer-column newsletter-section">
+            <h4 class="footer-heading">Stay Updated</h4>
+            <p>Get the latest bonuses delivered to your inbox.</p>
+            <form id="subscribe-form" class="footer-form"
+                onsubmit="event.preventDefault(); window.location.href='/subscribe.html'">
+                <input type="email" id="sub-email" placeholder="Manage Preferences" readonly style="cursor: pointer;">
+                <button type="submit">Manage</button>
+            </form>
+            <div id="sub-msg"><a href="/subscribe.html"
+                    style="color: #666; font-size: 12px; margin-top: 5px; display: block;">Unsubscribe / Preferences</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-bottom">
+        <p>&copy; 2025 Bettrion.com. All rights reserved.</p>
+    </div>
+</footer>
+
+<style>
+    :root {
+        --footer-bg: #000000;
+        /* Pure Black as requested */
+        --footer-text: #888888;
+        --footer-heading: #ffffff;
+        --accent-footer: #e50914;
+        /* Bettrion Red */
+        --accent-footer-hover: #ff0f1f;
+    }
+
+    .site-footer {
+        background: var(--footer-bg);
+        color: var(--footer-text);
+        padding: 60px 20px 20px;
+        font-family: 'Inter', sans-serif;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        margin-top: auto;
+        /* Push to bottom if flex container */
+    }
+
+    .footer-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1.5fr 0.8fr 0.8fr 1.5fr;
+        gap: 40px;
+    }
+
+    .footer-logo-img {
+        height: 32px;
+        margin-bottom: 15px;
+    }
+
+    .footer-tagline {
+        font-size: 14px;
+        line-height: 1.6;
+        margin-bottom: 20px;
+    }
+
+    .footer-heading {
+        color: var(--footer-heading);
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 20px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .footer-nav {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .footer-nav a {
+        color: var(--footer-text);
+        text-decoration: none;
+        font-size: 14px;
+        transition: color 0.2s ease;
+    }
+
+    .footer-nav a:hover {
+        color: var(--accent-footer);
+    }
+
+    .social-icons {
+        display: flex;
+        gap: 15px;
+    }
+
+    .social-icons img {
+        width: 20px;
+        height: 20px;
+        filter: invert(0.5);
+        /* Greyish */
+        transition: 0.3s;
+    }
+
+    .social-icons a:hover img {
+        filter: invert(1) sepia(1) saturate(5) hue-rotate(-50deg);
+        /* Attempt Red-ish or just keep it simple */
+        filter: brightness(0) saturate(100%) invert(14%) sepia(96%) saturate(4590%) hue-rotate(352deg) brightness(88%) contrast(98%);
+        /* Red hex #e50914 filter generator approximation */
+    }
+
+    /* Newsletter Form Styling */
+    .footer-form {
+        display: flex;
+        margin-top: 15px;
+        background: rgba(255, 255, 255, 0.05);
+        padding: 5px;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .footer-form input {
+        background: transparent;
+        border: none;
+        padding: 10px 15px;
+        color: white;
+        flex-grow: 1;
+        outline: none;
+        font-family: inherit;
+    }
+
+    .footer-form button {
+        background: var(--accent-footer);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: background 0.2s;
+    }
+
+    .footer-form button:hover {
+        background: var(--accent-footer-hover);
+    }
+
+    .footer-bottom {
+        max-width: 1200px;
+        margin: 40px auto 0;
+        padding-top: 20px;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        text-align: center;
+        font-size: 13px;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+        .footer-container {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    @media (max-width: 500px) {
+        .footer-container {
+            grid-template-columns: 1fr;
+            text-align: center;
+        }
+
+        .footer-nav,
+        .social-icons,
+        .footer-form {
+            justify-content: center;
+            align-items: center;
+        }
+
+        .footer-logo-img {
+            margin: 0 auto 15px;
+            display: block;
+        }
+    }
+</style>

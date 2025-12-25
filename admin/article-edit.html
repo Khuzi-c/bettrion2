@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Write Article - Bettrion Admin</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="/assets/css/admin-layout.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            padding: 10px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            color: white;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-layout">
+        <aside class="sidebar">
+            <a href="/" class="brand">Bettrion Admin</a>
+            <nav>
+                <a href="/admin/dashboard.html">Dashboard</a>
+                <a href="/admin/platform-edit.html">Add Platform</a>
+                <a href="/admin/add-slot.html">Add Slot</a>
+                <a href="/admin/platforms.html">Manage Platforms</a>
+                <a href="/admin/articles.html">Manage Articles</a>
+                <a href="/admin/article-edit.html" class="active">Write Article</a>
+                <a href="/admin/tickets.html">Support Tickets</a>
+                <a href="/admin/staff-time.html">Staff Hours</a>
+                <a href="/admin/backups.html">Backups</a>
+                <a href="/admin/users.html">Users</a>
+                <a href="/admin/settings.html">Settings</a>
+            </nav>
+        </aside>
+
+        <main class="admin-content">
+            <h1>Write New Article</h1>
+            <div class="card" style="max-width: 800px;">
+                <form id="article-form">
+                    <div class="form-group">
+                        <label>Title</label>
+                        <input type="text" name="title" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Cover Image URL</label>
+                        <input type="text" name="image" placeholder="https://...">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Content (Text)</label>
+                        <textarea name="content" rows="15" placeholder="Write your article here..."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Publish Article</button>
+                    <div id="msg" style="margin-top: 10px;"></div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <script src="/assets/js/api.js"></script>
+    <script>
+        document.getElementById('article-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+
+            const res = await api.post('/articles', data);
+
+            const msg = document.getElementById('msg');
+            if (res.success) {
+                msg.innerHTML = '<span style="color: green;">Article published successfully!</span>';
+                e.target.reset();
+            } else {
+                msg.innerHTML = `<span style="color: red;">Error: ${res.error}</span>`;
+            }
+        });
+    </script>
+</body>
+
+</html>

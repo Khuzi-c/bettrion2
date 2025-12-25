@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management - Bettrion Admin</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=Fira+Code:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/admin.css">
+    <style>
+        .user-search-bar {
+            background: #111;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            border: 1px solid #333;
+        }
+
+        /* Table Styles */
+        .user-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .user-table th {
+            text-align: left;
+            padding: 15px;
+            color: #888;
+            font-weight: 500;
+            border-bottom: 1px solid #333;
+        }
+
+        .user-table td {
+            padding: 15px;
+            border-bottom: 1px solid #222;
+            vertical-align: middle;
+        }
+
+        .user-table tr:hover {
+            background: #151515;
+        }
+
+        .user-cell {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #333;
+        }
+
+        .user-info div {
+            font-size: 0.85rem;
+            color: #888;
+        }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .badge-admin {
+            background: rgba(255, 215, 0, 0.15);
+            color: #ffd700;
+            border: 1px solid #ffd700;
+        }
+
+        .badge-user {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ccc;
+        }
+
+        .badge-banned {
+            background: rgba(244, 67, 54, 0.15);
+            color: #f44336;
+            border: 1px solid #f44336;
+        }
+
+        .badge-verified {
+            background: rgba(76, 175, 80, 0.15);
+            color: #4CAF50;
+            border: 1px solid #4CAF50;
+        }
+
+        .discord-link {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #5865F2;
+            font-size: 0.9rem;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: #1a1a1a;
+            width: 100%;
+            max-width: 600px;
+            border-radius: 12px;
+            border: 1px solid #333;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-body {
+            padding: 20px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .control-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .control-card {
+            background: #111;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #333;
+        }
+
+        .control-label {
+            color: #888;
+            font-size: 0.8rem;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-layout">
+        <aside class="sidebar admin-sidebar" id="adminSidebar">
+            <div class="admin-sidebar-header">
+                <a href="/" class="admin-brand">Bettrion Admin</a>
+            </div>
+            <nav class="admin-nav">
+                <a href="/admin/dashboard.html" class="nav-item">
+                    <img src="/assets/img/icon-menu.png" class="nav-icon"
+                        onerror="this.src='/assets/img/1881-ping.png'"> Dashboard
+                </a>
+
+                <div class="nav-label">PLATFORMS</div>
+                <a href="/admin/casinos.html" class="nav-item">
+                    <img src="/assets/img/2666-casino-chip.png" class="nav-icon"> Manage Casinos
+                </a>
+                <a href="/admin/platform-edit.html" class="nav-item">
+                    <img src="/assets/img/494995-new.png" class="nav-icon"> Add Casino
+                </a>
+                <a href="/admin/slots.html" class="nav-item">
+                    <img src="/assets/img/43091-slots.gif" class="nav-icon"> Manage Slots
+                </a>
+                <a href="/admin/add-slot.html" class="nav-item">
+                    <img src="/assets/img/494995-new.png" class="nav-icon"> Add Slot
+                </a>
+                <a href="/admin/top-lists.html" class="nav-item">
+                    <img src="/assets/img/81912-news-paper.png" class="nav-icon"> Top Lists
+                </a>
+
+                <div class="nav-label">CONTENT</div>
+                <a href="/admin/articles.html" class="nav-item">
+                    <img src="/assets/img/81912-news-paper.png" class="nav-icon"> Manage Articles
+                </a>
+                <a href="/admin/article-edit.html" class="nav-item">
+                    <img src="/assets/img/494995-new.png" class="nav-icon"> Write Article
+                </a>
+                <a href="/admin/images.html" class="nav-item">
+                    <img src="/assets/img/80012-verified.png" class="nav-icon"> Image Manager
+                </a>
+                <a href="/admin/ads.html" class="nav-item">
+                    <img src="/assets/img/3869-cardsndice.png" class="nav-icon"> Ads Manager
+                </a>
+                <a href="/admin/promotions.html" class="nav-item">
+                    <img src="/assets/img/22134-luckyclover.gif" class="nav-icon"> Promotions
+                </a>
+                <a href="/admin/notifications.html" class="nav-item">
+                    <img src="/assets/img/icon-menu.png" class="nav-icon"> Notifications Bar
+                </a>
+
+                <div class="nav-label">OPERATIONS</div>
+                <a href="/admin/affiliates" class="nav-item">
+                    <img src="/assets/img/3753-save-money-bag.png" class="nav-icon"> Affiliates
+                </a>
+                <a href="/admin/users.html" class="nav-item active">
+                    <img src="/assets/img/44014-msp-elite-vip.png" class="nav-icon"> Users
+                </a>
+                <a href="/admin/tickets.html" class="nav-item">
+                    <img src="/assets/img/18502-beta-pogo-os.png" class="nav-icon"> Support Tickets
+                </a>
+                <a href="/admin/emails.html" class="nav-item">
+                    <img src="/assets/img/1881-ping.png" class="nav-icon"> Emails
+                </a>
+                <a href="/admin/staff-time.html" class="nav-item">
+                    <img src="/assets/img/8885-buyhere-ids.png" class="nav-icon"> Staff Hours
+                </a>
+
+                <div class="nav-label">ANALYTICS</div>
+                <a href="/admin/web-stats.html" class="nav-item">
+                    <img src="/assets/img/22134-luckyclover.gif" class="nav-icon" style="filter: hue-rotate(180deg);"
+                        onerror="this.src='/assets/img/1881-ping.png'"> Web Stats
+                </a>
+
+                <div class="nav-label">SYSTEM</div>
+                <a href="/admin/database.html" class="nav-item">
+                    <img src="/assets/img/21503-payhere-ids.png" class="nav-icon"> Database (Raw)
+                </a>
+                <a href="/admin/settings.html" class="nav-item">
+                    <img src="/assets/img/2879-securitywarning.png" class="nav-icon"> Settings
+                </a>
+                <a href="/admin/backups.html" class="nav-item">
+                    <img src="/assets/img/3753-save-money-bag.png" class="nav-icon"> Backups
+                </a>
+                <a href="/admin/logs.html" class="nav-item">
+                    <img src="/assets/img/81912-news-paper.png" class="nav-icon"> Server Logs
+                </a>
+
+                <div style="flex:1"></div>
+                <a href="#" onclick="AdminV2.logout()" class="nav-item" style="color:#ff4444;">
+                    <img src="/assets/img/2879-securitywarning.png" class="nav-icon"> Logout
+                </a>
+            </nav>
+        </aside>
+        <main class="main-content">
+            <header class="admin-header">
+                <h1>👥 User Management</h1>
+                <div style="font-size:0.9rem; color:#888;">God Mode: Active</div>
+            </header>
+
+            <div class="user-search-bar">
+                <input type="text" id="search-input" class="form-control" placeholder="🔍 Search Name, Email, ID..."
+                    style="flex:1;">
+                <button class="btn-primary" onclick="loadUsers()">Search</button>
+            </div>
+
+            <div style="background: #0a0a0a; border-radius: 8px; border: 1px solid #333; overflow:hidden;">
+                <table class="user-table">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Role & Status</th>
+                            <th>Balance</th>
+                            <th>Identity</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="users-tbody">
+                        <tr>
+                            <td colspan="5" style="text-align:center; padding:30px;">Loading users...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- GOD MODE MODAL -->
+    <div id="edit-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">Edit User</h3>
+                <button onclick="closeModal()"
+                    style="background:none; border:none; color:#fff; cursor:pointer;">✕</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="edit-id">
+
+                <div style="display:flex; gap:15px; margin-bottom:20px;">
+                    <img id="edit-avatar" src="" style="width:60px; height:60px; border-radius:50%; background:#333;">
+                    <div style="flex:1;">
+                        <input type="text" id="edit-name" class="form-control" placeholder="Username"
+                            style="margin-bottom:5px;">
+                        <input type="text" id="edit-email" class="form-control" placeholder="Email">
+                    </div>
+                </div>
+
+                <div class="control-grid">
+                    <!-- Balance -->
+                    <div class="control-card">
+                        <div class="control-label">💰 POINTS BALANCE</div>
+                        <input type="number" id="edit-balance" class="form-control">
+                        <button class="btn-primary" style="margin-top:10px; width:100%; padding:5px;"
+                            onclick="saveBalance()">Update Balance</button>
+                    </div>
+
+                    <!-- Role -->
+                    <div class="control-card">
+                        <div class="control-label">🛡️ ROLE</div>
+                        <select id="edit-role" class="form-control">
+                            <option value="user">User</option>
+                            <option value="admin">Admin</option>
+                            <option value="owner">Owner</option>
+                            <option value="support">Support</option>
+                        </select>
+                        <button class="btn-primary"
+                            style="margin-top:10px; width:100%; padding:5px; background:#4CAF50;"
+                            onclick="saveRole()">Set Role</button>
+                    </div>
+
+                    <!-- Security -->
+                    <div class="control-card">
+                        <div class="control-label">🔐 PASSWORD</div>
+                        <input type="text" id="edit-password" class="form-control" placeholder="New Password">
+                        <button class="btn-primary"
+                            style="margin-top:10px; width:100%; padding:5px; background:#FF9800;"
+                            onclick="resetPassword()">Reset</button>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="control-card" style="border-color:#f44336;">
+                        <div class="control-label" style="color:#f44336;">🚨 DANGER ZONE</div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+                            <label style="color:#aaa; font-size:0.8rem;"><input type="checkbox" id="ban-discord"> Sync
+                                Discord</label>
+                            <button id="btn-ban" class="btn-primary" style="background:#f44336; padding:5px 10px;"
+                                onclick="toggleBan()">Ban User</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top:20px; border-top:1px solid #333; padding-top:15px;">
+                    <div class="control-label">📋 METADATA</div>
+                    <div id="meta-info" style="font-family:monospace; color:#666; font-size:0.8rem;"></div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/admin-sidebar.js"></script>
+    <script src="/assets/js/admin-auth.js"></script>
+    <script>
+        // Sidebar manually injected above
+
+        let currentUser = null;
+
+        async function loadUsers() {
+            const query = document.getElementById('search-input').value;
+            const res = await API.get(`/admin/users?query=${encodeURIComponent(query)}`);
+            const tbody = document.getElementById('users-tbody');
+            tbody.innerHTML = '';
+
+            if (res.success) {
+                if (res.data.length === 0) tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:30px;">No users found.</td></tr>';
+
+                res.data.forEach(u => {
+                    const isBanned = u.status === 'banned' || u.banned;
+                    `<span class="discord-link" title="${u.discord_id}"><img src="https://cdn.prod.website-files.com/6257adef93867e56f84d3092/636e0a6a49cf127bf92de1e2_icon_clyde_blurple_RGB.png" width="16"> Linked</span>` :
+                    `<span style="color:#444;">No Discord</span>`;
+
+                    const row = `
+                        <tr>
+                            <td>
+                                <div class="user-cell">
+                                    <img src="${u.avatar_url || 'https://cdn.discordapp.com/embed/avatars/0.png'}" class="user-avatar">
+                                    <div class="user-info">
+                                        <div style="color:#fff; font-weight:600;">${u.name}</div>
+                                        <div>${u.email}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge badge-${u.role}">${u.role}</span>
+                                ${isBanned ? '<span class="badge badge-banned">BANNED</span>' : '<span class="badge badge-verified">ACTIVE</span>'}
+                            </td>
+                            <td style="color:#4CAF50; font-family:monospace;">${(u.points_balance || 0).toLocaleString()}</td>
+                            <td>${discordDisplay}</td>
+                            <td>
+                                <button class="btn-primary" style="padding:5px 10px; font-size:0.8rem;" onclick='openModal(${JSON.stringify(u)})'>Manage</button>
+                            </td>
+                        </tr>
+                    `;
+                    tbody.insertAdjacentHTML('beforeend', row);
+                });
+            }
+        }
+
+        // --- MODAL LOGIC ---
+        // --- MODAL LOGIC (GOD MODE) ---
+        function openModal(user) {
+            currentUser = user;
+            const m = document.getElementById('edit-modal');
+            const body = m.querySelector('.modal-body');
+
+            // 1. Build Dynamic Table for EVERYTHING
+            let rows = '';
+            const keys = Object.keys(user).sort();
+
+            keys.forEach(key => {
+                let val = user[key];
+                let displayVal = val;
+                let inputType = 'text';
+
+                if (val === null) displayVal = '';
+                if (typeof val === 'object') {
+                    displayVal = JSON.stringify(val, null, 2);
+                    inputType = 'textarea';
+                }
+
+                let inputHtml = '';
+                if (inputType === 'textarea') {
+                    inputHtml = `<textarea class="form-control dyn-input" data-key="${key}" style="min-height:50px; font-family:monospace; font-size:0.75rem; background:#050505; color:#0f0;">${displayVal}</textarea>`;
+                } else {
+                    inputHtml = `<input type="text" class="form-control dyn-input" data-key="${key}" value="${displayVal}" placeholder="NULL" style="background:#050505;">`;
+                }
+
+                rows += `
+                    <tr>
+                        <td style="width:140px; font-weight:600; color:#aaa; font-size:0.8rem; border-color:#222;">${key}</td>
+                        <td style="border-color:#222;">${inputHtml}</td>
+                    </tr>
+                `;
+            });
+
+            // 2. Specialized Actions
+            const specializedActions = `
+                <div style="margin-top:20px; padding-top:20px; border-top:1px solid #333;">
+                    <h4 style="margin-bottom:15px; color:#fff; font-size:1rem;">⚡ Quick Actions</h4>
+                    <div class="control-grid">
+                        <div class="control-card">
+                             <div class="control-label">Update Role</div>
+                             <select id="quick-role" class="form-control">
+                                <option value="user" ${user.role === 'user' ? 'selected' : ''}>User</option>
+                                <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Admin</option>
+                                <option value="owner" ${user.role === 'owner' ? 'selected' : ''}>Owner</option>
+                             </select>
+                             <button class="btn-primary" style="margin-top:5px; width:100%; font-size:0.8rem;" onclick="saveRoleQuick()">Set Role</button>
+                        </div>
+                        <div class="control-card">
+                             <div class="control-label">Reset Password</div>
+                             <div style="display:flex; gap:5px;">
+                                <input type="text" id="quick-pass" class="form-control" placeholder="New Pass">
+                                <button class="btn-primary" onclick="resetPassword()">Set</button>
+                             </div>
+                        </div>
+                        <div class="control-card" style="border-color:#f44336;">
+                             <button class="btn-primary" style="background:#f44336; width:100%;" onclick="toggleBan()">${(user.banned || user.status === 'banned') ? 'Unban User' : 'Ban User'}</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // 3. Inject
+            body.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #333; padding-bottom:15px;">
+                    <div style="display:flex; gap:15px; align-items:center;">
+                        <img src="${user.avatar_url || 'https://cdn.discordapp.com/embed/avatars/0.png'}" style="width:40px; height:40px; border-radius:50%;">
+                        <div>
+                            <h2 style="margin:0; font-size:1.2rem;">${user.name || 'No Name'}</h2>
+                            <span style="color:#666; font-size:0.75rem; font-family:monospace;">${user.id}</span>
+                        </div>
+                    </div>
+                    <button class="btn-primary" onclick="saveAllChanges()" style="background:#4CAF50; box-shadow:0 0 10px rgba(76,175,80,0.3);">💾 Save Record</button>
+                </div>
+                
+                <div style="max-height:60vh; overflow-y:auto; border:1px solid #333; border-radius:8px; background:#111;">
+                    <table class="user-table">
+                        <tbody id="dyn-tbody">${rows}</tbody>
+                    </table>
+                </div>
+
+                ${specializedActions}
+            `;
+
+            m.style.display = 'flex';
+        }
+
+        async function saveAllChanges() {
+            if (!confirm('⚠️ CAUTION: You are about to raw update the user database record. Continue?')) return;
+
+            const inputs = document.querySelectorAll('.dyn-input');
+            const updates = {};
+
+            inputs.forEach(input => {
+                const key = input.dataset.key;
+                let val = input.value;
+
+                if (val === '') val = null;
+                else if (val === 'true') val = true;
+                else if (val === 'false') val = false;
+
+                if (key === 'metadata' || key.includes('_data') || (typeof val === 'string' && (val.startsWith('{') || val.startsWith('[')))) {
+                    try { val = JSON.parse(val); } catch (e) { }
+                }
+
+                updates[key] = val;
+            });
+
+            const res = await API.put(`/admin/users/${currentUser.id}/profile`, updates);
+            if (res.success) {
+                alert('Database Record Updated Successfully');
+                loadUsers();
+                closeModal();
+            } else {
+                alert('Error: ' + (res.error || 'Unknown'));
+            }
+        }
+
+        async function saveRoleQuick() {
+            const role = document.getElementById('quick-role').value;
+            const res = await API.put(`/admin/users/${currentUser.id}/role`, { role });
+            if (res.success) { alert('Role Updated'); loadUsers(); }
+        }
+
+        function closeModal() {
+            document.getElementById('edit-modal').style.display = 'none';
+        }
+
+        // ACTIONS
+        async function saveBalance() {
+            const val = document.getElementById('edit-balance').value;
+            // Use admin updateBalance route (set type to set)
+            const res = await API.put(`/admin/users/${currentUser.id}/balance`, { amount: val, type: 'set' });
+            if (res.success) { alert('Balance Updated'); loadUsers(); }
+        }
+
+        async function saveRole() {
+            const role = document.getElementById('edit-role').value;
+            const res = await API.put(`/admin/users/${currentUser.id}/role`, { role });
+            if (res.success) { alert('Role Updated'); loadUsers(); }
+        }
+
+        async function resetPassword() {
+            const pass = document.getElementById('edit-password').value;
+            if (!pass) return alert('Enter a password');
+            const res = await API.post(`/admin/users/${currentUser.id}/password`, { newPassword: pass });
+            if (res.success) alert('Password Reset');
+        }
+
+        async function toggleBan() {
+            const isBanned = currentUser.status === 'banned' || currentUser.banned;
+            const action = isBanned ? 'unban' : 'ban';
+            const res = await API.post(`/admin/users/${currentUser.id}/${action}`, {});
+            if (res.success) { alert('Done'); closeModal(); loadUsers(); }
+        }
+
+        // Init
+        // Debounce search
+        let timeout = null;
+        document.getElementById('search-input').addEventListener('input', () => {
+            clearTimeout(timeout);
+            timeout = setTimeout(loadUsers, 500);
+        });
+
+        loadUsers();
+    </script>
+</body>
+
+</html>

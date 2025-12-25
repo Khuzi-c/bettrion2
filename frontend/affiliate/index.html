@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Affiliate Dashboard - Bettrion</title>
+    <link rel="icon" type="image/webp" href="/assets/img/logo.webp">
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .affiliate-dash {
+            padding: 40px 0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: linear-gradient(145deg, #1a1a1a, #0d0d0d);
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid #333;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #fff;
+            margin: 10px 0;
+        }
+
+        .stat-label {
+            color: #888;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+
+        .share-section {
+            background: #141414;
+            padding: 30px;
+            border-radius: 12px;
+            border: 1px solid #222;
+            margin-bottom: 40px;
+        }
+
+        .share-input-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            background: #000;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #333;
+        }
+
+        .share-input {
+            flex: 1;
+            background: none;
+            border: none;
+            color: #ccc;
+            font-family: monospace;
+            font-size: 1.1rem;
+            outline: none;
+        }
+
+        .btn-copy {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .pack-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .pack-card {
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #333;
+        }
+
+        .pack-text {
+            background: #000;
+            color: #ccc;
+            padding: 10px;
+            border-radius: 4px;
+            min-height: 60px;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            border: 1px solid #222;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="sidebar-container"></div>
+
+    <div class="main-content">
+        <header>
+            <div class="header-container">
+                <div class="header-left">
+                    <button class="menu-btn" id="mobile-menu-btn"><i class="fas fa-bars"></i></button>
+                    <a href="/" class="brand-link">
+                        <img src="/assets/img/logo.webp" alt="Bettrion" class="brand-logo">
+                        <span class="brand-text">Bettrion</span>
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <div class="container affiliate-dash">
+            <h1>Affiliate Dashboard</h1>
+            <p style="color:#888; margin-bottom: 30px;">Earn <strong>$0.01</strong> for every verified user you invite.
+                Minimum payout: $1.00.</p>
+
+            <!-- Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Wallet Balance</div>
+                    <div class="stat-value" style="color: #46d369;">$<span id="balance">0.00</span></div>
+                    <a href="/affiliate/payout.html" class="btn-primary btn-sm"
+                        style="display:inline-block; margin-top:5px;">Cashout</a>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total Invites</div>
+                    <div class="stat-value" id="total-invites">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Pending Verification</div>
+                    <div class="stat-value" id="pending-invites" style="color: #ffd700;">0</div>
+                </div>
+            </div>
+
+            <!-- Main Link -->
+            <div class="share-section">
+                <h3><i class="fas fa-link" style="color:var(--primary)"></i> Your Unique Referral Code</h3>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <div style="color:#888;">Share this link to earn commissions.</div>
+                    <button class="btn-outline btn-sm" onclick="toggleEditCode()">✏️ Customize Code</button>
+                </div>
+
+                <!-- Normal View -->
+                <div class="share-input-group" id="link-view">
+                    <input type="text" id="ref-link" class="share-input" readonly value="Loading...">
+                    <button class="btn-copy" onclick="copyLink('ref-link')">COPY LINK</button>
+                </div>
+
+                <!-- Edit View -->
+                <div class="share-input-group" id="code-edit-view" style="display:none;">
+                    <input type="text" id="new-code-input" class="share-input"
+                        placeholder="Enter new code (e.g. Free-Money)"
+                        style="border:1px solid #444; padding:5px; border-radius:4px;">
+                    <button class="btn-primary" onclick="saveNewCode()">SAVE</button>
+                    <button class="btn-outline" onclick="toggleEditCode()">CANCEL</button>
+                </div>
+            </div>
+
+            <!-- Share Packs -->
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h2><i class="fas fa-bullhorn" style="color:var(--primary)"></i> Quick Share Packs</h2>
+                <button class="btn-outline btn-sm" onclick="randomizePacks()"><i class="fas fa-dice"></i> Randomize
+                    Texts</button>
+            </div>
+            <div class="pack-grid">
+                <!-- Pack 1 -->
+                <div class="pack-card">
+                    <h4>🔥 Hype Blast</h4>
+                    <div class="pack-text" id="pack-1">Yo! Just found the ULTIMATE crypto casino gem! 💎 Bettrion has
+                        insane RTP slots 🎰, instant payouts ⚡, and zero fees! 🚀 Stop losing at rigged sites. Join the
+                        winning team here! 👇 %LINK%</div>
+                    <button class="btn-outline btn-sm" onclick="copyPack('pack-1')">Copy Text</button>
+                </div>
+                <!-- Pack 2 -->
+                <div class="pack-card">
+                    <h4>🎁 Bonus Hunter</h4>
+                    <div class="pack-text" id="pack-2">💰 Claim your EXCLUSIVE 2025 Bonus! 🎁 The #1 Verified Crypto
+                        Casino is giving away massive rewards! 💸 Secure your spot now before it's gone! ⏳ Click here:
+                        👇 %LINK%</div>
+                    <button class="btn-outline btn-sm" onclick="copyPack('pack-2')">Copy Text</button>
+                </div>
+            </div>
+
+        </div>
+
+        <footer>
+            <div class="container">
+                <p>&copy; 2025 Bettrion. <a href="/affiliate/terms">Affiliate Terms</a></p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/assets/js/api.js?v=4"></script>
+    <script src="/assets/js/utils.js?v=4"></script>
+    <script src="/assets/js/render.js?v=4"></script> <!-- Sidebar -->
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Auth Check
+            if (!localStorage.getItem('user_token')) {
+                window.location.href = '/login?redirect=/affiliate';
+                return;
+            }
+
+            try {
+                const res = await API.get('/affiliate/stats');
+                if (!res.success) throw new Error(res.message);
+
+                const { profile, stats } = res;
+
+                // Update UI
+                document.getElementById('balance').innerText = profile.balance.toFixed(2);
+                document.getElementById('total-invites').innerText = stats.total;
+                document.getElementById('pending-invites').innerText = stats.pending;
+
+            } catch (err) {
+                console.error(err);
+                alert('Failed to load affiliate data.');
+            }
+        });
+    </script>
+
+    <!-- Beta Popup -->
+    <div id="beta-popup"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; justify-content:center; align-items:center;">
+        <div
+            style="background:#1a1a1a; padding:40px; border-radius:12px; border:1px solid #333; max-width:500px; text-align:center; position:relative;">
+            <h2 style="color:#ffd700; margin-bottom:20px;">🚧 Affiliate Beta Program</h2>
+            <p style="color:#ccc; margin-bottom:20px; line-height:1.6;">
+                Welcome to the Bettrion Affiliate Program! Please note that this system is currently in
+                <strong>BETA</strong>.
+                <br><br>
+                Stats may have a slight delay. Payouts are processed manually during this phase.
+                By continuing, you agree to our <a href="/affiliate/terms.html" style="color:var(--primary)">Terms of
+                    Service</a>.
+            </p>
+            <button class="btn-primary" onclick="acceptBeta()" style="width:100%; padding:15px; font-size:1.1rem;">I
+                Understand & Accept</button>
+        </div>
+    </div>
+
+    <script>
+        // --- DATA ---
+        let currentRefCode = '';
+        const packOptions = [
+            "🔥 **Yo! Just found the ULTIMATE crypto casino gem!** 💎 Bettrion has insane RTP slots 🎰, instant payouts ⚡, and zero fees! 🚀 Stop losing at rigged sites. Join the winning team here! 👇 %LINK%",
+            "💰 **Claim your EXCLUSIVE 2025 Bonus!** 🎁 The #1 Verified Crypto Casino is giving away massive rewards! 💸 Secure your spot now before it's gone! ⏳ Click here: 👇 %LINK%",
+            "🚨 **STOP SCROLLING!** 🚨 Do you want to double your crypto? 💸 Bettrion is the easiest place to win BIG! 🏆 Verified fair and instant withdrawals. ⚡ Sign up now: %LINK%",
+            "🎰 **Slots Fan?** You NEED to see this. 👀 Bettrion has 5000+ games and the highest payouts online. 📈 Don't play anywhere else! Check it out: %LINK%",
+            "🤫 **Secret Tip:** Use code matching my link to get a FREE boost on Bettrion! 🚀 Best crypto casino of 2025 hands down. 👇 %LINK%",
+            "💎 **Hidden Gem Alert!** 💎 Keep your winnings with 0% fees on Bettrion! 💸 Instant crypto deposits and withdrawals. ⚡ Join the revolution: %LINK%",
+            "💸 **Need cash fast?** Bettrion's affiliate program + high RTP slots = 💰💰💰. Verify your account and start winning today! Link: %LINK%",
+            "🎮 **Gamers Wanted!** Bettrion isn't just a casino, it's an EXPERIENCE. 🕹️ Level up, earn XP, and cash out crypto instantly! 🚀 Join here: %LINK%",
+            "🛑 **Sick of slow payouts?** Bettrion pays out in SECONDS. ⚡ No KYC for small amounts! 🕵️‍♂️ The future of gambling is here. 👇 %LINK%",
+            "🦄 **Unicorn Casino Found!** 🦄 Fair games, huge bonuses, and community rewards. 🎁 Join Bettrion now and see why everyone is switching! 🚀 %LINK%",
+            "🤑 **Make Money Online 2025:** Stop doing surveys. Start referring or playing on Bettrion. 💸 Real crypto, real wins. 🏆 Sign up free: %LINK%",
+            "⚡ **Flash Sale on Bonuses!** ⚡ Sign up to Bettrion TODAY and get a massive welcome package! 🎁 Limited time only! ⏳ Link: %LINK%",
+            "🏆 **Be a Champion!** 🏆 Bettrion creates winners every day. Are you next? 🫵 Spin to win now! 🎰 %LINK%",
+            "🌊 **Ride the Wave!** 🌊 Crypto is booming and so is Bettrion! 📈 Get in early on the next big casino platform! 🚀 Join: %LINK%",
+            "🔑 **Unlock VIP Status!** 🔑 Register now and get fast-tracked to VIP rewards on Bettrion! 👑 Exclusive perks await. 👇 %LINK%",
+            "📱 **Play on Mobile!** 📱 Bettrion works perfect on your phone. 📲 Win crypto on the go! 🚀 Sign up here: %LINK%",
+            "👾 **Glitch in the Matrix?** 👾 Nope, just insane win rates on Bettrion! 📈 Try it yourself before they nerf it! 😉 %LINK%",
+            "🚀 **To The Moon!** 🚀 Take your portfolio to the next level with Bettrion's massive jackpots! 🌕 Don't miss the flight! 🎫 %LINK%",
+            "🍀 **Feeling Lucky?** 🍀 Today is your day! Bettrion is paying out HUGE right now. 💸 Tap in: %LINK%",
+            "🤖 **Beep Boop!** 🤖 AI says Bettrion is the #1 Casino for 2025. 📈 Trust the data. Win the crypto. 💰 %LINK%"
+        ];
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            checkBeta();
+
+            // Auth Check
+            if (!localStorage.getItem('user_token')) {
+                window.location.href = '/login?redirect=/affiliate';
+                return;
+            }
+
+            try {
+                const res = await API.get('/affiliate/stats');
+                if (!res.success) throw new Error(res.message);
+
+                const { profile, stats } = res;
+                currentRefCode = profile.referral_code;
+
+                // Update UI
+                document.getElementById('balance').innerText = profile.balance.toFixed(2);
+                document.getElementById('total-invites').innerText = stats.total;
+                document.getElementById('pending-invites').innerText = stats.pending;
+
+                updateLinkDisplay();
+                randomizePacks(); // Init random packs
+
+            } catch (err) {
+                console.error(err);
+                alert('Failed to load affiliate data.');
+            }
+        });
+
+        // --- CORE FUNCTIONS ---
+
+        function updateLinkDisplay() {
+            const baseUrl = window.location.origin;
+            const fullLink = `${baseUrl}/signup.html?ref=${currentRefCode}`;
+            document.getElementById('ref-link').value = fullLink;
+            document.getElementById('new-code-input').value = currentRefCode;
+
+            // Update visible packs
+            document.querySelectorAll('.pack-text').forEach(el => {
+                // We store the template in a data attribute to allow re-rendering
+                if (!el.dataset.template) el.dataset.template = el.innerText;
+                // Currently replacing directly but for randomize we need to be smarter
+            });
+        }
+
+        function toggleEditCode() {
+            const view = document.getElementById('link-view');
+            const edit = document.getElementById('code-edit-view');
+            if (view.style.display === 'none') {
+                view.style.display = 'flex';
+                edit.style.display = 'none';
+            } else {
+                view.style.display = 'none';
+                edit.style.display = 'flex';
+            }
+        }
+
+        async function saveNewCode() {
+            const newCode = document.getElementById('new-code-input').value.trim();
+            if (!newCode) return;
+
+            try {
+                const res = await API.post('/affiliate/code', { newCode });
+                if (res.success) {
+                    currentRefCode = res.code;
+                    alert('Referral Code Updated! ✨');
+                    toggleEditCode();
+                    updateLinkDisplay();
+                    randomizePacks(); // Refresh packs with new code
+                } else {
+                    alert('Error: ' + res.message);
+                }
+            } catch (e) {
+                alert('Failed to update code: ' + e.message);
+            }
+        }
+
+        function randomizePacks() {
+            const baseUrl = window.location.origin;
+            const fullLink = `${baseUrl}/signup.html?ref=${currentRefCode}`;
+
+            // Pick 2 random unique indices
+            let i1 = Math.floor(Math.random() * packOptions.length);
+            let i2 = Math.floor(Math.random() * packOptions.length);
+            while (i1 === i2) i2 = Math.floor(Math.random() * packOptions.length);
+
+            const tmpl1 = packOptions[i1];
+            const tmpl2 = packOptions[i2];
+
+            document.getElementById('pack-1').innerText = tmpl1.replace('%LINK%', fullLink);
+            document.getElementById('pack-2').innerText = tmpl2.replace('%LINK%', fullLink);
+        }
+
+        function copyLink(id) {
+            const input = document.getElementById(id);
+            input.select();
+            document.execCommand('copy');
+            alert('Link Copied! 🔗');
+        }
+
+        function copyPack(id) {
+            let text = document.getElementById(id).innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Text Copied! 📋');
+            });
+        }
+
+        // --- POPUP ---
+        function checkBeta() {
+            if (!localStorage.getItem('affiliate_beta_accepted')) {
+                document.getElementById('beta-popup').style.display = 'flex';
+            }
+        }
+
+        function acceptBeta() {
+            localStorage.setItem('affiliate_beta_accepted', 'true');
+            document.getElementById('beta-popup').style.display = 'none';
+        }
+    </script>
+    <!-- AI Chatbot -->
+    <script src="https://elfsightcdn.com/platform.js" async></script>
+    <div class="elfsight-app-9d38424e-e3ae-4b5f-adaa-db397cca9d5f" data-elfsight-app-lazy></div>
+</body>
+
+</html>

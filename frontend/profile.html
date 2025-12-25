@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>My Profile - Bettrion</title>
+    <link rel="icon" type="image/webp" href="/assets/img/logo.webp">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/main.css?v=8">
+    <link rel="stylesheet" href="/assets/css/premium-layout.css?v=1">
+
+    <!-- NUCLEAR CSS INJECTION -->
+    <style>
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 280px;
+            background: #0d0d0d;
+            z-index: 2001;
+            transform: translateX(-100%);
+            transition: transform 0.4s ease;
+            border-right: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar.active {
+            transform: translateX(0);
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .sidebar-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .sidebar-header {
+            padding: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #222;
+            background: #050505;
+        }
+
+        .sidebar-content {
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .sidebar-title {
+            color: #666;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            margin: 25px 0 10px 15px;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 20px;
+            color: #ccc;
+            text-decoration: none;
+            font-weight: 500;
+            transition: 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar-link:hover,
+        .sidebar-link.active {
+            background: rgba(255, 255, 255, 0.03);
+            color: white;
+            border-left-color: var(--primary);
+        }
+
+        .sidebar-link .icon {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+        }
+
+        .close-btn {
+            background: transparent;
+            border: none;
+            color: #888;
+            font-size: 1.8rem;
+            cursor: pointer;
+        }
+
+        header {
+            background: #0a0a0a;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            height: 70px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .header-container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .hamburger-btn {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .hamburger-btn span {
+            display: block;
+            width: 20px;
+            height: 2px;
+            background: #fff;
+            border-radius: 2px;
+        }
+
+        .brand-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .brand-logo {
+            height: 32px;
+            filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.4));
+        }
+
+        .brand-name {
+            font-family: 'Inter', sans-serif;
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: #ffd700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .lang-selector {
+            position: relative;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .btn-login-plain {
+            color: white;
+            font-weight: 600;
+            text-decoration: none;
+            margin-right: 10px;
+        }
+
+        .btn-signup {
+            background: #e50914;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+    </style>
+    <style>
+        .profile-card {
+            background: #1a1a1e;
+            padding: 40px;
+            border-radius: 16px;
+            border: 1px solid #333;
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .avatar-circle {
+            width: 100px;
+            height: 100px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: white;
+            margin: 0 auto 20px;
+            font-weight: bold;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid #333;
+            color: #ddd;
+        }
+
+        .info-label {
+            color: #888;
+        }
+    </style>
+</head>
+
+<body>
+    <header id="header"></header>
+
+    <div class="container" style="padding-top: 60px;">
+        <div class="profile-card">
+            <div style="position:relative; width:100px; margin:0 auto 20px;">
+                <div class="avatar-circle" id="avatar" style="cursor:pointer;" title="Click to Change Avatar"
+                    onclick="document.getElementById('avatar-input').click()">?</div>
+                <input type="file" id="avatar-input" style="display:none;" accept="image/*"
+                    onchange="uploadAvatar(this)">
+                <div
+                    style="position:absolute; bottom:0; right:0; background:rgba(0,0,0,0.7); border-radius:50%; width:30px; height:30px; display:flex; align-items:center; justify-content:center; pointer-events:none;">
+                    📷</div>
+            </div>
+
+            <script>
+                async function uploadAvatar(input) {
+                    if (input.files && input.files[0]) {
+                        // 1. Upload
+                        const formData = new FormData();
+                        formData.append('image', input.files[0]);
+
+                        document.getElementById('avatar').innerText = '...';
+
+                        const uploadRes = await api.upload('/uploads', formData);
+                        if (uploadRes.success) {
+                            // 2. Update Profile
+                            const updateRes = await api.post('/users/me/avatar', { avatar_url: uploadRes.data.url });
+                            if (updateRes.success) {
+                                alert('Avatar Updated!');
+                                window.location.reload();
+                            } else {
+                                alert('Update Failed: ' + updateRes.error);
+                            }
+                        } else {
+                            alert('Upload Failed: ' + uploadRes.error);
+                        }
+                    }
+                }
+            </script>
+
+            <div style="display:flex; justify-content:center; align-items:center; gap:10px;">
+                <h1 id="u-name" style="color:white; margin-bottom: 5px;">Loading...</h1>
+                <button id="btn-edit-name" style="background:none; border:none; cursor:pointer;" title="Edit Username">
+                    <img src="/assets/img/edit-icon.png" style="width:16px; opacity:0.7;">
+                </button>
+            </div>
+            <!-- Edit Name Input (Hidden) -->
+            <div id="edit-name-container" style="display:none; margin-bottom:20px;">
+                <input type="text" id="new-username" placeholder="New Username"
+                    style="width:auto; padding:8px; background:#222; border:1px solid #444; color:white; border-radius:4px;">
+                <button id="btn-save-name"
+                    style="background:var(--primary); color:white; padding:8px 15px; border:none; border-radius:4px; cursor:pointer;">Save</button>
+                <button id="btn-cancel-name"
+                    style="background:transparent; color:#888; border:none; cursor:pointer; margin-left:5px;">Cancel</button>
+            </div>
+
+            <p id="u-email" style="color:#888; margin-bottom: 30px;">...</p>
+
+            <div class="info-row">
+                <span class="info-label">Member Since</span>
+                <span id="u-date">-</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Status</span>
+                <span id="u-status" style="color:var(--accent-green)">Active</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Roles</span>
+                <span id="u-role">User</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Country</span>
+                <span id="u-country" style="color:white;">-</span>
+            </div>
+
+            <div class="info-row">
+                <span class="info-label">City</span>
+                <span id="u-city" style="color:white;">-</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">ISP</span>
+                <span id="u-isp" style="color:white;">-</span>
+            </div>
+
+            <!-- Phone Section -->
+            <div class="info-row" style="border:none; flex-direction:column; align-items:flex-start; gap:10px;">
+                <div style="display:flex; justify-content:space-between; width:100%;">
+                    <span class="info-label">Phone Number</span>
+                    <span id="u-phone" style="color:#888;">Not Linked</span>
+                </div>
+                <button id="btn-link-phone" class="btn-primary"
+                    style="background:#333; font-size:0.85rem; padding:8px 12px; margin-top:5px;">Link Phone
+                    Number</button>
+
+                <!-- Phone Input (Hidden) -->
+                <div id="phone-link-container"
+                    style="display:none; width:100%; margin-top:10px; background:#222; padding:15px; border-radius:8px;">
+                    <div id="step-link-phone">
+                        <input type="tel" id="link-phone-input" placeholder="+1 650 555 1234"
+                            style="width:100%; padding:10px; background:#333; border:1px solid #444; color:white; border-radius:4px; margin-bottom:10px;">
+                        <div id="link-recaptcha"></div>
+                        <button id="btn-send-link-code"
+                            style="background:var(--primary); color:white; padding:8px 15px; border:none; border-radius:4px; cursor:pointer;"
+                            onclick="sendLinkOTP()">Send Code</button>
+                    </div>
+                    <div id="step-link-otp" style="display:none;">
+                        <input type="text" id="link-otp-input" placeholder="123456"
+                            style="width:100%; padding:10px; background:#333; border:1px solid #444; color:white; border-radius:4px; margin-bottom:10px;">
+                        <button id="btn-verify-link-otp"
+                            style="background:var(--primary); color:white; padding:8px 15px; border:none; border-radius:4px; cursor:pointer;"
+                            onclick="verifyLinkOTP()">Verify</button>
+                    </div>
+                    <p id="link-msg" style="color:red; font-size:0.8rem; margin-top:5px;"></p>
+                </div>
+            </div>
+
+            <a href="/settings" class="btn-primary"
+                style="display:inline-block; margin-top:20px; width:100%; text-decoration:none; text-align:center;">Edit
+                Profile & Settings</a>
+        </div>
+
+        <script src="/assets/js/utils.js?v=3"></script>
+        <script src="/assets/js/api.js?v=3"></script>
+        <script src="/assets/js/router.js?v=3"></script>
+
+        <!-- Firebase SDKs -->
+        <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+        <script src="/firebaseConfig.js"></script>
+
+        <script>
+            let linkConfirmationResult = null;
+            let linkRecaptchaVerifier = null;
+
+            // Phone Linking Logic
+            function initLinkRecaptcha() {
+                if (window.firebase && !linkRecaptchaVerifier) {
+                    linkRecaptchaVerifier = new firebase.auth.RecaptchaVerifier('link-recaptcha', {
+                        'size': 'invisible'
+                    });
+                }
+            }
+
+            async function sendLinkOTP() {
+                const phone = document.getElementById('link-phone-input').value;
+                const msg = document.getElementById('link-msg');
+
+                if (!phone) { msg.innerText = "Enter phone number"; return; }
+                msg.innerText = "Sending code...";
+
+                try {
+                    if (!linkRecaptchaVerifier) initLinkRecaptcha();
+                    linkConfirmationResult = await firebase.auth().signInWithPhoneNumber(phone, linkRecaptchaVerifier);
+
+                    document.getElementById('step-link-phone').style.display = 'none';
+                    document.getElementById('step-link-otp').style.display = 'block';
+                    msg.innerText = "";
+                } catch (e) {
+                    console.error(e);
+                    msg.innerText = "Error: " + e.message;
+                }
+            }
+
+            async function verifyLinkOTP() {
+                const code = document.getElementById('link-otp-input').value;
+                const msg = document.getElementById('link-msg');
+
+                try {
+                    const result = await linkConfirmationResult.confirm(code);
+                    const idToken = await result.user.getIdToken();
+
+                    msg.innerText = "Linking to account...";
+
+                    // Call Backend
+                    const res = await api.post('/users/link-phone', {
+                        idToken,
+                        phoneNumber: result.user.phoneNumber
+                    });
+
+                    if (res.success) {
+                        alert("Phone Number Linked Successfully!");
+                        window.location.reload();
+                    } else {
+                        msg.innerText = res.message;
+                    }
+
+                } catch (e) {
+                    console.error(e);
+                    msg.innerText = "Verification Failed: " + e.message;
+                }
+            }
+        </script>
+        <script>
+            document.addEventListener('DOMContentLoaded', async () => {
+                const token = localStorage.getItem('user_token');
+                if (!token) {
+                    window.location.href = '/login';
+                    return;
+                }
+
+                try {
+                    // Decode token to get basic info if API fails, but ideally fetch me
+                    // For now, assume we implement /api/users/me later. 
+                    // Let's rely on basic details stored or fetch generic.
+                    const parts = token.split('.');
+                    if (parts.length !== 3) {
+                        console.error('Invalid Token Structure');
+                        localStorage.removeItem('user_token');
+                        window.location.href = '/login';
+                        return;
+                    }
+
+                    // Inner try removed to fix syntax error
+
+                    const base64Url = parts[1];
+                    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                    const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function (c) {
+                        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                    }).join(''));
+                    const user = JSON.parse(jsonPayload);
+
+                    // Fetch full details if we have an endpoint, otherwise mock for now
+                    document.getElementById('avatar').innerText = (user.username || 'User')[0].toUpperCase();
+                    document.getElementById('u-name').innerHTML = user.username || 'User';
+                    document.getElementById('u-email').innerText = user.email || 'Logged In';
+                    document.getElementById('u-role').innerText = (user.role || 'User').toUpperCase();
+
+                    // Stats (Handle if fields are missing)
+                    const vip = user.vip_level || 'Bronze';
+                    const wagered = parseFloat(user.total_wagered || 0).toFixed(2);
+                    const deposited = parseFloat(user.total_deposited || 0).toFixed(2);
+                    const currency = user.currency || '$';
+
+                    document.getElementById('u-vip').innerText = vip;
+                    document.getElementById('u-wagered').innerText = `${currency}${wagered}`;
+                    document.getElementById('u-deposited').innerText = `${currency}${deposited}`;
+
+                    // VIP Color Logic
+                    const vipEl = document.getElementById('u-vip');
+                    if (vip === 'Silver') vipEl.style.background = 'linear-gradient(45deg, #c0c0c0, #e0e0e0)';
+                    if (vip === 'Gold') vipEl.style.background = 'linear-gradient(45deg, #ffd700, #ffec8b)';
+                    if (vip === 'Platinum') vipEl.style.background = 'linear-gradient(45deg, #e5e4e2, #ffffff)';
+
+                    // Display Phone if available
+                    // Assuming we will fetch updated profile or store in token
+                    if (user.phone) {
+                        document.getElementById('u-phone').innerText = user.phone;
+                        document.getElementById('u-phone').style.color = 'var(--accent-green)';
+                        document.getElementById('u-phone').innerHTML += ` <img src="/assets/img/80012-verified.png" style="height:16px; vertical-align:middle;" title="Verified">`;
+                        document.getElementById('btn-link-phone').style.display = 'none';
+                    } else {
+                        // Show Link Button Logic
+                        document.getElementById('btn-link-phone').onclick = () => {
+                            document.getElementById('phone-link-container').style.display = 'block';
+                            document.getElementById('btn-link-phone').style.display = 'none';
+                        };
+                    }
+
+                    // Verification Logic (Check email_verified or confirmed_at)
+                    // Note: Standard Supabase JWT has email_confirmed_at. If mock token, check property.
+                    const isVerified = user.email_verified || user.email_confirmed_at || (user.app_metadata && user.app_metadata.providers && user.app_metadata.providers.includes('email'));
+
+                    if (isVerified) {
+                        document.getElementById('u-name').innerHTML += ` <img src="/assets/img/80012-verified.png" style="height:24px; vertical-align:middle; margin-left:8px;" title="Verified Account">`;
+                    } else {
+                        const warning = document.createElement('div');
+                        warning.innerHTML = `
+                        <div style="background: rgba(255,0,0,0.1); border: 1px solid #ff4444; padding: 15px; border-radius: 8px; display: flex; align-items: start; gap: 15px; margin-bottom: 20px; text-align: left;">
+                            <img src="/assets/img/2879-securitywarning.png" style="height: 40px; flex-shrink:0;">
+                            <div>
+                                <h3 style="color:#ff4444; margin:0; font-size:1rem;">Start Security Check</h3>
+                                <p style="margin:5px 0 10px 0; font-size:0.85rem; color:#ccc;">Your email is not verified. Please verify your email to secure your account.</p>
+                                <button id="btn-verify-now" class="btn-signup" style="background:#ff4444; border:none; padding:8px 15px; cursor:pointer; font-size:0.85rem;">Verify Now</button>
+                            </div>
+                        </div>
+                    `;
+                        document.querySelector('.profile-card').prepend(warning.firstElementChild);
+
+                        document.getElementById('btn-verify-now').onclick = async function () {
+                            const btn = this;
+                            btn.innerText = 'Sending...';
+                            btn.style.opacity = '0.7';
+
+                            try {
+                                // api wrapper available
+                                const res = await api.post('/auth/resend-verification', { email: user.email });
+                                if (res.success) {
+                                    alert('Verification code sent! Redirecting to verification page...');
+                                    window.location.href = `/verify.html?email=${encodeURIComponent(user.email)}`;
+                                } else {
+                                    alert('Error: ' + (res.message || 'Failed to send code'));
+                                    btn.innerText = 'Verify Now';
+                                    btn.style.opacity = '1';
+                                }
+                            } catch (e) {
+                                console.error(e);
+                                alert('Connection Error');
+                                btn.innerText = 'Verify Now';
+                                btn.style.opacity = '1';
+                            }
+                        };
+                    }
+
+                } catch (e) {
+                    console.error('Profile Load Error:', e);
+                }
+            });
+        </script>
+</body>
+
+</html>

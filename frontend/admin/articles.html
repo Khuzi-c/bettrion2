@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Articles - Bettrion Admin</title>
+    <link rel="stylesheet" href="/assets/css/admin-v2.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <main class="admin-main">
+        <h1 style="margin:0; font-size:2rem; color:white;">News & Articles</h1>
+        <a href="/admin/article-edit.html" class="btn btn-primary">＋ Write New</a>
+        </div>
+
+        <!-- RSS Widget -->
+        <div
+            style="margin-bottom: 30px; background: var(--card-bg); padding: 15px; border-radius: 12px; border: 1px solid var(--border);">
+            <h3 style="margin-top:0; color:white; font-size:1.1rem; margin-bottom:10px;">🔴 External RSS Feed</h3>
+            <script src="https://elfsightcdn.com/platform.js" async></script>
+            <div class="elfsight-app-c384ab02-912e-49c2-a533-9a15ffe1cf4e" data-elfsight-app-lazy></div>
+        </div>
+
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Author</th>
+                        <th>Published</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <tr>
+                        <td colspan="4">Loading...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/admin-v2.js"></script>
+    <script>
+        async function load() {
+            const res = await api.get('/articles'); // Assuming public endpoint lists all, or separate admin one
+            if (res.success) {
+                const tbody = document.getElementById('table-body');
+                tbody.innerHTML = res.data.map(a => `
+                    <tr>
+                        <td style="font-weight:600;">${a.title}</td>
+                        <td>${a.author || 'Admin'}</td>
+                        <td>${new Date(a.created_at).toLocaleDateString()}</td>
+                        <td style="display:flex; gap:10px;">
+                            <a href="/admin/article-edit.html?id=${a.id}" class="btn btn-sm btn-outline">Edit</a>
+                            <button onclick="del('${a.id}')" class="btn btn-sm btn-delete">Delete</button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+        }
+        async function del(id) {
+            if (confirm('Delete?')) {
+                await api.delete('/articles/' + id);
+                load();
+            }
+        }
+        window.addEventListener('load', load);
+    </script>
+</body>
+
+</html>

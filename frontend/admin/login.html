@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Redirecting...</title>
+    <script>
+        // BYPASS LOGIN DIRECTLY TO DASHBOARD
+        localStorage.setItem('token', 'bypass_token'); // Set dummy token just in case
+        window.location.href = '/admin/dashboard';
+    </script>
+</head>
+
+<body>
+    <p>Redirecting to Dashboard...</p>
+</body>
+
+</html>

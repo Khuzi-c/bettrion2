@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Settings - Bettrion Admin</title>
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="stylesheet" href="/assets/css/components.css">
+    <link rel="stylesheet" href="/assets/css/admin.css">
+</head>
+
+<body>
+    <div class="main-content">
+        <h1>Settings</h1>
+        <form id="settings-form" style="max-width: 600px;">
+            <label>Site Name</label>
+            <input type="text" id="site_name">
+
+            <label>Blocked Countries (comma separated)</label>
+            <input type="text" id="blocked_countries">
+
+            <h3>Change Admin Password</h3>
+            <label>New Password (leave blank to keep current)</label>
+            <input type="password" id="new_password">
+
+            <button type="submit" class="btn">Save Settings</button>
+        </form>
+    </div>
+
+    <script src="/assets/js/utils.js"></script>
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/admin.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const s = await API.get('/settings');
+            document.getElementById('site_name').value = s.site_name || '';
+            document.getElementById('blocked_countries').value = (s.blocked_countries || []).join(',');
+        });
+
+        document.getElementById('settings-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = {
+                site_name: document.getElementById('site_name').value,
+                blocked_countries: document.getElementById('blocked_countries').value.split(',').map(x => x.trim()).filter(Boolean),
+            };
+
+            const pass = document.getElementById('new_password').value;
+            if (pass) data.new_password = pass;
+
+            try {
+                await API.put('/settings', data);
+                alert('Saved!');
+                if (pass) {
+                    Admin.logout(); // Re-login on password change
+                }
+            } catch (err) { alert(err.message); }
+        });
+    </script>
+</body>
+
+</html>

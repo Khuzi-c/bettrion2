@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">Casino Details - Bettrion</title>
+    <meta name="description" id="page-description" content="Detailed casino review">
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        .casino-header {
+            background: linear-gradient(135deg, var(--bg-card), var(--bg-sidebar));
+            padding: 40px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .casino-logo {
+            width: 150px;
+            height: 150px;
+            object-fit: contain;
+            background: white;
+            border-radius: 12px;
+            padding: 10px;
+        }
+
+        .casino-info h1 {
+            margin: 0 0 10px 0;
+            color: var(--accent-gold);
+        }
+
+        .rating-large {
+            font-size: 2rem;
+            color: var(--accent-gold);
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, var(--accent-gold), #ffd700);
+            color: #000;
+            font-weight: bold;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 1.2rem;
+            margin: 20px 0;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.5);
+        }
+
+        .section {
+            background: var(--bg-card);
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .section h2 {
+            color: var(--accent-gold);
+            border-bottom: 2px solid var(--accent-gold);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .pros-cons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .pros li {
+            color: #6bff6b;
+        }
+
+        .cons li {
+            color: #ff6b6b;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <a href="/" class="logo" style="display: flex; align-items: center; gap: 10px;">
+                <img src="/assets/images/bettrion-logo_notxt.webp" alt="Bettrion" style="height: 40px;">
+                <span style="font-size: 1.5rem; font-weight: 800; color: var(--accent-gold);">Bettrion</span>
+            </a>
+            <nav>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/casinos">Casinos</a></li>
+                    <li><a href="/slots">Slots</a></li>
+                    <li><a href="/articles">News</a></li>
+                    <li><a href="/support">Support</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container" style="padding: 40px 0;">
+        <div id="loading" style="text-align: center; padding: 60px;">
+            <p style="font-size: 1.2rem; color: var(--text-secondary);">Loading casino details...</p>
+        </div>
+
+        <div id="casino-content" style="display: none;">
+            <div class="casino-header">
+                <img id="casino-logo" class="casino-logo" src="" alt="Casino Logo">
+                <div class="casino-info">
+                    <h1 id="casino-name">Casino Name</h1>
+                    <div class="rating-large">★ <span id="casino-rating">5.0</span> / 5.0</div>
+                    <p id="casino-category" style="color: var(--text-secondary); margin: 10px 0;"></p>
+                    <a id="play-now-btn" href="#" target="_blank" class="cta-button">🎰 Play Now</a>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>About This Casino</h2>
+                <p id="casino-description" style="line-height: 1.8; font-size: 1.05rem;"></p>
+            </div>
+
+            <div class="section">
+                <h2>Pros & Cons</h2>
+                <div class="pros-cons">
+                    <div>
+                        <h3 style="color: #6bff6b;">✅ Pros</h3>
+                        <ul id="pros-list"></ul>
+                    </div>
+                    <div>
+                        <h3 style="color: #ff6b6b;">❌ Cons</h3>
+                        <ul id="cons-list"></ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Quick Info</h2>
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 12px; font-weight: bold;">Category:</td>
+                        <td id="info-category" style="padding: 12px;"></td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 12px; font-weight: bold;">Rating:</td>
+                        <td id="info-rating" style="padding: 12px;"></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 12px; font-weight: bold;">Tags:</td>
+                        <td id="info-tags" style="padding: 12px;"></td>
+                    </tr>
+                </table>
+            </div>
+
+            <div style="text-align: center; margin: 40px 0;">
+                <a id="play-now-btn-bottom" href="#" target="_blank" class="cta-button">🎰 Start Playing Now</a>
+            </div>
+        </div>
+    </main>
+
+    <footer
+        style="background: var(--bg-sidebar); border-top: 1px solid var(--border-color); padding: 40px 0; margin-top: 60px; text-align: center; color: var(--text-secondary);">
+        <p>&copy; 2025 Bettrion. All rights reserved.</p>
+        <p style="margin-top: 10px;">
+            <a href="/terms" style="color: var(--accent-gold); margin: 0 10px;">Terms</a> |
+            <a href="/privacy" style="color: var(--accent-gold); margin: 0 10px;">Privacy</a> |
+            <a href="/support" style="color: var(--accent-gold); margin: 0 10px;">Support</a>
+        </p>
+    </footer>
+
+    <script src="/assets/js/api.js"></script>
+    <script>
+        const pathParts = window.location.pathname.split('/');
+        const slug = pathParts[pathParts.length - 1];
+
+        async function loadCasino() {
+            const res = await api.get(`/platforms/slug/${slug}`);
+
+            if (res.success && res.data) {
+                const casino = res.data;
+
+                // Update page title and meta
+                document.getElementById('page-title').innerText = `${casino.name} Review - Bettrion`;
+                document.getElementById('page-description').content = casino.short_description || casino.description?.substring(0, 160);
+
+                // Update content
+                document.getElementById('casino-name').innerText = casino.name;
+                document.getElementById('casino-rating').innerText = casino.rating || '5.0';
+                document.getElementById('casino-category').innerText = casino.category || 'Casino';
+                document.getElementById('casino-description').innerText = casino.description || casino.short_description || 'No description available.';
+
+                // Logo
+                const logo = casino.images && casino.images.length > 0 ? casino.images[0] : 'https://via.placeholder.com/150?text=No+Logo';
+                document.getElementById('casino-logo').src = logo;
+
+                // Affiliate links
+                const affiliateLink = casino.affiliate_link || '#';
+                document.getElementById('play-now-btn').href = affiliateLink;
+                document.getElementById('play-now-btn-bottom').href = affiliateLink;
+
+                // Pros & Cons
+                const prosList = document.getElementById('pros-list');
+                const consList = document.getElementById('cons-list');
+
+                if (casino.bonuses && casino.bonuses.pros) {
+                    casino.bonuses.pros.forEach(pro => {
+                        const li = document.createElement('li');
+                        li.innerText = pro;
+                        prosList.appendChild(li);
+                    });
+                } else {
+                    prosList.innerHTML = '<li>No pros listed</li>';
+                }
+
+                if (casino.bonuses && casino.bonuses.cons) {
+                    casino.bonuses.cons.forEach(con => {
+                        const li = document.createElement('li');
+                        li.innerText = con;
+                        consList.appendChild(li);
+                    });
+                } else {
+                    consList.innerHTML = '<li>No cons listed</li>';
+                }
+
+                // Quick info
+                document.getElementById('info-category').innerText = casino.category || 'Casino';
+                document.getElementById('info-rating').innerText = `★ ${casino.rating || '5.0'} / 5.0`;
+                document.getElementById('info-tags').innerText = casino.tags && casino.tags.length > 0 ? casino.tags.join(', ') : 'None';
+
+                // Show content
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('casino-content').style.display = 'block';
+            } else {
+                document.getElementById('loading').innerHTML = '<p style="color: red;">Casino not found. <a href="/casinos" style="color: var(--accent-gold);">Browse all casinos</a></p>';
+            }
+        }
+
+        window.addEventListener('load', loadCasino);
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Sitemap - Bettrion</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="/assets/css/admin-layout.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <script src="/assets/js/admin-auth.js"></script>
+    <style>
+        .sitemap-section {
+            margin-bottom: 40px;
+        }
+
+        .sitemap-section h2 {
+            color: var(--accent-gold);
+            border-bottom: 2px solid var(--accent-gold);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .sitemap-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .sitemap-link {
+            display: block;
+            padding: 15px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .sitemap-link:hover {
+            border-color: var(--accent-gold);
+            transform: translateY(-2px);
+        }
+
+        .sitemap-link h3 {
+            margin: 0 0 5px 0;
+            color: var(--accent-gold);
+            font-size: 1.1rem;
+        }
+
+        .sitemap-link p {
+            margin: 0;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-layout">
+        <aside class="sidebar">
+            <a href="/" class="brand" style="display: flex; align-items: center; gap: 10px;">
+                <img src="/assets/images/bettrion-logo_notxt.webp" alt="Bettrion" style="height: 35px;">
+                <span style="font-size: 1.5rem; font-weight: 800; color: var(--accent-gold);">Bettrion</span>
+            </a>
+            <nav>
+                <a href="/admin/dashboard">Dashboard</a>
+                <a href="/admin/platform-edit">Add Platform</a>
+                <a href="/admin/add-slot">Add Slot</a>
+                <a href="/admin/platforms">Manage Platforms</a>
+                <a href="/admin/articles">Manage Articles</a>
+                <a href="/admin/article-edit">Write Article</a>
+                <a href="/admin/tickets">Support Tickets</a>
+                <a href="/admin/staff-time">Staff Hours</a>
+                <a href="/admin/backups">Backups</a>
+                <a href="/admin/images">Image Manager</a>
+                <a href="/admin/users">Users</a>
+                <a href="/admin/settings">Settings</a>
+                <a href="/admin/sitemap" class="active">Sitemap</a>
+            </nav>
+            <div style="padding: 20px;">
+                <button onclick="adminLogout()" class="btn"
+                    style="width:100%; background:var(--accent-red);">Logout</button>
+            </div>
+        </aside>
+
+        <main class="admin-content">
+            <h1>🗺️ Admin Sitemap</h1>
+            <p style="color: var(--text-secondary); margin-bottom: 30px;">Complete overview of all admin panel pages and
+                features</p>
+
+            <div class="sitemap-section">
+                <h2>📊 Dashboard & Analytics</h2>
+                <div class="sitemap-grid">
+                    <a href="/admin/dashboard" class="sitemap-link">
+                        <h3>Dashboard</h3>
+                        <p>Overview, stats, and recent analytics</p>
+                    </a>
+                    <a href="/admin/users" class="sitemap-link">
+                        <h3>Users</h3>
+                        <p>View all users, IP tracking, online status</p>
+                    </a>
+                </div>
+            </div>
+
+            <div class="sitemap-section">
+                <h2>🎰 Content Management</h2>
+                <div class="sitemap-grid">
+                    <a href="/admin/platform-edit" class="sitemap-link">
+                        <h3>Add Platform</h3>
+                        <p>Create new casino/platform</p>
+                    </a>
+                    <a href="/admin/platforms" class="sitemap-link">
+                        <h3>Manage Platforms</h3>
+                        <p>Edit, delete, view all platforms</p>
+                    </a>
+                    <a href="/admin/add-slot" class="sitemap-link">
+                        <h3>Add Slot</h3>
+                        <p>Create new slot game</p>
+                    </a>
+                    <a href="/admin/article-edit" class="sitemap-link">
+                        <h3>Write Article</h3>
+                        <p>Create new blog post/article</p>
+                    </a>
+                    <a href="/admin/articles" class="sitemap-link">
+                        <h3>Manage Articles</h3>
+                        <p>Edit, delete, view all articles</p>
+                    </a>
+                </div>
+            </div>
+
+            <div class="sitemap-section">
+                <h2>🎫 Support & Tickets</h2>
+                <div class="sitemap-grid">
+                    <a href="/admin/tickets" class="sitemap-link">
+                        <h3>Support Tickets</h3>
+                        <p>View and manage all support tickets</p>
+                    </a>
+                    <a href="/admin/ticket-detail" class="sitemap-link">
+                        <h3>Ticket Details</h3>
+                        <p>View individual ticket conversations</p>
+                    </a>
+                </div>
+            </div>
+
+            <div class="sitemap-section">
+                <h2>⚙️ System & Settings</h2>
+                <div class="sitemap-grid">
+                    <a href="/admin/backups" class="sitemap-link">
+                        <h3>Backups</h3>
+                        <p>Database backups, restore, auto-backup</p>
+                    </a>
+                    <a href="/admin/images" class="sitemap-link">
+                        <h3>Image Manager</h3>
+                        <p>Upload and manage images</p>
+                    </a>
+                    <a href="/admin/staff-time" class="sitemap-link">
+                        <h3>Staff Hours</h3>
+                        <p>Clock in/out, view staff logs</p>
+                    </a>
+                    <a href="/admin/settings" class="sitemap-link">
+                        <h3>Settings</h3>
+                        <p>System configuration</p>
+                    </a>
+                </div>
+            </div>
+
+            <div class="sitemap-section">
+                <h2>🌐 Public Pages</h2>
+                <div class="sitemap-grid">
+                    <a href="/" class="sitemap-link" target="_blank">
+                        <h3>Homepage</h3>
+                        <p>Public homepage with featured casinos</p>
+                    </a>
+                    <a href="/platforms" class="sitemap-link" target="_blank">
+                        <h3>All Casinos</h3>
+                        <p>Browse all platforms</p>
+                    </a>
+                    <a href="/slots" class="sitemap-link" target="_blank">
+                        <h3>Slots</h3>
+                        <p>Browse all slot games</p>
+                    </a>
+                    <a href="/articles" class="sitemap-link" target="_blank">
+                        <h3>News/Articles</h3>
+                        <p>Public blog/news page</p>
+                    </a>
+                    <a href="/support" class="sitemap-link" target="_blank">
+                        <h3>Support</h3>
+                        <p>Public support/contact page</p>
+                    </a>
+                </div>
+            </div>
+
+            <div class="card"
+                style="margin-top: 40px; padding: 20px; background: var(--bg-card); border: 1px solid var(--accent-gold);">
+                <h3 style="color: var(--accent-gold); margin-top: 0;">🔐 Quick Access</h3>
+                <p><strong>Admin Login:</strong> <code>/admin/login</code></p>
+                <p><strong>Username:</strong> Admin</p>
+                <p><strong>Password:</strong> BettrionAdmin6767</p>
+                <p><strong>Session Duration:</strong> 8 hours</p>
+            </div>
+        </main>
+    </div>
+
+    <script src="/assets/js/api.js"></script>
+</body>
+
+</html>

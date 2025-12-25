@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server Logs - Bettrion Admin</title>
+    <link rel="stylesheet" href="/assets/css/admin-v2.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        .terminal {
+            background: #0d0d0d;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 20px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+            color: #ccc;
+            height: calc(100vh - 200px);
+            overflow-y: auto;
+            white-space: pre-wrap;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .log-info {
+            color: #5dade2;
+        }
+
+        .log-err {
+            color: #e74c3c;
+        }
+
+        .log-warn {
+            color: #f1c40f;
+        }
+    </style>
+</head>
+
+<body>
+    <main class="admin-main">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h1 class="page-title">📜 Server Logs</h1>
+            <button onclick="loadLogs()" class="btn btn-outline">🔄 Refresh</button>
+        </div>
+
+        <div id="terminal" class="terminal">Loading logs...</div>
+    </main>
+
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/admin-v2.js"></script>
+    <script>
+        async function loadLogs() {
+            try {
+                const term = document.getElementById('terminal');
+                term.innerHTML = '<span style="color:#888">Fetching...</span>';
+
+                const res = await api.get('/admin/logs');
+                if (res.success) {
+                    let content = res.data;
+                    // Basic syntax highlighting
+                    content = content.replace(/error/gi, '<span class="log-err">ERROR</span>');
+                    content = content.replace(/warn/gi, '<span class="log-warn">WARN</span>');
+                    content = content.replace(/info/gi, '<span class="log-info">INFO</span>');
+
+                    term.innerHTML = content;
+                    term.scrollTop = term.scrollHeight; // Auto scroll to bottom
+                } else {
+                    term.innerHTML = '<span style="color:red">Failed to load logs: ' + res.error + '</span>';
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        window.addEventListener('load', loadLogs);
+    </script>
+</body>
+
+</html>

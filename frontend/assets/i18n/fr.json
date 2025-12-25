@@ -1,0 +1,45 @@
+{
+    "nav": {
+        "home": "Accueil",
+        "casinos": "Casinos",
+        "slots": "Machines à sous",
+        "news": "Actualités",
+        "support": "Support",
+        "login": "Connexion"
+    },
+    "home": {
+        "title": "Meilleurs Casinos",
+        "subtitle": "Avis vérifiés, bonus exclusifs et plateformes de confiance.",
+        "browse": "Parcourir tous les casinos",
+        "featured": "Plateformes en vedette",
+        "loading": "Chargement des casinos en vedette...",
+        "noResults": "Aucun casino trouvé. Revenez plus tard!"
+    },
+    "footer": {
+        "rights": "Tous droits réservés.",
+        "terms": "Conditions",
+        "privacy": "Confidentialité",
+        "support": "Support"
+    },
+    "popup": {
+        "tosTitle": "Avis important",
+        "tosText": "En continuant, vous acceptez nos",
+        "tosLink": "Conditions d'utilisation",
+        "and": "et",
+        "privacyLink": "Politique de confidentialité",
+        "cookieText": "Nous utilisons des cookies pour améliorer votre expérience.",
+        "warningText": "Les jeux d'argent en ligne peuvent être restreints ou illégaux dans votre juridiction. Veuillez vérifier les lois locales avant de continuer.",
+        "accept": "J'accepte",
+        "decline": "Refuser",
+        "ageTitle": "Vérification de l'âge",
+        "ageText": "Vous devez avoir 18 ans ou plus pour accéder à ce site.",
+        "ageQuestion": "Avez-vous 18 ans ou plus?",
+        "yes18": "Oui, j'ai 18+",
+        "no": "Non"
+    },
+    "casino": {
+        "rating": "Note",
+        "playNow": "Jouer maintenant",
+        "details": "Détails"
+    }
+}

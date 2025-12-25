@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Preferences | Bettrion</title>
+    <meta name="description" content="Manage your email subscriptions and notifications for Bettrion.">
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: #050507;
+            background-image:
+                radial-gradient(circle at 10% 20%, rgba(229, 9, 20, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(255, 215, 0, 0.1) 0%, transparent 40%);
+            color: #ffffff;
+            font-family: 'Outfit', sans-serif;
+            min-height: 100vh;
+        }
+
+        .pref-container {
+            max-width: 600px;
+            margin: 120px auto 60px;
+            padding: 30px;
+            background: rgba(20, 20, 20, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+
+        .pref-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .pref-header h1 {
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .pref-header p {
+            color: #aaa;
+        }
+
+        .current-email {
+            background: rgba(229, 9, 20, 0.1);
+            color: #fff;
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+            margin-bottom: 30px;
+            border: 1px solid rgba(229, 9, 20, 0.3);
+            display: none;
+            /* Shown via JS */
+        }
+
+        .pref-group {
+            margin-bottom: 20px;
+        }
+
+        .pref-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .pref-info h3 {
+            color: #fff;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .pref-info p {
+            color: #888;
+            font-size: 13px;
+            margin: 0;
+        }
+
+        /* Switch */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #333;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: #e50914;
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(24px);
+        }
+
+        input:disabled+.slider {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .actions {
+            margin-top: 30px;
+            display: flex;
+            gap: 15px;
+            flex-direction: column;
+        }
+
+        .btn-save {
+            background: #e50914;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            transition: 0.2s;
+        }
+
+        .btn-save:hover {
+            background: #ff0f1f;
+        }
+
+        .btn-unsub-all {
+            background: transparent;
+            color: #888;
+            border: 1px solid #333;
+            padding: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 14px;
+        }
+
+        .btn-unsub-all:hover {
+            border-color: #e50914;
+            color: #e50914;
+        }
+
+        .login-prompt {
+            text-align: center;
+            padding: 40px;
+            display: none;
+        }
+
+        .login-prompt h2 {
+            color: #fff;
+            margin-bottom: 20px;
+        }
+
+        .auth-btn {
+            background: #e50914;
+            color: white;
+            padding: 10px 25px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="header-placeholder"></div>
+
+    <div class="pref-container" id="pref-content">
+        <div class="pref-header">
+            <h1 data-i18n="email_prefs_title">Email Preferences</h1>
+            <p data-i18n="email_prefs_desc">Manage what emails you receive from us.</p>
+        </div>
+
+        <div class="current-email" id="user-email-display">
+            <span data-i18n="logged_in_as">Logged in as:</span> <strong id="email-address">...</strong>
+        </div>
+
+        <div class="pref-group">
+            <!-- Marketing -->
+            <div class="pref-item">
+                <div class="pref-info">
+                    <h3 data-i18n="pref_marketing_title">Marketing & Offers</h3>
+                    <p data-i18n="pref_marketing_desc">Exclusive bonuses, promotions, and casino news.</p>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="pref-marketing" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <!-- Product Updates -->
+            <div class="pref-item">
+                <div class="pref-info">
+                    <h3 data-i18n="pref_updates_title">Product Updates</h3>
+                    <p data-i18n="pref_updates_desc">New features, platform improvements, and announcements.</p>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="pref-updates" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <!-- Security (Locked) -->
+            <div class="pref-item">
+                <div class="pref-info">
+                    <h3 data-i18n="pref_security_title">Security & Account</h3>
+                    <p data-i18n="pref_security_desc">Critical alerts, password resets, and verification codes.</p>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" checked disabled>
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <div class="actions">
+            <button class="btn-save" onclick="savePreferences()" data-i18n="btn_save_prefs">Save Preferences</button>
+            <button class="btn-unsub-all" onclick="unsubscribeAll()" data-i18n="btn_unsub_all">Unsubscribe from
+                All</button>
+        </div>
+    </div>
+
+    <div class="login-prompt" id="login-required">
+        <h2 data-i18n="login_required">Please Login</h2>
+        <p style="color:#aaa; margin-bottom:20px;" data-i18n="login_desc_prefs">You must be logged in to manage your
+            email preferences.</p>
+        <a href="#" onclick="document.dispatchEvent(new CustomEvent('open-login'));" class="auth-btn"
+            data-i18n="btn_login">Login</a>
+    </div>
+
+    <div id="footer-placeholder"></div>
+
+    <script src="/assets/js/utils.js"></script>
+    <script src="/assets/js/components.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Define checkAuth for components.js to call after header injection
+            window.checkAuth = () => {
+                const token = localStorage.getItem('user_token');
+                const authContainer = document.getElementById('auth-container');
+                if (!authContainer) return;
+
+                if (token) {
+                    // Logged In State
+                    authContainer.innerHTML = `
+                        <a href="/profile" class="auth-link" style="color:white; margin-right:15px; text-decoration:none;"><i class="fa fa-user"></i> My Profile</a>
+                        <button onclick="logout()" class="auth-btn" style="background:none; border:1px solid #e50914; color:#e50914; padding:5px 15px;">Logout</button>
+                    `;
+                } else {
+                    // Logged Out State
+                    authContainer.innerHTML = `
+                        <a href="#" onclick="document.dispatchEvent(new CustomEvent('open-login'));" class="auth-btn">Login</a>
+                        <a href="/signup" class="auth-btn" style="background:#333; margin-left:10px;">Sign Up</a>
+                    `;
+                }
+            };
+
+            // Global Logout Function
+            window.logout = () => {
+                localStorage.removeItem('user_token');
+                window.location.reload();
+            };
+
+            const token = localStorage.getItem('user_token');
+            if (!token) {
+                document.getElementById('pref-content').style.display = 'none';
+                document.getElementById('login-required').style.display = 'block';
+                return;
+            }
+
+            // Load Preferences
+            try {
+                const res = await fetch('/api/users/me/preferences', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    // Show Email
+                    document.getElementById('user-email-display').style.display = 'block';
+                    document.getElementById('email-address').textContent = data.email;
+
+                    // Set Toggles
+                    document.getElementById('pref-marketing').checked = data.preferences.marketing;
+                    document.getElementById('pref-updates').checked = data.preferences.updates;
+                }
+            } catch (err) {
+                console.error('Error loading prefs', err);
+            }
+        });
+
+        async function savePreferences() {
+            const token = localStorage.getItem('user_token');
+            const marketing = document.getElementById('pref-marketing').checked;
+            const updates = document.getElementById('pref-updates').checked;
+            const security = true; // Always true
+
+            const btn = document.querySelector('.btn-save');
+            const originalText = btn.innerText;
+            btn.innerText = 'Saving...';
+
+            try {
+                const res = await fetch('/api/users/me/preferences', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ preferences: { marketing, updates, security } })
+                });
+
+                if (res.ok) {
+                    alert('Preferences Updated!');
+                } else {
+                    alert('Failed to update.');
+                }
+            } catch (e) {
+                alert('Error: ' + e.message);
+            } finally {
+                btn.innerText = originalText;
+            }
+        }
+
+        async function unsubscribeAll() {
+            if (!confirm('Are you sure you want to unsubscribe from all marketing and update emails?')) return;
+
+            document.getElementById('pref-marketing').checked = false;
+            document.getElementById('pref-updates').checked = false;
+            await savePreferences();
+        }
+    </script>
+</body>
+
+</html>

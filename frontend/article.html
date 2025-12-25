@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Article - Bettrion</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <a href="/" class="logo">Bettrion</a>
+            <nav>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/platforms.html">Casinos</a></li>
+                    <li><a href="/slots.html">Slots</a></li>
+                    <li><a href="/articles.html">News</a></li>
+                    <li><a href="/support.html">Support</a></li>
+                </ul>
+            </nav>
+            <div>
+                <a href="#" class="btn btn-primary">Login</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container" style="max-width: 800px; margin-top: 40px;">
+        <div id="content">Loading...</div>
+    </main>
+
+    <footer
+        style="background: var(--bg-sidebar); border-top: 1px solid var(--border-color); padding: 40px 0; margin-top: 60px; text-align: center; color: var(--text-secondary);">
+        <p>&copy; 2025 Bettrion. All rights reserved.</p>
+        <div style="margin-top:20px;">
+            <a href="/privacy.html" style="color:var(--text-secondary); margin:0 10px;">Privacy</a>
+            <a href="/terms.html" style="color:var(--text-secondary); margin:0 10px;">Terms</a>
+            <a href="/support.html" style="color:var(--text-secondary); margin:0 10px;">Support</a>
+        </div>
+    </footer>
+    <script src="/assets/js/support-widget.js"></script>
+
+    <script src="/assets/js/api.js"></script>
+    <script>
+        async function load() {
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get('id');
+            const container = document.getElementById('content');
+
+            if (!id) {
+                container.innerHTML = '<p>Article not found.</p>';
+                return;
+            }
+
+            const res = await api.get(`/articles/${id}`);
+            if (res.success && res.data) {
+                const item = res.data;
+                document.title = item.title + ' - Bettrion';
+
+                const img = item.image ? `<img src="${item.image}" style="width: 100%; border-radius: 8px; margin-bottom: 20px;">` : '';
+
+                container.innerHTML = `
+                    <h1 style="font-size: 2.5rem; margin-bottom: 10px;">${item.title}</h1>
+                    <p style="color: var(--text-secondary); margin-bottom: 30px;">Published on ${new Date(item.created_at).toLocaleDateString()}</p>
+                    ${img}
+                    <div class="article-body" style="line-height: 1.6; font-size: 1.1rem;">
+                        ${item.content}
+                    </div>
+                `;
+            } else {
+                container.innerHTML = '<p>Article not found.</p>';
+            }
+        }
+        window.addEventListener('load', load);
+    </script>
+</body>
+
+</html>

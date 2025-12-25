@@ -1,0 +1,253 @@
+:root {
+    --admin-bg: #0d0d0d;
+    /* Very Dark Grey/Black */
+    --sidebar-bg: #050505;
+    /* Pitch Black */
+    --sidebar-width: 260px;
+    --primary: #e50914;
+    /* Netflix Red */
+    --text-main: #ffffff;
+    --text-muted: #888888;
+    --card-bg: #161616;
+    --border-color: #222;
+}
+
+body.admin-body,
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background-color: var(--admin-bg);
+    color: var(--text-main);
+}
+
+/* --- SIDEBAR --- */
+.admin-sidebar {
+    width: var(--sidebar-width);
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
+}
+
+.admin-sidebar-header {
+    height: 50px;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.admin-brand {
+    font-weight: 800;
+    font-size: 1rem;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.admin-nav {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px 0;
+}
+
+.nav-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #444;
+    padding: 10px 20px 5px;
+    letter-spacing: 1px;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 20px;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border-left: 3px solid transparent;
+}
+
+.nav-item:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.nav-item.active {
+    color: #fff;
+    background: linear-gradient(90deg, rgba(229, 9, 20, 0.15) 0%, transparent 100%);
+    border-left-color: var(--primary);
+}
+
+.nav-item .nav-icon {
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+    text-align: center;
+}
+
+/* --- MAIN CONTENT --- */
+.main-content {
+    margin-left: var(--sidebar-width);
+    padding: 40px;
+}
+
+h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 30px;
+    color: #fff;
+}
+
+/* --- CARDS --- */
+.card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.stat-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    padding: 25px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-card h3 {
+    font-size: 2.5rem;
+    margin: 10px 0 0;
+    color: #fff;
+}
+
+/* --- TABLES --- */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    text-align: left;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    padding: 15px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+td {
+    padding: 15px;
+    border-bottom: 1px solid var(--border-color);
+    color: #ddd;
+}
+
+tr:hover td {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+/* --- BUTTONS --- */
+.btn-primary {
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-primary:hover {
+    background: #ff0f1f;
+    box-shadow: 0 0 15px rgba(229, 9, 20, 0.4);
+}
+
+.btn-danger {
+    background: #333;
+    color: #ff4d4d;
+    border: 1px solid #444;
+}
+
+.btn-sm {
+    padding: 5px 10px;
+    font-size: 0.8rem;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* --- FORMS --- */
+input,
+select,
+textarea {
+    background: #000;
+    border: 1px solid #333;
+    color: #fff;
+    padding: 10px;
+    border-radius: 6px;
+    font-family: inherit;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: var(--primary);
+    outline: none;
+}
+
+/* --- SIDEBAR TOGGLE --- */
+.admin-sidebar.collapsed {
+    width: 60px;
+}
+
+.admin-sidebar.collapsed .admin-brand,
+.admin-sidebar.collapsed .nav-item {
+    justify-content: center;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.admin-sidebar.collapsed .nav-item span,
+/* Assuming text is in span or just text node */
+.admin-sidebar.collapsed .nav-label,
+.admin-sidebar.collapsed .brand-name {
+    /* If brand has name span */
+    display: none;
+}
+
+.admin-sidebar.collapsed .admin-brand {
+    font-size: 0.8rem;
+}
+
+.main-content.expanded {
+    margin-left: 60px;
+}
+
+/* Mobile Fix for Sidebar */
+@media (max-width: 768px) {
+    .admin-sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s;
+    }
+
+    .admin-sidebar.active {
+        transform: translateX(0);
+    }
+
+    .main-content {
+        margin-left: 0;
+    }
+}

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Top Lists - Bettrion Admin</title>
+    <link rel="stylesheet" href="/assets/css/admin-v2.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        .lists-wrapper {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .list-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            min-height: 200px;
+        }
+
+        .list-item {
+            background: var(--bg-body);
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--border);
+        }
+
+        .pool-grid {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 10px;
+        }
+
+        .pool-card {
+            background: var(--bg-card);
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .badge-current {
+            background: #333;
+            color: #aaa;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+        }
+    </style>
+</head>
+
+<body>
+    <main class="admin-main">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h1 class="page-title">Manage Top Lists</h1>
+            <button onclick="saveLists()" class="btn btn-primary">Save Changes</button>
+        </div>
+
+        <div class="lists-wrapper">
+            <!-- Top 3 -->
+            <div class="list-box">
+                <h3 style="margin-top:0; color:var(--accent);">Top 3 (Header)</h3>
+                <p style="font-size:0.8rem; color:#666; margin-bottom:15px;">Platforms featured in the hero header.</p>
+                <div id="top3-list"></div>
+            </div>
+
+            <!-- Top 10 -->
+            <div class="list-box">
+                <h3 style="margin-top:0; color:var(--text);">Top 10 (Main List)</h3>
+                <p style="font-size:0.8rem; color:#666; margin-bottom:15px;">Platforms listed in the main ranking table.
+                </p>
+                <div id="top10-list"></div>
+            </div>
+        </div>
+
+        <h2 style="margin-top:30px; font-size:1.2rem;">Available Platforms</h2>
+        <input type="text" id="search-pool" placeholder="Search platforms..." class="form-control"
+            style="max-width:300px;">
+
+        <div id="pool-list" class="pool-grid"></div>
+    </main>
+
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/admin-v2.js"></script>
+    <script>
+        let allPlatforms = [];
+        let top3 = [];
+        let top10 = [];
+
+        async function init() {
+            try {
+                // Fetch Settings & Platforms in parallel
+                const [settingRes, platRes] = await Promise.all([
+                    api.get('/settings/top_lists'),
+                    api.get('/admin/platforms')
+                ]);
+
+                if (settingRes.success && settingRes.data) {
+                    let config = settingRes.data.setting_value;
+                    if (typeof config === 'string') {
+                        try { config = JSON.parse(config); } catch (e) { }
+                    }
+                    if (config) {
+                        top3 = config.top3 || [];
+                        top10 = config.top10 || [];
+                    }
+                }
+
+                if (platRes.success) {
+                    allPlatforms = platRes.data;
+                }
+
+                render();
+            } catch (e) {
+                console.error('Init Error:', e);
+                alert('Error loading data. Check console.');
+            }
+        }
+
+        function render() {
+            renderList('top3-list', top3, 'top3');
+            renderList('top10-list', top10, 'top10');
+            renderPool();
+        }
+
+        function renderList(elementId, listIds, listName) {
+            const container = document.getElementById(elementId);
+            container.innerHTML = '';
+
+            if (listIds.length === 0) {
+                container.innerHTML = '<p style="font-style:italic; color:#444;">No items.</p>';
+                return;
+            }
+
+            listIds.forEach((id, index) => {
+                const platform = allPlatforms.find(p => p.id === id);
+                if (!platform) return;
+
+                const el = document.createElement('div');
+                el.className = 'list-item';
+                el.innerHTML = `
+                    <span style="font-weight:600;">#${index + 1} ${platform.name}</span>
+                    <button onclick="removeFromList('${listName}', '${id}')" class="btn btn-sm btn-delete">Remove</button>
+                `;
+                container.appendChild(el);
+            });
+        }
+
+        function renderPool() {
+            const container = document.getElementById('pool-list');
+            const search = document.getElementById('search-pool').value.toLowerCase();
+            container.innerHTML = '';
+
+            const filtered = allPlatforms.filter(p => p.name.toLowerCase().includes(search));
+
+            filtered.forEach(p => {
+                const isInTop3 = top3.includes(p.id);
+                const isInTop10 = top10.includes(p.id);
+                const el = document.createElement('div');
+                el.className = 'pool-card';
+                el.innerHTML = `
+                    <div style="font-weight:bold; margin-bottom:5px;">${p.name}</div>
+                    <div style="display:flex; justify-content:center; gap:5px; flex-wrap:wrap;">
+                        ${!isInTop3 ? `<button onclick="addToList('top3', '${p.id}')" class="btn btn-sm btn-outline">+ Top3</button>` : '<span class="badge-current">Top3</span>'}
+                        ${!isInTop10 ? `<button onclick="addToList('top10', '${p.id}')" class="btn btn-sm btn-outline">+ Top10</button>` : '<span class="badge-current">Top10</span>'}
+                    </div>
+                `;
+                container.appendChild(el);
+            });
+        }
+
+        function addToList(listName, id) {
+            if (listName === 'top3') {
+                if (top3.length >= 3) return alert('Top 3 list is full.');
+                if (!top3.includes(id)) top3.push(id);
+            } else {
+                if (!top10.includes(id)) top10.push(id);
+            }
+            render();
+        }
+
+        function removeFromList(listName, id) {
+            if (listName === 'top3') top3 = top3.filter(x => x !== id);
+            else top10 = top10.filter(x => x !== id);
+            render();
+        }
+
+        async function saveLists() {
+            const config = { top3, top10 };
+            const res = await api.put('/admin/settings/top_lists', { value: JSON.stringify(config) });
+            if (res.success) alert('✅ Lists saved!');
+            else alert('❌ Error: ' + res.error);
+        }
+
+        document.getElementById('search-pool').addEventListener('input', renderPool);
+        window.addEventListener('load', init);
+    </script>
+</body>
+
+</html>

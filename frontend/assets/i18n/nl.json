@@ -1,0 +1,45 @@
+{
+    "nav": {
+        "home": "Home",
+        "casinos": "Casino's",
+        "slots": "Slots",
+        "news": "Nieuws",
+        "support": "Ondersteuning",
+        "login": "Inloggen"
+    },
+    "home": {
+        "title": "Top Casino's",
+        "subtitle": "Geverifieerde beoordelingen, exclusieve bonussen en vertrouwde platforms.",
+        "browse": "Bekijk Alle Casino's",
+        "featured": "Aanbevolen Platforms",
+        "loading": "Aanbevolen casino's laden...",
+        "noResults": "Geen casino's gevonden. Kom later terug!"
+    },
+    "footer": {
+        "rights": "Alle rechten voorbehouden.",
+        "terms": "Voorwaarden",
+        "privacy": "Privacy",
+        "support": "Ondersteuning"
+    },
+    "popup": {
+        "tosTitle": "Belangrijke Kennisgeving",
+        "tosText": "Door verder te gaan, gaat u akkoord met onze",
+        "tosLink": "Servicevoorwaarden",
+        "and": "en",
+        "privacyLink": "Privacybeleid",
+        "cookieText": "We gebruiken cookies om uw ervaring te verbeteren.",
+        "warningText": "Online gokken kan beperkt of illegaal zijn in uw rechtsgebied. Controleer de lokale wetten voordat u doorgaat.",
+        "accept": "Ik Accepteer",
+        "decline": "Weigeren",
+        "ageTitle": "Leeftijdsverificatie",
+        "ageText": "U moet 18 jaar of ouder zijn om toegang te krijgen tot deze website.",
+        "ageQuestion": "Bent u 18 jaar of ouder?",
+        "yes18": "Ja, ik ben 18+",
+        "no": "Nee"
+    },
+    "casino": {
+        "rating": "Beoordeling",
+        "playNow": "Speel Nu",
+        "details": "Details"
+    }
+}

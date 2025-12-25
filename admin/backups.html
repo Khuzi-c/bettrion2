@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Backups - Bettrion Admin</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="/assets/css/admin-layout.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <script src="/assets/js/admin-auth.js"></script>
+    <style>
+        .backup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .table th,
+        .table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .table th {
+            background: var(--bg-card);
+            color: var(--accent-gold);
+        }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .badge-auto {
+            background: var(--accent-blue);
+        }
+
+        .badge-manual {
+            background: var(--accent-green);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-layout">
+        <aside class="sidebar">
+            <a href="/" class="brand" style="display: flex; align-items: center; gap: 10px;">
+                <img src="/assets/images/bettrion-logo_notxt.webp" alt="Bettrion" style="height: 35px;">
+                <span style="font-size: 1.5rem; font-weight: 800; color: var(--accent-gold);">Bettrion</span>
+            </a>
+            <nav>
+                <a href="/admin/dashboard">Dashboard</a>
+                <a href="/admin/platform-edit">Add Platform</a>
+                <a href="/admin/add-slot">Add Slot</a>
+                <a href="/admin/platforms">Manage Platforms</a>
+                <a href="/admin/articles">Manage Articles</a>
+                <a href="/admin/article-edit">Write Article</a>
+                <a href="/admin/tickets">Support Tickets</a>
+                <a href="/admin/staff-time">Staff Hours</a>
+                <a href="/admin/backups" class="active">Backups</a>
+                <a href="/admin/images">Image Manager</a>
+                <a href="/admin/users">Users</a>
+                <a href="/admin/settings">Settings</a>
+            </nav>
+            <div style="padding: 20px;">
+                <button onclick="adminLogout()" class="btn"
+                    style="width:100%; background:var(--accent-red);">Logout</button>
+            </div>
+        </aside>
+
+        <main class="admin-content">
+            <div class="backup-header">
+                <div>
+                    <h1>Database Backups</h1>
+                    <p style="color: var(--text-secondary);">Auto-backups run every 6 hours. Last auto-backup: <span
+                            id="last-auto">Loading...</span></p>
+                </div>
+                <div class="btn-group">
+                    <button onclick="createBackup()" class="btn btn-primary">Create Backup Now</button>
+                    <button onclick="cleanOldBackups()" class="btn" style="background: var(--accent-red);">Clean Old
+                        Backups</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Backup Name</th>
+                            <th>Type</th>
+                            <th>Size</th>
+                            <th>Tables</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="backups-table">
+                        <tr>
+                            <td colspan="6" style="text-align:center;">Loading backups...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="msg" style="margin-top: 20px;"></div>
+        </main>
+    </div>
+
+    <script src="/assets/js/api.js"></script>
+    <script>
+        let backups = [];
+
+        async function loadBackups() {
+            const res = await api.get('/backups');
+            const tbody = document.getElementById('backups-table');
+            tbody.innerHTML = '';
+
+            if (res.success && res.data.length > 0) {
+                backups = res.data;
+                const lastAuto = res.data.find(b => b.backup_type === 'auto');
+                if (lastAuto) {
+                    document.getElementById('last-auto').innerText = new Date(lastAuto.created_at).toLocaleString();
+                }
+
+                res.data.forEach(backup => {
+                    const tr = document.createElement('tr');
+                    const badgeClass = backup.backup_type === 'auto' ? 'badge-auto' : 'badge-manual';
+                    const tableCount = backup.tables_included?.length || 0;
+
+                    tr.innerHTML = `
+                        <td>${backup.backup_name}</td>
+                        <td><span class="badge ${badgeClass}">${backup.backup_type.toUpperCase()}</span></td>
+                        <td>${backup.file_size_kb} KB</td>
+                        <td>${tableCount} tables</td>
+                        <td>${new Date(backup.created_at).toLocaleString()}</td>
+                        <td>
+                            <div class="btn-group">
+                                <button onclick="downloadBackup('${backup.id}')" class="btn btn-sm">Download</button>
+                                <button onclick="restoreBackup('${backup.id}')" class="btn btn-sm" style="background: var(--accent-gold);">Restore</button>
+                                <button onclick="deleteBackup('${backup.id}')" class="btn btn-sm" style="background: var(--accent-red);">Delete</button>
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } else {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No backups found.</td></tr>';
+            }
+        }
+
+        async function createBackup() {
+            const msg = document.getElementById('msg');
+            msg.innerHTML = '<span style="color: var(--accent-blue);">Creating backup...</span>';
+            const res = await api.post('/backups/create', {});
+            if (res.success) {
+                msg.innerHTML = '<span style="color: green;">✅ Backup created successfully!</span>';
+                setTimeout(() => loadBackups(), 1000);
+            } else {
+                msg.innerHTML = `<span style="color: red;">❌ Error: ${res.error}</span>`;
+            }
+        }
+
+        async function downloadBackup(id) {
+            const res = await api.get(`/backups/${id}`);
+            if (res.success) {
+                const dataStr = JSON.stringify(res.data.backup_data, null, 2);
+                const blob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${res.data.backup_name}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+        }
+
+        async function restoreBackup(id) {
+            if (!confirm('⚠️ WARNING: This will OVERWRITE all current data with the backup data. Are you absolutely sure?')) return;
+            const msg = document.getElementById('msg');
+            msg.innerHTML = '<span style="color: var(--accent-blue);">Restoring backup... This may take a while.</span>';
+            const res = await api.post(`/backups/${id}/restore`, {});
+            if (res.success) {
+                msg.innerHTML = `<span style="color: green;">✅ Restore complete! Tables restored: ${res.restoredTables.join(', ')}</span>`;
+            } else {
+                msg.innerHTML = `<span style="color: red;">❌ Restore failed: ${res.error}</span>`;
+            }
+        }
+
+        async function deleteBackup(id) {
+            if (!confirm('Delete this backup?')) return;
+            const res = await api.delete(`/backups/${id}`);
+            if (res.success) loadBackups();
+        }
+
+        async function cleanOldBackups() {
+            if (!confirm('Delete all backups older than 30 days?')) return;
+            const msg = document.getElementById('msg');
+            const res = await api.post('/backups/cleanup', {});
+            if (res.success) {
+                msg.innerHTML = `<span style="color: green;">✅ Cleaned ${res.deleted || 0} old backups</span>`;
+                setTimeout(() => loadBackups(), 1000);
+            }
+        }
+
+        setInterval(loadBackups, 30000);
+        window.addEventListener('load', loadBackups);
+    </script>
+</body>
+
+</html>

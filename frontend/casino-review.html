@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Casino Review - Bettrion</title>
+    <link rel="icon" type="image/webp" href="/assets/img/logo.webp">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/main.css?v=9">
+    <style>
+        .review-hero {
+            background: linear-gradient(to bottom, #111, #000);
+            padding: 40px 0;
+            border-bottom: 1px solid #222;
+        }
+
+        .casino-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-box {
+            background: #1a1a1a;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #333;
+        }
+
+        .content-card {
+            background: #111;
+            padding: 30px;
+            border-radius: 12px;
+            border: 1px solid #222;
+            margin-bottom: 20px;
+        }
+
+        .pro-con-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .pro-con-list li {
+            margin-bottom: 10px;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .pro-con-list.pros li::before {
+            content: '✅';
+            position: absolute;
+            left: 0;
+        }
+
+        .pro-con-list.cons li::before {
+            content: '❌';
+            position: absolute;
+            left: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="header-placeholder"></div>
+
+    <div id="loading" style="text-align:center; padding:100px; color:#888;">Loading Review...</div>
+
+    <div id="review-content" style="display:none;">
+        <section class="review-hero">
+            <div class="container">
+                <div style="display:flex; align-items:center; gap:30px; flex-wrap:wrap;">
+                    <img id="c-logo" src=""
+                        style="width:150px; height:150px; object-fit:contain; background:white; border-radius:12px;">
+                    <div style="flex:1;">
+                        <h1 id="c-name" style="font-size:3rem; margin:0 0 10px 0;">Casino Name</h1>
+                        <div style="display:flex; align-items:center; gap:15px;">
+                            <span class="badge" style="background:var(--accent); color:black;">VERIFIED</span>
+                            <span style="color:#ffd700; font-size:1.2rem;">⭐ <span id="c-rating">5.0</span>/5</span>
+                        </div>
+                        <p id="c-desc" style="color:#aaa; max-width:600px; margin-top:15px;">...</p>
+                    </div>
+                    <div style="text-align:center;">
+                        <div style="font-size:2rem; font-weight:bold; color:var(--primary);" id="c-bonus">100% Bonus
+                        </div>
+                        <div style="color:#888;">Welcome Offer</div>
+                        <a id="c-play-btn" href="#" class="btn btn-primary"
+                            style="margin-top:15px; font-size:1.2rem; padding:15px 40px;">Play Now 🚀</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <main class="container" style="margin-top:40px;">
+            <div style="display:grid; grid-template-columns: 2fr 1fr; gap:30px;">
+                <!-- Left Content -->
+                <div>
+                    <div class="content-card">
+                        <h2>Overview</h2>
+                        <div id="c-long-desc" style="line-height:1.6; color:#ccc;"></div>
+                    </div>
+
+                    <div class="content-card">
+                        <h2>Pros & Cons</h2>
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                            <div>
+                                <h3 style="color:#46d369;">Pros</h3>
+                                <ul class="pro-con-list pros" id="c-pros"></ul>
+                            </div>
+                            <div>
+                                <h3 style="color:#ff4444;">Cons</h3>
+                                <ul class="pro-con-list cons" id="c-cons"></ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Sidebar -->
+                <div>
+                    <div class="content-card">
+                        <h3>Information</h3>
+                        <div class="stat-box" style="margin-bottom:10px;">
+                            <div style="color:#888; font-size:0.8rem;">ESTABLISHED</div>
+                            <div id="c-estab">2024</div>
+                        </div>
+                        <div class="stat-box" style="margin-bottom:10px;">
+                            <div style="color:#888; font-size:0.8rem;">LICENSE</div>
+                            <div id="c-license">Unknown</div>
+                        </div>
+                        <a id="c-play-side" href="#" class="btn btn-primary"
+                            style="width:100%; text-align:center;">Claim Bonus</a>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/router.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Get Slug from URL (last part)
+            const slug = window.location.pathname.split('/').pop();
+
+            try {
+                // Fetch by slug (requires backend support or filter)
+                // For MVP, we might fetch all or specialized endpoint. 
+                // Assuming backend supports /api/platforms?slug=x or we filter client side.
+                // Optimally: /api/platforms/slug/:slug
+                // Let's try finding it in all platforms first as a fallback
+
+                const res = await api.get('/platforms');
+                const casinos = res.success ? res.data : (Array.isArray(res) ? res : []);
+
+                // Simple Find
+                const casino = casinos.find(c => c.name.toLowerCase().replace(/ /g, '-') === slug.toLowerCase() || c.slug === slug);
+
+                if (!casino) {
+                    document.getElementById('loading').innerText = 'Casino Not Found';
+                    return;
+                }
+
+                // Render
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('review-content').style.display = 'block';
+
+                document.title = `${casino.name} Review 2025 - Bettrion`;
+
+                document.getElementById('c-name').innerText = casino.name;
+                document.getElementById('c-logo').src = casino.logo;
+                document.getElementById('c-rating').innerText = casino.rating;
+                document.getElementById('c-desc').innerText = casino.description;
+                document.getElementById('c-bonus').innerText = casino.bonus_text || 'Welcome Bonus';
+
+                // Affiliate Link
+                const link = `/go/${slug}`; // Internal redirect
+                document.getElementById('c-play-btn').href = link;
+                document.getElementById('c-play-side').href = link;
+
+                // Long content
+                document.getElementById('c-long-desc').innerHTML = casino.long_description || casino.description || 'No detailed review available.';
+
+                // Pros/Cons (Mock if not in DB)
+                const pros = casino.pros || ['Instant Withdrawals', 'Crypto Accepted', '24/7 Support'];
+                document.getElementById('c-pros').innerHTML = pros.map(p => `<li>${p}</li>`).join('');
+
+                const cons = casino.cons || ['VPN Needed in US'];
+                document.getElementById('c-cons').innerHTML = cons.map(c => `<li>${c}</li>`).join('');
+
+            } catch (e) {
+                console.error(e);
+                document.getElementById('loading').innerText = 'Error loading review.';
+            }
+        });
+    </script>
+</body>
+
+</html>

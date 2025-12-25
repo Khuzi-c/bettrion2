@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Platform - Admin</title>
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="stylesheet" href="/assets/css/admin.css">
+</head>
+
+<body class="admin-body">
+
+    <!-- Sidebar injected by admin.js -->
+
+    <div class="main-content">
+        <h1>Edit Platform</h1>
+        <div class="card">
+            <form id="edit-form">
+                <input type="hidden" id="platform-id">
+
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" id="name" required style="width:100%">
+                </div>
+
+                <div class="form-group">
+                    <label>Slug (URL Path)</label>
+                    <input type="text" id="slug" placeholder="e.g. holy-luck" required style="width:100%">
+                    <small style="color:#999; display:block; margin-top:5px;">Visible at: /casinos/<span
+                            id="slug-preview">...</span></small>
+                </div>
+
+                <div class="form-group">
+                    <label>Short Description (Card)</label>
+                    <input type="text" id="short_description" style="width:100%">
+                </div>
+
+                <div class="form-group">
+                    <label>Full Description (Markdown/HTML)</label>
+                    <textarea id="description" rows="10" style="width:100%"></textarea>
+                </div>
+
+                <div class="form-group" style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                    <div>
+                        <label>Rating (0-5)</label>
+                        <input type="number" id="rating" step="0.1" max="5">
+                    </div>
+                    <div>
+                        <label>Category</label>
+                        <select id="category" style="width:100%">
+                            <option value="Casino">Casino</option>
+                            <option value="Sportsbook">Sportsbook</option>
+                            <option value="Crypto">Crypto</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Affiliate Link</label>
+                    <input type="text" id="link_url" style="width:100%">
+                </div>
+
+                <div class="form-group">
+                    <label>Logo Image URL</label>
+                    <input type="text" id="logo_url" style="width:100%">
+                </div>
+
+                <div class="form-group">
+                    <label>Banner Image URL</label>
+                    <input type="text" id="banner_url" style="width:100%">
+                </div>
+
+                <div style="margin-top:20px;">
+                    <button type="submit" class="btn-primary">Save Changes</button>
+                    <a href="/admin/platforms.html" class="btn-danger"
+                        style="text-decoration:none; margin-left:10px;">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/assets/js/utils.js"></script>
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/admin.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const id = Utils.getQueryParam('id');
+            if (!id) {
+                alert('No ID provided');
+                window.location.href = '/admin/platforms.html';
+                return;
+            }
+
+            document.getElementById('platform-id').value = id;
+
+            try {
+                // Fetch existing data
+                // Assuming we can use public endpoint or admin endpoint. 
+                // Admin endpoint usually /admin/platforms/:id or public /platforms/:id
+                const platform = await API.get(`/platforms/${id}`);
+
+                // Populate form
+                document.getElementById('name').value = platform.name || '';
+                document.getElementById('slug').value = platform.slug || '';
+                document.getElementById('slug-preview').innerText = platform.slug || '...';
+                document.getElementById('short_description').value = platform.short_description || '';
+                document.getElementById('description').value = platform.description || '';
+                document.getElementById('rating').value = platform.rating || 5.0;
+                document.getElementById('category').value = platform.category || 'Casino';
+                document.getElementById('link_url').value = platform.link_url || '';
+
+                // Images might be array or string depending on schema version, handling generic case
+                if (platform.images && platform.images.length > 0) {
+                    document.getElementById('logo_url').value = platform.images[0] || '';
+                }
+                document.getElementById('banner_url').value = platform.banner_image || '';
+
+            } catch (e) {
+                console.error(e);
+                alert('Failed to load platform data');
+            }
+        });
+
+        // Slug Auto-Preview
+        document.getElementById('slug').addEventListener('input', (e) => {
+            document.getElementById('slug-preview').innerText = e.target.value;
+        });
+
+        document.getElementById('edit-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('platform-id').value;
+
+            const payload = {
+                name: document.getElementById('name').value,
+                slug: document.getElementById('slug').value,
+                short_description: document.getElementById('short_description').value,
+                description: document.getElementById('description').value,
+                rating: parseFloat(document.getElementById('rating').value),
+                category: document.getElementById('category').value,
+                link_url: document.getElementById('link_url').value,
+                // Handle images formatting if backend expects array
+                images: [document.getElementById('logo_url').value],
+                banner_image: document.getElementById('banner_url').value
+            };
+
+            try {
+                await API.put(`/admin/platforms/${id}`, payload);
+                alert('Saved successfully!');
+                window.location.href = '/admin/platforms.html';
+            } catch (err) {
+                alert('Error saving: ' + err.message);
+            }
+        });
+    </script>
+</body>
+
+</html>

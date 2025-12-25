@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Categories - Bettrion</title>
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="stylesheet" href="/assets/css/components.css">
+</head>
+
+<body>
+
+    <main class="container">
+        <h1>Categories</h1>
+        <div id="categories-list" class="grid">
+            <div class="loader"></div>
+        </div>
+    </main>
+
+    <script src="/assets/js/utils.js"></script>
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/router.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const categories = await API.get('/categories');
+                const container = document.getElementById('categories-list');
+
+                if (categories.length === 0) {
+                    container.innerHTML = '<p>No categories found.</p>';
+                    container.style.display = 'block';
+                } else {
+                    container.innerHTML = categories.map(c => `
+                        <div class="card" style="padding: 20px; text-align: center;">
+                            <h3>${c.name}</h3>
+                            <a href="/platforms.html?category=${c.id}" class="btn">View Items</a>
+                        </div>
+                    `).join('');
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        });
+    </script>
+</body>
+
+</html>

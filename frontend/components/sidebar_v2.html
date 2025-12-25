@@ -1,0 +1,87 @@
+<!-- PREMIUM USER SIDEBAR V2 -->
+<div id="sidebar-v2" class="sidebar-v2">
+    <div class="sidebar-v2-header" style="flex-direction:column; align-items:flex-start;">
+        <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
+            <div class="brand-row">
+                <span style="font-size:24px; margin-right:10px;">🎰</span>
+                <span class="brand-text">BETTRION</span>
+            </div>
+            <button id="sidebar-v2-close" class="close-btn-v2">&times;</button>
+        </div>
+
+        <!-- Stats Row -->
+        <div id="sidebar-stats"
+            style="width:100%; background:rgba(255,255,255,0.05); border-radius:8px; padding:10px; margin-top:15px; font-size:0.85rem; color:#ccc;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                <span>💰 Balance:</span> <span id="user-balance-sidebar"
+                    style="color:#4caf50; font-weight:bold;">$0.00</span>
+            </div>
+            <div style="display:flex; justify-content:space-between;">
+                <span>🕒 UTC Time:</span> <span id="utc-clock" style="font-family:monospace;">--:--</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="sidebar-v2-content">
+        <!-- Main Navigation -->
+        <div class="nav-group">
+            <label>Menu</label>
+            <a href="/" class="nav-link"><img src="/assets/img/2666-casino-chip.png" class="nav-icon"> Home</a>
+            <a href="/casinos.html" class="nav-link"><img src="/assets/img/3869-cardsndice.png" class="nav-icon">
+                Casinos</a>
+            <a href="/sports.html" class="nav-link"><img src="/assets/img/18502-beta-pogo-os.png" class="nav-icon">
+                Sports</a>
+            <a href="/promotions.html" class="nav-link"><img src="/assets/img/22134-luckyclover.gif" class="nav-icon">
+                Promotions</a>
+            <a href="/articles.html" class="nav-link"><img src="/assets/img/81912-news-paper.png" class="nav-icon"> News
+                & Guides</a>
+        </div>
+
+        <!-- Games -->
+        <div class="nav-group">
+            <label>Games</label>
+            <a href="/slots.html" class="nav-link"><img src="/assets/img/43091-slots.gif" class="nav-icon"> Slots</a>
+            <a href="/live-dealers.html" class="nav-link"><img src="/assets/img/3869-cardsndice.png" class="nav-icon">
+                Live Dealers</a>
+        </div>
+
+        <!-- User Section (Dynamic) -->
+        <div class="nav-group" id="user-nav-group">
+            <label>My Account</label>
+            <div id="sidebar-auth-placeholder">
+                <a href="/login.html" class="nav-link"><img src="/assets/img/2879-securitywarning.png" class="nav-icon">
+                    Sign In</a>
+                <a href="/signup.html" class="nav-link"><img src="/assets/img/494995-new.png" class="nav-icon"> Sign
+                    Up</a>
+            </div>
+        </div>
+
+        <!-- Support & Legal -->
+        <div class="nav-group">
+            <label>Support & Info</label>
+            <a href="/contact.html" class="nav-link"><img src="/assets/img/1881-ping.png" class="nav-icon">
+                Contact Us</a>
+            <!-- <a href="/status.html" class="nav-link"><span>🟢</span> System Status</a> -->
+            <a href="/about.html" class="nav-link"><img src="/assets/img/81912-news-paper.png" class="nav-icon">
+                About Us</a>
+            <a href="/legal.html" class="nav-link"><img src="/assets/img/80012-verified.png" class="nav-icon"> Legal &
+                Laws</a>
+            <a href="/terms.html" class="nav-link"><img src="/assets/img/80012-verified.png" class="nav-icon"> Terms &
+                Policy</a>
+            <a href="/responsible-gambling.html" class="nav-link"><img src="/assets/img/2879-securitywarning.png"
+                    class="nav-icon"> Responsible Gambling</a>
+            <a href="/underage-policy.html" class="nav-link"><img src="/assets/img/2879-securitywarning.png"
+                    class="nav-icon"> Underage Policy</a>
+        </div>
+
+        <!-- Ads Placeholder -->
+        <div class="nav-group">
+            <label>Sponsors</label>
+            <div class="sidebar-ad"
+                style="background:#111; padding:10px; border-radius:8px; text-align:center; color:#555; font-size:0.8rem;">
+                Ad Space Available
+            </div>
+        </div>
+    </div>
+</div>
+<div id="sidebar-v2-overlay" class="sidebar-v2-overlay"></div>

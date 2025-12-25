@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Manager - Bettrion Admin</title>
+    <link rel="stylesheet" href="/assets/css/admin-v2.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <main class="admin-main">
+        <h1 class="page-title">Email Manager</h1>
+
+        <div class="grid-stats" style="grid-template-columns: 2fr 1fr;">
+            <!-- Send Form -->
+            <div class="form-card">
+                <h3 style="margin-top:0;">Send Broadcast / Email</h3>
+                <form id="email-form">
+                    <div class="form-group">
+                        <label>Recipient (Empty = Broadcast All)</label>
+                        <input type="email" id="to" placeholder="specific@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Load Template</label>
+                        <select id="template-select" onchange="loadTemplate()">
+                            <option value="">-- Select a Template --</option>
+                            <option value="welcome">1. Welcome Series (New User)</option>
+                            <option value="newReview">2. New Casino Review Alert</option>
+                            <option value="highRtp">3. High RTP Slot Guide</option>
+                            <option value="exclusive">4. Exclusive Bonus Trigger</option>
+                            <option value="trust">5. Monthly Trust Report</option>
+                            <option value="reengage">6. Re-Engagement (We missed you)</option>
+                            <option value="geo">7. Geo-Specific Alert</option>
+                            <option value="provider">8. Slot Provider Spotlight</option>
+                            <option value="responsible">9. Responsible Gambling Check-in</option>
+                            <option value="feature">10. New Feature Announcement</option>
+                            <option value="news">11. Breaking News Alert</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Subject</label>
+                        <input type="text" id="subject" required placeholder="Subject Line">
+                    </div>
+                    <div class="form-group">
+                        <label>Message (HTML)</label>
+                        <textarea id="html" rows="8" required placeholder="<h1>Hello!</h1><p>Update...</p>"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Admin Secret Key</label>
+                        <input type="password" id="secret" placeholder="Required for Email API">
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width:100%;">Send Email</button>
+                    <div id="msg" style="margin-top:10px; font-weight:bold;"></div>
+                </form>
+            </div>
+
+            <!-- Subscribers -->
+            <div class="stat-card" style="height:fit-content;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                    <h3 style="margin:0;">Subscribers</h3>
+                    <button onclick="loadSubs()" class="btn btn-sm btn-outline">Refresh</button>
+                </div>
+                <div id="subs-list" style="max-height:400px; overflow-y:auto; font-size:0.9rem;">
+                    <p style="color:#666;">Enter Secret Key to load.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- History -->
+        <h2 style="color:white; margin:30px 0 20px;">Email History</h2>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>To</th>
+                        <th>Subject</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="logs-body">
+                    <tr>
+                        <td colspan="5" style="text-align:center;">Enter Secret Key to load logs.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/admin-v2.js"></script>
+    <script src="/assets/js/sudo.js"></script>
+    <script>
+        function getSecret() {
+            return document.getElementById('secret').value || localStorage.getItem('admin_secret_temp');
+        }
+
+        const templates = {
+            welcome: {
+                s: '🎲 Welcome to Bettrion! Your expert guide starts here.',
+                h: `<div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 8px;">
+                    <img src="https://bettrion.com/assets/banners/welcometobettrioncombanner.png" alt="Welcome to Bettrion" style="width: 100%; border-radius: 8px; margin-bottom: 20px;">
+                    <h1>Hi [Name],</h1>
+                    <p>We’re here to help you navigate the noise of online gambling. You'll get unbiased reviews, RTP data, and exclusive bonuses.</p>
+                    <p>Check out our Top 10 Rated Casinos for 2025 to see where the pros are playing.</p>
+                    <div style="text-align: center; margin: 30px 0;">
+                        <a href="https://bettrion.com/top-10-casinos" style="background: #e50914; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 16px;">See 2025 Rankings</a>
+                    </div>
+                </div>`
+            },
+            newReview: {
+                s: '🎰 New Review: Is [Casino Name] actually legit?',
+                h: `<div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto;">
+                    <h2>New Casino Review: [Casino Name]</h2>
+                    <p>We just finished our deep dive into <strong>[Casino Name]</strong>. We checked their withdrawal speeds and verified their license.</p>
+                    <p>See if they made our 'Must Play' list.</p>
+                    <div style="text-align: center; margin: 30px 0;">
+                        <a href="https://bettrion.com/casinos/slug-here" style="background: #e50914; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold;">Read Our Honest Review</a>
+                    </div>
+                </div>`
+            },
+            highRtp: {
+                s: '📈 These 5 Slots are paying out the most right now',
+                h: `<div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto;">
+                    <img src="https://bettrion.com/assets/banners/top3casinosof2025banner.png" alt="Top Casinos 2025" style="width: 100%; border-radius: 8px; margin-bottom: 20px;">
+                    <h2>Highest RTP Slots of 2025</h2>
+                    <p>Stop wasting bankroll on low-return games. We've compiled the latest RTP data for 2025.</p>
+                    <p>Here are the slots giving players the best odds this month.</p>
+                    <div style="text-align: center; margin: 30px 0;">
+                        <a href="https://bettrion.com/slots" style="background: #2ecc71; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold;">View High RTP Guide</a>
+                    </div>
+                </div>`
+            },
+            exclusive: {
+                s: '💎 Private Offer: [Casino Name] doubled their bonus for you',
+                h: `<div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto;">
+                    <h2>Exclusive: [Casino Name] Offer</h2>
+                    <p>As a Bettrion subscriber, you get access to deals others don't.</p>
+                    <p>We negotiated a special <strong>[Bonus Details]</strong> for [Casino Name].</p>
+                    <div style="text-align: center; margin: 30px 0;">
+                        <a href="https://bettrion.com" style="background: linear-gradient(45deg, #ffd700, #e50914); color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold;">Claim My Exclusive Bonus</a>
+                    </div>
+                </div>`
+            },
+            trust: {
+                s: '🛡️ Safe Play: 3 Casinos that passed our Audit this month',
+                h: `<div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto;">
+                    <img src="https://bettrion.com/assets/banners/top3casinosof2025banner.png" alt="Top Trusted Casinos" style="width: 100%; border-radius: 8px; margin-bottom: 20px;">
+                    <h2>Monthly Trust Report</h2>
+                    <p>Safety is our #1 priority. This month, we re-audited three top platforms for security and fair play.</p>
+                    <p>See which ones we still recommend for 2025.</p>
+                    <div style="text-align: center; margin: 30px 0;">
+                        <a href="https://bettrion.com/casinos" style="background: #34495e; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold;">Check Safety Rankings</a>
+                    </div>
+                </div>`
+            },
+            reengage: {
+                s: '👋 We missed you! Here is what new since you left...',
+                h: `<div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto;">
+                    <h2>Welcome Back?</h2>
+                    <p>A lot has changed at Bettrion since your last visit. We've added new reviews and a new Comparison Tool.</p>
+                    <p>See what you've been missing.</p>
+                    <div style="text-align: center; margin: 30px 0;">
+                        <a href="https://bettrion.com" style="background: #e50914; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold;">Return to Bettrion</a>
+                    </div>
+                </div>`
+            },
+            geo: {
+                s: '📍 The #1 Rated Casino for players in [Country]',
+                h: `<div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto;">
+                     <h2>Best Casinos in [Country]</h2>
+                     <p>Finding a casino that accepts your local payment methods can be hard. We've filtered our list to show you the best-licensed options available in <strong>[Country]</strong> right now.</p>
+                     <div style="text-align: center; margin: 30px 0;">
+                         <a href="https://bettrion.com/casinos" style="background: #e50914; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold;">See [Country] Recommendations</a>
+                     </div>
+                 </div>`
+            },
+            provider: {
+                s: '⚡ Why [Provider] is dominating 2025',
+                h: `<div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto;">
+                    <h2>Provider Spotlight: [Provider]</h2>
+                    <p>From innovative mechanics to massive jackpots, <strong>[Provider]</strong> is on fire.</p>
+                    <p>Read our reviews of their top 5 games and find out where to play them.</p>
+                    <div style="text-align: center; margin: 30px 0;">
+                        <a href="https://bettrion.com/slots?provider=[Provider]" style="background: #8e44ad; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold;">See [Provider] Game Reviews</a>
+                    </div>
+                </div>`
+            },
+            responsible: {
+                s: '🤝 Keeping it Fun: A quick tip for safe play',
+                h: `<div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto;">
+                    <h2>Play Smart</h2>
+                    <p>At Bettrion, we want you to play smart. Check out our latest guide on setting deposit limits and using 'Time-Out' tools to stay in control.</p>
+                    <p>It only takes 2 minutes to read.</p>
+                    <div style="text-align: center; margin: 30px 0;">
+                        <a href="https://bettrion.com/responsible-gambling" style="background: #27ae60; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold;">Safe Gambling Tips</a>
+                    </div>
+                </div>`
+            },
+            feature: {
+                s: '🛠️ New Tool: Compare any 2 casinos side-by-side',
+                h: `<div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto;">
+                    <h2>Compare & Choose</h2>
+                    <p>We just launched our Side-by-Side Comparison Tool. No more guessing—compare bonuses, games, and payout speeds instantly.</p>
+                    <p>Try it out now!</p>
+                    <div style="text-align: center; margin: 30px 0;">
+                        <a href="https://bettrion.com/compare" style="background: #2980b9; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold;">Try the Comparison Tool</a>
+                    </div>
+                </div>`
+            },
+            news: {
+                s: '🚨 Industry Alert: Major changes to [Topic]',
+                h: `<div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto;">
+                    <h2>Breaking News</h2>
+                    <p>Big news in the gambling world today regarding <strong>[Topic]</strong>.</p>
+                    <p>We've updated our guides to reflect how this affects you. Read the full story on our news page.</p>
+                    <div style="text-align: center; margin: 30px 0;">
+                        <a href="https://bettrion.com/articles" style="background: #c0392b; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold;">Read the News Story</a>
+                    </div>
+                </div>`
+            }
+        };
+
+        function loadTemplate() {
+            const key = document.getElementById('template-select').value;
+            if (key && templates[key]) {
+                document.getElementById('subject').value = templates[key].s;
+                document.getElementById('html').value = templates[key].h;
+            }
+        }
+
+        async function loadLogs() {
+            const secret = getSecret();
+            if (!secret) return;
+            try {
+                const res = await api.fetch('/email/admin/logs', { headers: { 'x-admin-secret': secret } });
+                const tbody = document.getElementById('logs-body');
+
+                if (res.success && res.data.length > 0) {
+                    tbody.innerHTML = res.data.map(log => `
+                        <tr>
+                            <td>${new Date(log.created_at).toLocaleString()}</td>
+                            <td>${log.to_email || 'BROADCAST'}</td>
+                            <td>${log.subject}</td>
+                            <td><span class="badge ${log.status === 'sent' ? 'badge-active' : 'badge-inactive'}">${log.status}</span></td>
+                            <td><button onclick="alert('Body: ' + decodeURIComponent('${encodeURIComponent(log.body)}'))" class="btn btn-sm btn-outline">View Body</button></td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No emails found.</td></tr>';
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        async function loadSubs() {
+            const secret = getSecret();
+            if (!secret) return;
+            try {
+                const res = await api.fetch('/email/admin/subscribers', { headers: { 'x-admin-secret': secret } });
+                if (res.success) {
+                    document.getElementById('subs-list').innerHTML = res.data.map(sub => `
+                        <div style="padding:8px 0; border-bottom:1px solid #222;">
+                            <div style="color:white;">${sub.email}</div>
+                            <div style="color:#666; font-size:0.8rem;">${new Date(sub.subscribed_at).toLocaleDateString()}</div>
+                        </div>
+                    `).join('');
+                }
+            } catch (e) { }
+        }
+
+        document.getElementById('email-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const to = document.getElementById('to').value;
+            const subject = document.getElementById('subject').value;
+            const html = document.getElementById('html').value;
+            const secret = document.getElementById('secret').value;
+            const msg = document.getElementById('msg');
+
+            if (secret) localStorage.setItem('admin_secret_temp', secret);
+            msg.innerText = 'Sending...';
+
+            try {
+                const endpoint = to ? '/email/admin/send' : '/email/admin/broadcast';
+                const body = { to, subject, html };
+                const res = await api.fetch(endpoint, {
+                    method: 'POST',
+                    body: JSON.stringify(body),
+                    headers: { 'x-admin-secret': secret }
+                });
+
+                if (res.success) {
+                    msg.innerHTML = '<span style="color:green;">✅ Sent successfully!</span>';
+                    loadLogs();
+                } else {
+                    msg.innerHTML = `<span style="color:red;">❌ Error: ${res.message || 'Failed'}</span>`;
+                }
+            } catch (err) {
+                msg.innerHTML = `<span style="color:red;">❌ Error: ${err.message}</span>`;
+            }
+        });
+
+        document.getElementById('secret').addEventListener('input', () => {
+            loadSubs();
+            loadLogs();
+        });
+
+        // Try auto-load if secret is stored
+        if (localStorage.getItem('admin_secret_temp')) {
+            document.getElementById('secret').value = localStorage.getItem('admin_secret_temp');
+            loadSubs();
+            loadLogs();
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Hours - Bettrion Admin</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="/assets/css/admin-layout.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .table th,
+        .table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .table th {
+            background: var(--bg-card);
+            color: var(--accent-gold);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-layout">
+        <aside class="sidebar">
+            <a href="/" class="brand">Bettrion Admin</a>
+            <nav>
+                <a href="/admin/dashboard.html">Dashboard</a>
+                <a href="/admin/platform-edit.html">Add Platform</a>
+                <a href="/admin/platforms.html">Manage Platforms</a>
+                <a href="/admin/tickets.html">Tickets</a>
+                <a href="/admin/users.html">Users</a>
+                <a href="/admin/staff-time.html" class="active">Staff Hours</a>
+                <a href="/admin/settings.html">Settings</a>
+            </nav>
+        </aside>
+
+        <main class="admin-content">
+            <h1>Staff Time Logs</h1>
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Clock In</th>
+                        <th>Clock Out</th>
+                        <th>Duration (Min)</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <tr>
+                        <td colspan="4">Loading...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </main>
+    </div>
+
+    <script src="/assets/js/api.js"></script>
+    <script>
+        async function load() {
+            const res = await api.get('/admin/staff-logs');
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = '';
+
+            if (res.success && res.data.length > 0) {
+                res.data.forEach(log => {
+                    const tr = document.createElement('tr');
+                    const user = log.users ? log.users.email : 'Unknown';
+                    const duration = log.duration_minutes ? Math.round(log.duration_minutes) : '-';
+                    tr.innerHTML = `
+                        <td>${user}</td>
+                        <td>${new Date(log.clock_in).toLocaleString()}</td>
+                        <td>${log.clock_out ? new Date(log.clock_out).toLocaleString() : '<span style="color:green">Active</span>'}</td>
+                        <td>${duration}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } else {
+                tbody.innerHTML = '<tr><td colspan="4">No logs found.</td></tr>';
+            }
+        }
+        window.addEventListener('load', load);
+    </script>
+</body>
+
+</html>

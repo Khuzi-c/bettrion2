@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ads Manager - Admin</title>
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="stylesheet" href="/assets/css/admin.css">
+</head>
+
+<body class="admin-body">
+
+    <!-- Sidebar is injected by admin.js -->
+
+    <div class="main-content">
+        <header style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h1>Ads Manager</h1>
+            <button onclick="openModal()" class="btn-primary">+ New Ad</button>
+        </header>
+
+        <div class="card">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Position</th>
+                        <th>Title/Link</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="ads-table-body">
+                    <tr>
+                        <td colspan="5">Loading...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Add Ad Modal -->
+    <div id="ad-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Create New Ad</h2>
+            <form id="ad-form">
+                <div class="form-group">
+                    <label>Position</label>
+                    <select id="position" required>
+                        <option value="sidebar">Sidebar (Square)</option>
+                        <option value="home_banner">Home Banner (Wide)</option>
+                        <option value="casino_list">Casino List (Wide)</option>
+                        <option value="footer">Footer</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Title (Internal)</label>
+                    <input type="text" id="title" placeholder="e.g. Welcome Bonus Promo">
+                </div>
+                <div class="form-group">
+                    <label>Image URL</label>
+                    <input type="text" id="image_url" placeholder="https://..." required>
+                </div>
+                <div class="form-group">
+                    <label>Redirect Link</label>
+                    <input type="text" id="link_url" placeholder="https://...">
+                </div>
+                <button type="submit" class="btn-primary">Create Ad</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="/assets/js/utils.js"></script>
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/admin.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', loadAds);
+
+        async function loadAds() {
+            try {
+                const res = await API.get('/admin/ads');
+                const tbody = document.getElementById('ads-table-body');
+                if (!res || res.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">No ads found.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = res.map(ad => `
+                    <tr>
+                        <td><img src="${ad.image_url}" style="height:50px; border-radius:4px;"></td>
+                        <td><span class="badge" style="background:#444;">${ad.position}</span></td>
+                        <td>
+                            <strong>${ad.title || '-'}</strong><br>
+                            <small>${ad.link_url || 'No Link'}</small>
+                        </td>
+                        <td>
+                            <button onclick="toggleAd('${ad.id}', ${!ad.is_active})" class="btn-sm ${ad.is_active ? 'btn-success' : 'btn-danger'}">
+                                ${ad.is_active ? 'Active' : 'Disabled'}
+                            </button>
+                        </td>
+                        <td>
+                            <button onclick="deleteAd('${ad.id}')" class="btn-sm btn-danger">Delete</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        document.getElementById('ad-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const payload = {
+                position: document.getElementById('position').value,
+                title: document.getElementById('title').value,
+                image_url: document.getElementById('image_url').value,
+                link_url: document.getElementById('link_url').value
+            };
+
+            try {
+                await API.post('/admin/ads', payload);
+                closeModal();
+                loadAds();
+            } catch (err) {
+                alert('Error: ' + err.message);
+            }
+        });
+
+        async function deleteAd(id) {
+            if (!confirm('Delete this ad?')) return;
+            await API.delete(`/admin/ads/${id}`);
+            loadAds();
+        }
+
+        async function toggleAd(id, status) {
+            await API.put(`/admin/ads/${id}/toggle`, { status });
+            loadAds();
+        }
+
+        // Modal Logic
+        const modal = document.getElementById('ad-modal');
+        function openModal() { modal.style.display = 'block'; }
+        function closeModal() { modal.style.display = 'none'; }
+        window.onclick = function (event) { if (event.target == modal) closeModal(); }
+    </script>
+</body>
+
+</html>

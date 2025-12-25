@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Verify Account - Bettrion</title>
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: #0b0b0f;
+        }
+
+        .auth-box {
+            background: #1a1a1e;
+            padding: 40px;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 400px;
+            border: 1px solid #333;
+            text-align: center;
+        }
+
+        .auth-box h1 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .code-input {
+            letter-spacing: 5px;
+            font-size: 1.5rem;
+            text-align: center;
+            width: 100%;
+            padding: 12px;
+            margin: 20px 0;
+            background: #222;
+            border: 1px solid #444;
+            color: white;
+            border-radius: 6px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .resend {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: #888;
+        }
+
+        .resend a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="auth-box">
+        <h1>Verify Email</h1>
+        <p style="color:#aaa;">Enter the 6-digit code sent to your email.</p>
+        <form id="verify-form">
+            <input type="text" id="code" class="code-input" placeholder="000000" maxlength="6" required>
+            <button type="submit" class="btn">Verify & Login</button>
+            <p id="msg" style="margin-top:10px; color:red;"></p>
+        </form>
+        <div class="resend">
+            Didn't receive code? <a href="#" onclick="resendCode(); return false;">Resend</a>
+        </div>
+    </div>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const email = urlParams.get('email');
+        if (!email) document.getElementById('msg').innerText = "Error: No email provided.";
+
+        document.getElementById('verify-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const code = document.getElementById('code').value;
+            const msg = document.getElementById('msg');
+            msg.innerText = "Verifying...";
+            msg.style.color = 'var(--text-secondary)';
+
+            try {
+                const res = await fetch('/api/auth/verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, code })
+                }).then(r => r.json());
+
+                if (res.success) {
+                    localStorage.setItem('user_token', res.token);
+                    msg.style.color = 'lime';
+                    msg.innerText = "Success! Redirecting...";
+                    setTimeout(() => window.location.href = '/', 1000);
+                } else {
+                    msg.style.color = 'red';
+                    msg.innerText = res.message;
+                }
+            } catch (e) {
+                msg.innerText = "Error: " + e.message;
+            }
+        });
+
+        // Polling for Auto-Verification (Magic Link)
+        if (email) {
+            setInterval(async () => {
+                try {
+                    const res = await fetch('/api/auth/check-status', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email })
+                    }).then(r => r.json());
+
+                    if (res.verified) {
+                        const msg = document.getElementById('msg');
+                        msg.style.color = 'lime';
+                        msg.innerText = "Verified! logging in...";
+                        // We don't have the token here effectively unless we use a cookie or ask user to login.
+                        // But for now, let's redirect to login or home. 
+                        // Ideally, checkStatus could return a token if we authenticated the request somehow, but for magic link flow across tabs, it's tricky without session/cookie.
+                        // Simplest: Redirect to login with a message.
+                        window.location.href = '/login?verified=true';
+                    }
+                } catch (e) { }
+            }, 3000); // Check every 3 seconds
+        }
+
+        async function resendCode() {
+            const link = document.querySelector('.resend a');
+            if (link.style.pointerEvents === 'none') return;
+
+            const originalText = link.innerText;
+            link.innerText = 'Sending...';
+
+            try {
+                const res = await fetch('/api/auth/resend-verification', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                }).then(r => r.json());
+
+                if (res.success) {
+                    alert('Verification code sent to email!');
+
+                    // 60s Cooldown
+                    let wait = 60;
+                    link.style.pointerEvents = 'none';
+                    link.style.color = '#555';
+                    link.style.textDecoration = 'none';
+
+                    link.innerText = `Wait ${wait}s`;
+                    const interval = setInterval(() => {
+                        wait--;
+                        link.innerText = `Wait ${wait}s`;
+                        if (wait <= 0) {
+                            clearInterval(interval);
+                            link.innerText = 'Resend';
+                            link.style.pointerEvents = 'auto';
+                            link.style.color = '';
+                            link.style.textDecoration = 'underline';
+                        }
+                    }, 1000);
+                } else {
+                    alert('Error: ' + res.message);
+                    link.innerText = 'Resend';
+                }
+            } catch (e) {
+                alert('Connection Error');
+                link.innerText = 'Resend';
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,168 @@
+/* --- PREMIUM SIDEBAR & MOBILE MENU --- */
+
+/* Sidebar Overlay */
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    z-index: 9998;
+    /* VERY HIGH Z-INDEX */
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.sidebar-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Sidebar Container */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 280px;
+    background: #0d0d0d;
+    background: linear-gradient(135deg, #141414 0%, #0a0a0a 100%);
+    z-index: 9999;
+    /* HIGHEST Z-INDEX */
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 10px 0 40px rgba(0, 0, 0, 0.8);
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar.active {
+    transform: translateX(0);
+}
+
+/* Sidebar Header */
+.sidebar-header {
+    padding: 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.sidebar-header .brand-text {
+    font-size: 1.4rem;
+    color: var(--primary);
+    text-shadow: 0 0 10px rgba(229, 9, 20, 0.3);
+}
+
+/* Close Button */
+.close-btn {
+    background: transparent;
+    border: none;
+    color: #888;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    line-height: 1;
+}
+
+.close-btn:hover {
+    background: var(--primary);
+    color: white;
+    transform: rotate(90deg);
+}
+
+/* Sidebar Content */
+.sidebar-content {
+    padding: 20px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+/* Groups */
+.sidebar-group {
+    margin-bottom: 30px;
+}
+
+.sidebar-group label {
+    display: block;
+    color: var(--primary);
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    margin-bottom: 12px;
+    letter-spacing: 1.5px;
+    font-weight: 800;
+    opacity: 0.9;
+    padding-left: 10px;
+    border-left: 2px solid var(--primary);
+}
+
+/* Navigation Links */
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    color: #ccc;
+    text-decoration: none;
+    padding: 12px 15px;
+    border-radius: 10px;
+    transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+    margin-bottom: 6px;
+    font-weight: 500;
+    border: 1px solid transparent;
+}
+
+.sidebar-link:hover,
+.sidebar-link.active {
+    background: rgba(255, 255, 255, 0.08);
+    color: white;
+    transform: translateX(5px);
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.sidebar-link .icon {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+}
+
+/* Menu Toggle Button (Header) */
+.menu-btn {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    font-size: 1.4rem;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 8px;
+    transition: 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+}
+
+.menu-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+/* Responsive Fixes */
+@media (max-width: 768px) {
+    .desktop-nav {
+        display: none !important;
+    }
+}

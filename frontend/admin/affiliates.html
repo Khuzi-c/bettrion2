@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Affiliates - Bettrion Admin</title>
+    <link rel="stylesheet" href="/assets/css/admin-v2.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .status-requested {
+            color: #ccc;
+        }
+
+        .status-paid {
+            color: #46d369;
+            font-weight: bold;
+        }
+
+        .status-rejected {
+            color: #e50914;
+            text-decoration: line-through;
+        }
+
+        .action-btn {
+            margin-right: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar injected by js -->
+
+    <div class="admin-main">
+        <h1 class="page-title">Affiliate Management</h1>
+
+        <!-- Stats -->
+        <div class="grid-stats">
+            <div class="stat-card">
+                <div class="stat-value" id="count-pending">0</div>
+                <div class="stat-label">Pending Payouts</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="count-paid">0</div>
+                <div class="stat-label">Total Paid</div>
+            </div>
+        </div>
+
+        <!-- Pending Requests -->
+        <div class="table-container">
+            <h3 style="padding: 20px; margin: 0; border-bottom: 1px solid #333;">Pending Requests</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Amount</th>
+                        <th>Asset</th>
+                        <th>Address</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="pending-table">
+                    <tr>
+                        <td colspan="6" style="text-align:center; padding:20px;">Loading...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- History -->
+        <div class="table-container">
+            <h3 style="padding: 20px; margin: 0; border-bottom: 1px solid #333;">Payout History</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>TXID</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody id="history-table">
+                    <tr>
+                        <td colspan="5" style="text-align:center; padding:20px;">Loading...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <!-- Modals for Action -->
+    <script>
+        // Simple prompt for now
+    </script>
+
+    <script src="/assets/js/admin-v2.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', loadData);
+
+        async function loadData() {
+            const token = localStorage.getItem('user_token');
+            if (!token) return;
+
+            try {
+                const res = await fetch('/api/admin/affiliates/payouts', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                let data = await res.json();
+                if (!Array.isArray(data)) {
+                    if (data.data && Array.isArray(data.data)) data = data.data;
+                    else throw new Error("Invalid Data Format");
+                }
+                const payouts = data;
+
+                const pending = payouts.filter(p => p.status === 'requested');
+                const history = payouts.filter(p => p.status !== 'requested');
+
+                // Update Stats
+                document.getElementById('count-pending').innerText = pending.length;
+                document.getElementById('count-paid').innerText = payouts.filter(p => p.status === 'paid').length;
+
+                // Render Pending
+                const pendingBody = document.getElementById('pending-table');
+                pendingBody.innerHTML = '';
+                if (pending.length === 0) pendingBody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px;">No pending requests.</td></tr>';
+
+                pending.forEach(p => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${p.users?.email || 'Unknown'}</td>
+                        <td>$${p.amount}</td>
+                        <td>${p.asset} (${p.network})</td>
+                        <td style="font-family:monospace; font-size:0.9rem;">${p.address}</td>
+                        <td>${new Date(p.created_at).toLocaleDateString()}</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary" onclick="processPayout('${p.id}', 'approve', '${p.amount}', '${p.asset}')">PAY</button>
+                            <button class="btn btn-sm btn-delete" onclick="processPayout('${p.id}', 'reject')">REJECT</button>
+                        </td>
+                    `;
+                    pendingBody.appendChild(tr);
+                });
+
+                // Render History
+                const histBody = document.getElementById('history-table');
+                histBody.innerHTML = '';
+                history.forEach(p => {
+                    const tr = document.createElement('tr');
+                    let statusClass = p.status === 'paid' ? 'status-paid' : 'status-rejected';
+                    tr.innerHTML = `
+                        <td>${p.users?.email || 'Unknown'}</td>
+                        <td>$${p.amount}</td>
+                        <td class="${statusClass}">${p.status.toUpperCase()}</td>
+                        <td style="font-family:monospace;">${p.tx_id || '-'}</td>
+                        <td>${new Date(p.created_at).toLocaleDateString()}</td>
+                    `;
+                    histBody.appendChild(tr);
+                });
+
+            } catch (err) {
+                console.error("Affiliate Load Error:", err);
+                document.getElementById('pending-table').innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px; color:#e50914;">❌ Error loading data: ${err.message}</td></tr>`;
+                document.getElementById('history-table').innerHTML = `<tr><td colspan="5" style="text-align:center; padding:20px; color:#e50914;">❌ Error loading data: ${err.message}</td></tr>`;
+            }
+        }
+
+        async function processPayout(id, action, amount, asset) {
+            let txId = null;
+            let note = null;
+
+            if (action === 'approve') {
+                txId = prompt(`Enter TXID for sending $${amount} ${asset}:`);
+                if (!txId) return; // Cancelled
+            } else {
+                if (!confirm("Reject this payout and refund the user?")) return;
+                note = prompt("Reason for rejection:");
+            }
+
+            const token = localStorage.getItem('user_token');
+            try {
+                const res = await fetch('/api/admin/affiliates/process', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify({ payoutId: id, action, tx_id: txId, note })
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    alert('Success!');
+                    loadData();
+                } else {
+                    alert('Error: ' + (data.error || 'Failed'));
+                }
+            } catch (err) {
+                alert('Network Error');
+            }
+        }
+    </script>
+</body>
+
+</html>

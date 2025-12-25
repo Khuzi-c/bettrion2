@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add/Edit Casino - Bettrion Admin</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="/assets/css/admin-layout.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <script src="/assets/js/admin-auth.js"></script>
+    <style>
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--accent-gold);
+            font-weight: 600;
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            background: #111;
+            border: 1px solid #333;
+            color: white;
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            transition: border-color 0.3s;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+
+        .payments-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 15px;
+            background: #0a0a0a;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #222;
+        }
+
+        .payments-grid label {
+            color: #ccc;
+            font-weight: normal;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            margin: 0;
+        }
+
+        .payments-grid input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, #1a9e40 100%);
+            border: none;
+            padding: 15px;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 20px;
+            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(46, 204, 113, 0.3);
+        }
+
+        .card {
+            background: #1a1a1e;
+            border: 1px solid #333;
+            padding: 30px;
+            border-radius: 16px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-layout">
+        <aside class="sidebar">
+            <a href="/" class="brand" style="display: flex; align-items: center; gap: 10px;">
+                <img src="/assets/images/bettrion-logo_notxt.webp" alt="Bettrion" style="height: 35px;">
+                <span style="font-size: 1.5rem; font-weight: 800; color: var(--accent-gold);">Bettrion</span>
+            </a>
+            <nav>
+                <a href="/admin/dashboard">Dashboard</a>
+                <a href="/admin/platform-edit" class="active">Add Casino</a>
+                <a href="/admin/add-slot">Add Slot</a>
+                <a href="/admin/platforms">Manage Casinos</a>
+                <a href="/admin/articles">Manage Articles</a>
+                <a href="/admin/article-edit">Write Article</a>
+                <a href="/admin/tickets">Support Tickets</a>
+                <a href="/admin/staff-time">Staff Hours</a>
+                <a href="/admin/backups">Backups</a>
+                <a href="/admin/images">Image Manager</a>
+                <a href="/admin/users">Users</a>
+                <a href="/admin/settings">Settings</a>
+            </nav>
+            <div style="padding: 20px;">
+                <button onclick="adminLogout()" class="btn"
+                    style="width:100%; background:var(--accent-red);">Logout</button>
+            </div>
+        </aside>
+
+        <main class="admin-content">
+            <h1 id="page-title">Add New Casino</h1>
+            <div class="card" style="max-width: 900px;">
+                <form id="platform-form">
+                    <div class="form-group">
+                        <label>Casino Name</label>
+                        <input type="text" name="name" required>
+                    </div>
+
+                    <div style="display: flex; gap: 20px;">
+                        <div class="form-group" style="flex: 1;">
+                            <label>Rating (0-5)</label>
+                            <input type="number" step="0.1" name="rating" value="5.0">
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label>Category</label>
+                            <input type="text" name="category" list="category-list"
+                                placeholder="Casino, Sports, Slots...">
+                            <datalist id="category-list">
+                                <option value="Casino">
+                                <option value="Sports">
+                                <option value="Slots">
+                                <option value="Live Casino">
+                            </datalist>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 20px;">
+                        <div class="form-group" style="flex: 1;">
+                            <label>Rank / Position (1=Top)</label>
+                            <input type="number" name="ranking" value="999" placeholder="999">
+                        </div>
+                        <div class="form-group"
+                            style="flex: 1; display:flex; align-items:center; gap:10px; margin-top:25px;">
+                            <input type="checkbox" name="is_exclusive" id="excl_chk" style="width:20px; margin:0;">
+                            <label for="excl_chk" style="margin:0; cursor:pointer;">Exclusive Casino?</label>
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label>Tags (comma separated)</label>
+                        <input type="text" name="tags" placeholder="crypto, live-dealer, sports-betting">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Logo URL</label>
+                        <input type="text" name="logo" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Banner URL (Hero Image)</label>
+                        <input type="text" name="banner" placeholder="/assets/img/banners/example.jpg">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Linked Review Article</label>
+                        <select name="review_article_id" id="article-select">
+                            <option value="">-- Select Related Review --</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Affiliate Link</label>
+                        <input type="text" name="affiliate_link" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Short Description</label>
+                        <textarea name="short_description" rows="2"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Full Description</label>
+                        <textarea name="description" rows="6"></textarea>
+                    </div>
+
+                    <!-- Payment Methods -->
+                    <div class="form-group">
+                        <label>Payment Methods</label>
+                        <div class="payments-grid"
+                            style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 4px;">
+                            <!-- Will be populated by JS -->
+                            <label><input type="checkbox" name="payment_methods" value="Visa"> <img
+                                    src="/assets/img/3459-visa.png"
+                                    style="height:20px; vertical-align:middle; margin-left:5px;"> Visa</label>
+                            <label><input type="checkbox" name="payment_methods" value="Mastercard"> <img
+                                    src="/assets/img/30410-mastercard.png"
+                                    style="height:20px; vertical-align:middle; margin-left:5px;"> Mastercard</label>
+                            <label><input type="checkbox" name="payment_methods" value="PayPal"> <img
+                                    src="/assets/img/54735-paypal.png"
+                                    style="height:20px; vertical-align:middle; margin-left:5px;"> PayPal</label>
+                            <label><input type="checkbox" name="payment_methods" value="Bitcoin"> <img
+                                    src="/assets/img/1425-bitcoin.png"
+                                    style="height:20px; vertical-align:middle; margin-left:5px;"> Bitcoin</label>
+                            <label><input type="checkbox" name="payment_methods" value="Ethereum"> <img
+                                    src="/assets/img/3031-ethereum.png"
+                                    style="height:20px; vertical-align:middle; margin-left:5px;"> Ethereum</label>
+                            <label><input type="checkbox" name="payment_methods" value="Tether"> <img
+                                    src="/assets/img/6121-tether.png"
+                                    style="height:20px; vertical-align:middle; margin-left:5px;"> USDT</label>
+                            <label><input type="checkbox" name="payment_methods" value="Litecoin"> <img
+                                    src="/assets/img/74062-ltc.png"
+                                    style="height:20px; vertical-align:middle; margin-left:5px;"> Litecoin</label>
+                            <label><input type="checkbox" name="payment_methods" value="Solana"> <img
+                                    src="/assets/img/19845-solana.png"
+                                    style="height:20px; vertical-align:middle; margin-left:5px;"> Solana</label>
+                            <label><input type="checkbox" name="payment_methods" value="Paysafe"> <img
+                                    src="/assets/img/3459-paysafecard.png"
+                                    style="height:20px; vertical-align:middle; margin-left:5px;"> Paysafe</label>
+                            <label><input type="checkbox" name="payment_methods" value="GooglePay"> <img
+                                    src="/assets/img/46992-googlepay.png"
+                                    style="height:20px; vertical-align:middle; margin-left:5px;"> Google Pay</label>
+                            <label><input type="checkbox" name="payment_methods" value="ApplePay"> <img
+                                    src="/assets/img/97263-applepay.png"
+                                    style="height:20px; vertical-align:middle; margin-left:5px;"> Apple Pay</label>
+                            <label><input type="checkbox" name="payment_methods" value="CashApp"> <img
+                                    src="/assets/img/511601-cashapp.png"
+                                    style="height:20px; vertical-align:middle; margin-left:5px;"> CashApp</label>
+                            <label><input type="checkbox" name="payment_methods" value="Venmo"> <img
+                                    src="/assets/img/29806-venmo.png"
+                                    style="height:20px; vertical-align:middle; margin-left:5px;"> Venmo</label>
+                            <label><input type="checkbox" name="payment_methods" value="Stripe"> <img
+                                    src="/assets/img/71388-stripe.png"
+                                    style="height:20px; vertical-align:middle; margin-left:5px;"> Stripe</label>
+                            <label><input type="checkbox" name="payment_methods" value="Binance"> <img
+                                    src="/assets/img/797078-binance.png"
+                                    style="height:20px; vertical-align:middle; margin-left:5px;"> Binance</label>
+                        </div>
+                    </div>
+
+                    <!-- Features -->
+                    <div class="form-group">
+                        <label>Key Features (Bulleted)</label>
+                        <div id="features-container" style="display: flex; flex-direction: column; gap: 8px;">
+                            <input type="text" name="features[]" placeholder="Feature 1 (e.g. Instant Payouts)">
+                            <input type="text" name="features[]" placeholder="Feature 2 (e.g. No KYC)">
+                            <input type="text" name="features[]" placeholder="Feature 3 (e.g. 24/7 Support)">
+                        </div>
+                    </div>
+
+                    <!-- Pros & Cons -->
+                    <div style="display:flex; gap:20px;">
+                        <div class="form-group" style="flex:1;">
+                            <label style="color:#2ecc71;">✅ Pros</label>
+                            <div id="pros-container" style="display: flex; flex-direction: column; gap: 8px;">
+                                <input type="text" name="pros[]" placeholder="Pro 1">
+                                <input type="text" name="pros[]" placeholder="Pro 2">
+                            </div>
+                            <button type="button" class="btn"
+                                style="padding:5px 10px; margin-top:5px; font-size:0.8rem;"
+                                onclick="addInput('pros-container', 'pros[]', 'Pro')">+ Add Pro</button>
+                        </div>
+                        <div class="form-group" style="flex:1;">
+                            <label style="color:#e74c3c;">❌ Cons</label>
+                            <div id="cons-container" style="display: flex; flex-direction: column; gap: 8px;">
+                                <input type="text" name="cons[]" placeholder="Con 1">
+                                <input type="text" name="cons[]" placeholder="Con 2">
+                            </div>
+                            <button type="button" class="btn"
+                                style="padding:5px 10px; margin-top:5px; font-size:0.8rem;"
+                                onclick="addInput('cons-container', 'cons[]', 'Con')">+ Add Con</button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Save Casino</button>
+                    <div id="msg" style="margin-top: 10px;"></div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <script src="/assets/js/api.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const editId = urlParams.get('id');
+        const isEditMode = !!editId;
+
+        if (isEditMode) {
+            document.getElementById('page-title').innerText = 'Edit Casino';
+            loadExistingData();
+        } else {
+            loadArticles(); // Just load articles for new casino
+        }
+
+        async function loadArticles(selectedId = null) {
+            try {
+                const res = await api.get('/admin/articles');
+                // articlesController usually returns { success: true, data: [ ... ] }
+                if (res.success || Array.isArray(res.data)) {
+                    const articles = res.data || [];
+                    const select = document.getElementById('article-select');
+                    articles.forEach(a => {
+                        const opt = document.createElement('option');
+                        opt.value = a.id;
+                        opt.innerText = a.title;
+                        if (a.id === selectedId) opt.selected = true;
+                        select.appendChild(opt);
+                    });
+                }
+            } catch (e) { console.error('Failed to load articles', e); }
+        }
+
+        function addInput(containerId, name, placeholderPrefix) {
+            const container = document.getElementById(containerId);
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.name = name;
+            input.placeholder = `${placeholderPrefix} ${container.children.length + 1}`;
+            container.appendChild(input);
+        }
+
+        async function loadExistingData() {
+            const res = await api.get(`/platforms/${editId}`);
+            if (res.success || res.id) {
+                const data = res.data || res;
+                document.querySelector('[name="name"]').value = data.name || '';
+                document.querySelector('[name="rating"]').value = data.rating || 5.0;
+                document.querySelector('[name="category"]').value = data.category || '';
+                document.querySelector('[name="tags"]').value = data.tags?.join(', ') || '';
+                document.querySelector('[name="logo"]').value = data.logo || (data.images?.[0] || '');
+                document.querySelector('[name="affiliate_link"]').value = data.affiliate_link || '';
+                document.querySelector('[name="short_description"]').value = data.short_description || '';
+                document.querySelector('[name="description"]').value = data.description || '';
+                document.querySelector('[name="ranking"]').value = data.ranking || 999;
+                if (data.is_exclusive) document.querySelector('[name="is_exclusive"]').checked = true;
+
+                document.querySelector('[name="banner"]').value = data.banner || '';
+
+                // Load Articles and select current
+                loadArticles(data.review_article_id);
+
+                // Pre-check Data
+                if (data.payment_methods && Array.isArray(data.payment_methods)) {
+                    data.payment_methods.forEach(pm => {
+                        const cb = document.querySelector(`input[name="payment_methods"][value="${pm}"]`);
+                        if (cb) cb.checked = true;
+                    });
+                }
+
+                // Pre-fill Features
+                if (data.features && Array.isArray(data.features)) {
+                    const inputs = document.querySelectorAll('input[name="features[]"]');
+                    data.features.forEach((f, i) => {
+                        if (inputs[i]) inputs[i].value = f;
+                    });
+                }
+
+                // Pre-fill Pros
+                if (data.pros && Array.isArray(data.pros)) {
+                    const container = document.getElementById('pros-container');
+                    container.innerHTML = ''; // clear default
+                    data.pros.forEach((p, i) => {
+                        const input = document.createElement('input');
+                        input.type = 'text';
+                        input.name = 'pros[]';
+                        input.value = p;
+                        container.appendChild(input);
+                    });
+                    if (data.pros.length === 0) addInput('pros-container', 'pros[]', 'Pro');
+                }
+
+                // Pre-fill Cons
+                if (data.cons && Array.isArray(data.cons)) {
+                    const container = document.getElementById('cons-container');
+                    container.innerHTML = '';
+                    data.cons.forEach((c, i) => {
+                        const input = document.createElement('input');
+                        input.type = 'text';
+                        input.name = 'cons[]';
+                        input.value = c;
+                        container.appendChild(input);
+                    });
+                    if (data.cons.length === 0) addInput('cons-container', 'cons[]', 'Con');
+                }
+            }
+        }
+
+        document.getElementById('platform-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+
+            // Convert tags to array
+            if (data.tags) {
+                data.tags = data.tags.split(',').map(t => t.trim()).filter(t => t);
+            }
+
+            // Convert logo to images array
+            if (data.logo) {
+                data.images = [data.logo];
+                // don't delete logo if you want to keep it as main column too, but images array is safer backup
+            }
+
+            // Handle Payment Methods (Checkbox array)
+            const payments = Array.from(document.querySelectorAll('input[name="payment_methods"]:checked')).map(cb => cb.value);
+            data.payment_methods = payments;
+
+            // Handle Features (Inputs array)
+            const features = Array.from(document.querySelectorAll('input[name="features[]"]')).map(i => i.value).filter(v => v);
+            data.features = features;
+
+            const pros = Array.from(document.querySelectorAll('input[name="pros[]"]')).map(i => i.value).filter(v => v);
+            data.pros = pros;
+
+            const cons = Array.from(document.querySelectorAll('input[name="cons[]"]')).map(i => i.value).filter(v => v);
+            data.cons = cons;
+
+            // Clean up FormData noise
+            delete data['features[]'];
+            delete data['pros[]'];
+            delete data['cons[]'];
+
+            data.rating = parseFloat(data.rating);
+            data.ranking = parseInt(data.ranking) || 999;
+            data.is_exclusive = document.querySelector('[name="is_exclusive"]').checked;
+
+            const msg = document.getElementById('msg');
+            let res;
+
+            if (isEditMode) {
+                res = await api.put(`/platforms/${editId}`, data);
+            } else {
+                res = await api.post('/platforms', data);
+            }
+
+
+            if (res.success || res.id) {
+                msg.innerHTML = '<span style="color: green;">✅ Casino saved successfully!</span>';
+                if (!isEditMode) {
+                    setTimeout(() => e.target.reset(), 1500);
+                }
+            } else {
+                msg.innerHTML = `<span style="color: red;">❌ Error: ${res.error || res.message || 'Unknown error'}</span>`;
+            }
+        });
+    </script>
+</body>
+
+</html>

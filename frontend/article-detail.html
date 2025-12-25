@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Article - Bettrion</title>
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="stylesheet" href="/assets/css/components.css">
+</head>
+
+<body>
+    <div id="header-placeholder"></div>
+
+    <main class="container">
+        <div id="article-content">
+            <div class="loader"></div>
+        </div>
+    </main>
+
+    <script src="/assets/js/utils.js"></script>
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/render.js"></script>
+    <script src="/assets/js/router.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const id = Utils.getQueryParam('id');
+            if (!id) {
+                window.location.href = '/articles.html';
+                return;
+            }
+
+            try {
+                const article = await API.get(`/articles/${id}`);
+
+                // Track View
+                API.post('/analytics/view', {
+                    item_type: 'article',
+                    item_id: id,
+                    referrer: document.referrer
+                });
+
+                const content = document.getElementById('article-content');
+                content.innerHTML = `
+                    <img src="${article.thumbnail || '/assets/img/default-banner.jpg'}" style="width: 100%; height: 300px; object-fit: cover; border-radius: 8px;">
+                    <h1>${article.title}</h1>
+                    <p style="color: gray;">${new Date(article.created_at).toLocaleDateString()}</p>
+                    <div class="article-body" style="margin-top: 30px; line-height: 1.6;">
+                        ${article.content || 'No content.'}
+                    </div>
+                `;
+
+                document.title = `${article.title} - Bettrion`;
+
+            } catch (err) {
+                document.getElementById('article-content').innerHTML = '<p>Article not found.</p>';
+            }
+        });
+    </script>
+</body>
+
+</html>

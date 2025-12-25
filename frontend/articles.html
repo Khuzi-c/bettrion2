@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Articles - Bettrion</title>
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="stylesheet" href="/assets/css/components.css">
+</head>
+
+<body>
+
+    <div id="header-placeholder"></div>
+
+    <main class="container">
+        <h1 style="margin-bottom:20px;">News & Articles</h1>
+
+        <!-- Live RSS Feed -->
+        <div style="margin-bottom: 40px;">
+            <script src="https://elfsightcdn.com/platform.js" async></script>
+            <div class="elfsight-app-c384ab02-912e-49c2-a533-9a15ffe1cf4e" data-elfsight-app-lazy></div>
+        </div>
+
+        <div id="articles-grid" class="grid">
+            <div class="loader"></div>
+        </div>
+    </main>
+
+    <script src="/assets/js/utils.js"></script>
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/render.js"></script>
+    <script src="/assets/js/router.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const res = await API.get('/articles');
+                // Handle wrapper { success: true, data: [...] }
+                const articles = Array.isArray(res) ? res : (res.data || []);
+
+                const container = document.getElementById('articles-grid');
+                if (!articles || articles.length === 0) {
+                    container.innerHTML = '<p>No articles found.</p>';
+                    container.style.display = 'block';
+                } else {
+                    container.innerHTML = articles.map(a => Render.articleCard(a)).join('');
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        });
+    </script>
+    <!-- AI Chatbot -->
+    <script src="https://elfsightcdn.com/platform.js" async></script>
+    <div class="elfsight-app-9d38424e-e3ae-4b5f-adaa-db397cca9d5f" data-elfsight-app-lazy></div>
+</body>
+
+</html>

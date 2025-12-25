@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Article - Bettrion Admin</title>
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="stylesheet" href="/assets/css/components.css">
+    <link rel="stylesheet" href="/assets/css/admin.css">
+</head>
+
+<body>
+    <div class="main-content">
+        <h1>Edit Article</h1>
+        <form id="article-form">
+            <label>Title</label>
+            <input type="text" id="title" required>
+
+            <label>Slug</label>
+            <input type="text" id="slug" required>
+
+            <label>Thumbnail</label>
+            <input type="file" id="thumb-file">
+            <input type="hidden" id="thumb-path">
+            <img id="thumb-preview" src="" width="100" style="display:none; margin-bottom: 10px;">
+
+            <label>Content (HTML allowed)</label>
+            <textarea id="content" rows="15"></textarea>
+
+            <button type="submit" class="btn">Save Article</button>
+        </form>
+    </div>
+
+    <script src="/assets/js/utils.js"></script>
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/admin.js"></script>
+    <script>
+        const form = document.getElementById('article-form');
+        const id = Utils.getQueryParam('id');
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (id) {
+                const a = await API.get(`/articles/${id}`);
+                document.getElementById('title').value = a.title;
+                document.getElementById('slug').value = a.slug;
+                document.getElementById('content').value = a.content;
+                document.getElementById('thumb-path').value = a.thumbnail || '';
+
+                if (a.thumbnail) {
+                    document.getElementById('thumb-preview').src = a.thumbnail;
+                    document.getElementById('thumb-preview').style.display = 'block';
+                }
+            }
+        });
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const thumbFile = document.getElementById('thumb-file');
+            if (thumbFile.files.length > 0) {
+                const path = await Admin.fileUpload(thumbFile, '/uploads/article-thumbnail');
+                document.getElementById('thumb-path').value = path;
+            }
+
+            const data = {
+                title: document.getElementById('title').value,
+                slug: document.getElementById('slug').value,
+                content: document.getElementById('content').value,
+                thumbnail: document.getElementById('thumb-path').value
+            };
+
+            try {
+                if (id) {
+                    await API.put(`/articles/${id}`, data);
+                } else {
+                    await API.post('/articles', data);
+                }
+                window.location.href = '/admin/articles.html';
+            } catch (err) {
+                alert('Error: ' + err.message);
+            }
+        });
+    </script>
+</body>
+
+</html>

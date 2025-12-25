@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free Crypto Slots - Bettrion</title>
+    <link rel="icon" type="image/webp" href="/assets/img/logo.webp">
+
+    <!-- SEO -->
+    <meta name="description"
+        content="Play thousands of free crypto slots. No download required. Pragmatic Play, Hacksaw, and more.">
+    <meta property="og:title" content="Free Crypto Slots - Bettrion">
+    <meta property="og:image" content="https://bettrion.com/assets/img/logo.webp">
+    <meta property="og:url" content="https://bettrion.com/slots">
+
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        .page-header {
+            margin-top: 100px;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="header-placeholder"></div>
+
+    <main class="container">
+        <div class="page-header">
+            <h1 class="gradient-text">Top Slots</h1>
+            <p style="color:#888;">Discover the best paying and most exciting slot games.</p>
+        </div>
+
+        <div id="slots-grid" class="platforms-grid">
+            Loading...
+        </div>
+    </main>
+
+    <div style="height:100px;"></div>
+
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/router.js"></script>
+    <script>
+        async function load() {
+            const res = await api.get('/platforms'); // Or /slots if we had it, but user said Slots Page shows casinos sometimes?
+            // Assuming we filter Platforms by Category "Slots" or maybe we have a separate slots endpoint? 
+            // In the previous file it filtered `res.data.filter(p => category == 'Slots')`
+            if (res.success || Array.isArray(res.data) || Array.isArray(res)) {
+                const list = res.data || res || [];
+                const slots = list.filter(p => (p.category || '').toLowerCase().includes('slot'));
+                const grid = document.getElementById('slots-grid');
+
+                if (slots.length === 0) {
+                    grid.innerHTML = '<p style="text-align:center; grid-column:1/-1;">No slots found.</p>';
+                    return;
+                }
+
+                grid.innerHTML = slots.map(s => {
+                    const img = (s.images && s.images[0]) || s.logo || '/assets/img/default_logo.png';
+                    return `
+                    <div class="platform-card">
+                        <img src="${img}" style="width:100%; height:160px; object-fit:cover; border-radius:8px; margin-bottom:15px;" alt="${s.name}">
+                        <h3 style="margin:0; font-size:1.2rem;">${s.name}</h3>
+                        <div class="badge" style="background:var(--primary); width:fit-content; margin-top:5px;">RTP: 96%</div>
+                        <a href="${s.affiliate_link || '#'}" class="btn-view" style="margin-top:15px;">Play Now</a>
+                    </div>
+                    `;
+                }).join('');
+            }
+        }
+        window.addEventListener('load', load);
+    </script>
+    <!-- AI Chatbot -->
+    <script src="https://elfsightcdn.com/platform.js" async></script>
+    <div class="elfsight-app-9d38424e-e3ae-4b5f-adaa-db397cca9d5f" data-elfsight-app-lazy></div>
+</body>
+
+</html>

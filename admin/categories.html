@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Categories - Bettrion Admin</title>
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="stylesheet" href="/assets/css/components.css">
+    <link rel="stylesheet" href="/assets/css/admin.css">
+</head>
+
+<body>
+    <div class="main-content">
+        <h1>Categories</h1>
+        <form id="category-form" style="margin-bottom: 20px; background: #f9f9f9; padding: 20px;">
+            <h3>Add/Edit Category</h3>
+            <input type="hidden" id="cat-id">
+            <input type="text" id="cat-name" placeholder="Name" required style="width: 200px;">
+            <select id="cat-type" required style="width: 200px;">
+                <option value="platform">Platform</option>
+                <option value="article">Article</option>
+            </select>
+            <button type="submit" class="btn">Save</button>
+            <button type="button" onclick="resetForm()" class="btn" style="background: grey;">Cancel</button>
+        </form>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="categories-table"></tbody>
+        </table>
+    </div>
+
+    <script src="/assets/js/utils.js"></script>
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/admin.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', loadCategories);
+
+        async function loadCategories() {
+            const cats = await API.get('/categories');
+            const tbody = document.getElementById('categories-table');
+            tbody.innerHTML = cats.map(c => `
+                <tr>
+                    <td>${c.name}</td>
+                    <td>${c.type}</td>
+                    <td class="actions">
+                        <button onclick="editCat('${c.id}', '${c.name}', '${c.type}')" class="btn" style="background:#f39c12">Edit</button>
+                        <button onclick="deleteCat('${c.id}')" class="btn" style="background:#c0392b">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        document.getElementById('category-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('cat-id').value;
+            const data = {
+                name: document.getElementById('cat-name').value,
+                type: document.getElementById('cat-type').value
+            };
+
+            try {
+                if (id) {
+                    await API.put(`/categories/${id}`, data);
+                } else {
+                    await API.post('/categories', data);
+                }
+                resetForm();
+                loadCategories();
+            } catch (err) { alert(err.message); }
+        });
+
+        function editCat(id, name, type) {
+            document.getElementById('cat-id').value = id;
+            document.getElementById('cat-name').value = name;
+            document.getElementById('cat-type').value = type;
+        }
+
+        async function deleteCat(id) {
+            if (confirm('Delete?')) {
+                await API.delete(`/categories/${id}`);
+                loadCategories();
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('category-form').reset();
+            document.getElementById('cat-id').value = '';
+        }
+    </script>
+</body>
+
+</html>

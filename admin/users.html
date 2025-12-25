@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>User Management - Bettrion Admin</title>
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="stylesheet" href="/assets/css/admin.css">
+    <style>
+        .badge-banned {
+            background: #e74c3c;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        .badge-active {
+            background: #2ecc71;
+            color: black;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-sidebar" id="admin-sidebar-placeholder">
+        <!-- Injected by admin.js -->
+    </div>
+
+    <div class="main-content">
+        <h1>User Management</h1>
+
+        <div class="card">
+            <input type="text" id="user-search" placeholder="Search by name or email..." class="search-box"
+                onkeyup="filterUsers()"
+                style="margin-bottom:20px; width:100%; padding:10px; background:#222; border:1px solid #444; color:white;">
+
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>User</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="users-table">
+                    <tr>
+                        <td colspan="6">Loading...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="/assets/js/utils.js"></script>
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/admin.js"></script>
+    <script>
+        let allUsers = [];
+
+        document.addEventListener('DOMContentLoaded', loadUsers);
+
+        async function loadUsers() {
+            try {
+                const res = await API.get('/admin/users');
+                if (res && res.success) {
+                    allUsers = res.data;
+                    renderUsers(allUsers);
+                } else {
+                    document.getElementById('users-table').innerHTML = '<tr><td colspan="6">No users found or error loading.</td></tr>';
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        function renderUsers(users) {
+            const tbody = document.getElementById('users-table');
+            if (users.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6">No users found</td></tr>';
+                return;
+            }
+            tbody.innerHTML = users.map(u => `
+                <tr>
+                    <td><small>${u.id.substring(0, 8)}...</small></td>
+                    <td>
+                        <img src="${u.avatar || '/assets/img/default-avatar.png'}" style="width:30px; border-radius:50%; vertical-align:middle; margin-right:5px;">
+                        ${u.name || 'No Name'}
+                    </td>
+                    <td>${u.email}</td>
+                    <td><span class="badge" style="background:${u.role === 'admin' ? '#8e44ad' : '#555'}">${u.role || 'user'}</span></td>
+                    <td>
+                        ${u.banned ? '<span class="badge-banned">BANNED</span>' : '<span class="badge-active">ACTIVE</span>'}
+                    </td>
+                    <td>
+                        ${u.role !== 'admin'
+                    ? `<button onclick="setRole('${u.id}', 'admin')" class="btn-sm btn-primary">Make Admin</button>`
+                    : `<button onclick="setRole('${u.id}', 'user')" class="btn-sm btn-warning">Revoke Admin</button>`
+                }
+                        
+                        ${u.banned
+                    ? `<button onclick="unbanUser('${u.id}')" class="btn-sm btn-success">Unban</button>`
+                    : `<button onclick="banUser('${u.id}')" class="btn-sm btn-danger">Ban</button>`
+                }
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function setRole(id, role) {
+            if (!confirm(`Change role to ${role}?`)) return;
+            try {
+                await API.put(`/admin/users/${id}/role`, { role });
+                loadUsers();
+            } catch (e) { alert(e.message); }
+        }
+
+        function filterUsers() {
+            const term = document.getElementById('user-search').value.toLowerCase();
+            const filtered = allUsers.filter(u =>
+                (u.name && u.name.toLowerCase().includes(term)) ||
+                (u.email && u.email.toLowerCase().includes(term)) ||
+                u.id.includes(term)
+            );
+            renderUsers(filtered);
+        }
+
+        async function banUser(id) {
+            if (!confirm('Are you sure you want to BAN this user?')) return;
+            try {
+                await API.post(`/admin/users/${id}/ban`);
+                loadUsers();
+            } catch (e) { alert(e.message); }
+        }
+
+        async function unbanUser(id) {
+            if (!confirm('Unban this user?')) return;
+            try {
+                await API.post(`/admin/users/${id}/unban`);
+                loadUsers();
+            } catch (e) { alert(e.message); }
+        }
+
+    </script>
+</body>
+
+</html>

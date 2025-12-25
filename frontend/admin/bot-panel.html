@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bot Command Center - Bettrion</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=Fira+Code:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/admin.css">
+    <style>
+        .split-view {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 20px;
+            height: calc(100vh - 250px);
+        }
+
+        .chat-sidebar {
+            background: #111;
+            border: 1px solid #333;
+            overflow-y: auto;
+            border-radius: 8px;
+        }
+
+        .chat-main {
+            background: #0a0a0a;
+            border: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+            border-radius: 8px;
+        }
+
+        .channel-item {
+            padding: 10px;
+            cursor: pointer;
+            color: #888;
+            border-bottom: 1px solid #222;
+            font-size: 0.9rem;
+        }
+
+        .channel-item:hover,
+        .channel-item.active {
+            background: #1e1e24;
+            color: white;
+        }
+
+        .channel-item::before {
+            content: '# ';
+            color: #666;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column-reverse;
+        }
+
+        .chat-bubble {
+            max-width: 80%;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            position: relative;
+        }
+
+        .chat-in {
+            background: #222;
+            align-self: flex-start;
+            color: #ddd;
+        }
+
+        .chat-out {
+            background: #5865F2;
+            align-self: flex-end;
+            color: white;
+        }
+
+        .chat-meta {
+            font-size: 0.7rem;
+            color: #666;
+            margin-bottom: 2px;
+        }
+
+        .chat-input-area {
+            padding: 15px;
+            background: #111;
+            border-top: 1px solid #333;
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Tabs */
+        .admin-nav {
+            display: flex;
+            gap: 15px;
+            border-bottom: 1px solid #333;
+            margin-bottom: 20px;
+        }
+
+        .nav-item {
+            padding: 10px 20px;
+            cursor: pointer;
+            color: #888;
+        }
+
+        .nav-item.active {
+            border-bottom: 2px solid #5865F2;
+            color: white;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th,
+        .data-table td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid #333;
+        }
+
+        /* Pulse Widget */
+        .pulse-stat {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.8rem;
+            color: #aaa;
+            margin-right: 15px;
+            background: #222;
+            padding: 5px 10px;
+            border-radius: 20px;
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background: #4CAF50;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+                box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 5px rgba(76, 175, 80, 0);
+            }
+
+            100% {
+                opacity: 1;
+                box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
+            }
+        }
+
+        /* Terminal */
+        .live-terminal {
+            background: #000;
+            color: #0f0;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+            height: 150px;
+            overflow-y: auto;
+            padding: 10px;
+            border-top: 2px solid #333;
+            width: 100%;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+        }
+
+        .term-line {
+            white-space: pre-wrap;
+            word-break: break-all;
+            margin-bottom: 2px;
+        }
+
+        .term-info {
+            color: #888;
+        }
+
+        .term-error {
+            color: #f44336;
+        }
+
+        /* Embed Builder */
+        .embed-preview {
+            background: #36393f;
+            padding: 10px;
+            border-left: 4px solid #f6d56a;
+            border-radius: 4px;
+            max-width: 400px;
+            color: #dcddde;
+        }
+
+        .embed-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: white;
+        }
+
+        .embed-desc {
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+        }
+
+        .embed-image {
+            max-width: 100%;
+            border-radius: 4px;
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
+</head>
+
+<body style="padding-bottom: 160px; /* Space for terminal */">
+    <div class="admin-layout">
+        <div id="sidebar-container"></div>
+        <main class="admin-content">
+            <header class="admin-header" style="justify-content: space-between;">
+                <div style="display:flex; align-items:center; gap:20px;">
+                    <h1>🤖 Bot Manager</h1>
+                    <!-- Server Pulse -->
+                    <div id="pulse-container" style="display:flex;">
+                        <div class="pulse-stat">
+                            <div class="pulse-dot"></div> <span id="pulse-ram">RAM: --</span>
+                        </div>
+                        <div class="pulse-stat"><span style="color:#2196F3">⚡</span> <span id="pulse-uptime">UP:
+                                --</span></div>
+                        <div class="pulse-stat"><span id="socket-status" style="color:#888">Connecting...</span></div>
+                    </div>
+                </div>
+
+                <select id="guild-select" onchange="changeGuild()" class="form-control" style="width: 200px;">
+                    <option value="1446269308605825047">Server 1 (Main)</option>
+                    <option value="1448410901899382857">Server 2 (Backup)</option>
+                </select>
+            </header>
+
+            <div class="admin-nav">
+                <div class="nav-item active" onclick="showTab('chat')">💬 Live Chat</div>
+                <div class="nav-item" onclick="showTab('embed')">📢 Announce</div>
+                <div class="nav-item" onclick="showTab('channels')">📺 Channels</div>
+                <div class="nav-item" onclick="showTab('roles')">🛡️ Roles</div>
+                <div class="nav-item" onclick="showTab('fraud')">🕵️ Fraud Intel</div>
+                <div class="nav-item" onclick="showTab('backups')">💾 Backups</div>
+            </div>
+
+            <!-- CHAT TAB -->
+            <div id="tab-chat" class="tab-content">
+                <div class="split-view">
+                    <div class="chat-sidebar" id="channel-list">
+                        <div style="padding:10px;">Loading...</div>
+                    </div>
+                    <div class="chat-main">
+                        <div class="chat-messages" id="message-container">
+                            <div style="text-align:center; color:#444; margin-top:50px;">Select a channel</div>
+                        </div>
+                        <div class="chat-input-area">
+                            <input type="text" id="msg-input" class="form-control" placeholder="Type a message..."
+                                disabled>
+                            <button id="msg-btn" class="btn-primary" onclick="sendMessage()" disabled>Send</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EMBED BUILDER TAB -->
+            <div id="tab-embed" class="tab-content" style="display:none;">
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:30px;">
+                    <div>
+                        <h3>Create Announcement</h3>
+                        <div class="form-group"><label>Destination Channel ID</label><input type="text" id="emb-channel"
+                                class="form-control" placeholder="Channel ID"></div>
+                        <div class="form-group"><label>Title</label><input type="text" id="emb-title"
+                                class="form-control" placeholder="Big Header" oninput="updatePreview()"></div>
+                        <div class="form-group"><label>Message Content</label><textarea id="emb-desc"
+                                class="form-control" rows="5" placeholder="Your amazing news..."
+                                oninput="updatePreview()"></textarea></div>
+                        <div class="form-group"><label>Image URL</label><input type="text" id="emb-img"
+                                class="form-control" placeholder="https://..." oninput="updatePreview()"></div>
+                        <div class="form-group"><label>Embed Color</label><input type="color" id="emb-color"
+                                value="#f6d56a" oninput="updatePreview()"></div>
+                        <div class="form-group"><label>Button URL (Optional)</label><input type="text" id="emb-url"
+                                class="form-control" placeholder="Link for title click"></div>
+                        <div class="form-group"><label>Plain Text (Notification)</label><input type="text"
+                                id="emb-plain" class="form-control" placeholder="@everyone check this out!"></div>
+
+                        <button class="btn-primary" onclick="sendEmbed()" style="margin-top:20px; width:100%;">🚀 Launch
+                            Announcement</button>
+                    </div>
+                    <div>
+                        <h3>Live Preview</h3>
+                        <div style="padding:20px; background:#2f3136; border-radius:8px;">
+                            <div class="embed-preview" id="preview-box">
+                                <div class="embed-title" id="preview-title">Title</div>
+                                <div class="embed-desc" id="preview-desc">Content...</div>
+                                <img src="" id="preview-img" class="embed-image">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CHANNELS & ROLES TABS (Simplified for brevity, same logic) -->
+            <div id="tab-channels" class="tab-content" style="display:none;">
+                <div style="margin-bottom:15px;"><button class="btn-primary" onclick="loadChannels()">Refresh</button>
+                </div>
+                <div id="tab-roles" class="tab-content" style="display:none;">
+                    <div style="margin-bottom:15px;"><button class="btn-primary" onclick="loadRoles()">Refresh</button>
+                    </div>
+                    <table class="data-table">
+                        <tbody id="roles-tbody"></tbody>
+                    </table>
+                </div>
+
+                <!-- FRAUD INTEL TAB -->
+                <div id="tab-fraud" class="tab-content" style="display:none;">
+                    <div style="background:#111; padding:20px; border-radius:8px; margin-bottom:20px;">
+                        <div style="display:flex; gap:10px;">
+                            <input type="text" id="fraud-search" class="form-control"
+                                placeholder="Search Username, Email, or Discord ID...">
+                            <button class="btn-primary" onclick="lookupUser()">🔍 Investigate</button>
+                        </div>
+                    </div>
+
+                    <div id="fraud-results" style="display:none;">
+                        <div class="split-view" style="height:auto; grid-template-columns: 1fr 1fr; gap:20px;">
+                            <!-- Web -->
+                            <div style="background:#191919; padding:15px; border-radius:8px; border:1px solid #333;">
+                                <h3 style="color:#4CAF50; border-bottom:1px solid #333; padding-bottom:10px;">🌐 Web
+                                    Profile</h3>
+                                <div id="web-data" style="color:#ccc; line-height:1.6;"></div>
+                            </div>
+                            <!-- Discord -->
+                            <div style="background:#191919; padding:15px; border-radius:8px; border:1px solid #5865F2;">
+                                <h3 style="color:#5865F2; border-bottom:1px solid #333; padding-bottom:10px;">🎮 Discord
+                                    Profile</h3>
+                                <div id="discord-data" style="color:#ccc; line-height:1.6;"></div>
+                            </div>
+                        </div>
+
+                        <div
+                            style="margin-top:20px; padding:15px; background:rgba(255,0,0,0.1); border:1px solid #ff4444; border-radius:8px; display:flex; justify-content:space-between; align-items:center;">
+                            <div>
+                                <strong style="color:#ff4444; font-size:1.2rem;">🚨 THREAT CONTROL</strong>
+                                <div id="risk-score" style="color:#aaa;">Flags: None</div>
+                            </div>
+                            <button id="ban-all-btn" class="btn-primary" style="background:#ff0000;"
+                                onclick="banAll()">⛔ BAN ALL</button>
+                        </div>
+                    </div>
+                </div>
+
+        </main>
+    </div>
+
+    <!-- LIVE TERMINAL -->
+    <div class="live-terminal" id="terminal-out">
+        <div class="term-line term-info">Bettrion Bot Terminal v1.0.0 [Online]</div>
+        <div class="term-line term-info">Waiting for logs...</div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/admin-sidebar.js"></script>
+    <script src="/assets/js/admin-auth.js"></script>
+    <script>
+        document.getElementById('sidebar-container').innerHTML = ADMIN_SIDEBAR_HTML;
+
+        let currentGuildId = '1446269308605825047';
+        let currentChannelId = null;
+        let socket = null;
+
+        // Fraud Globals
+        let currentWebId = null;
+        let currentDiscordId = null;
+
+        // Init Socket
+        try {
+            socket = io();
+            socket.on('connect', () => {
+                document.getElementById('socket-status').innerText = 'Online';
+                document.getElementById('socket-status').style.color = '#4CAF50';
+                socket.emit('join_admin');
+            });
+
+            socket.on('disconnect', () => {
+                document.getElementById('socket-status').innerText = 'Offline';
+                document.getElementById('socket-status').style.color = '#f44336';
+            });
+
+            // LOG STREAM
+            socket.on('bot_log', (data) => {
+                const term = document.getElementById('terminal-out');
+                const div = document.createElement('div');
+                div.className = `term-line term-${data.type === 'error' ? 'error' : 'info'}`;
+                // Strip timestamps if double
+                div.innerText = `> ${data.msg}`;
+                term.appendChild(div);
+                term.scrollTop = term.scrollHeight;
+            });
+
+            // PULSE
+            socket.on('server_pulse', (data) => {
+                document.getElementById('pulse-ram').innerText = `RAM: ${data.ram}`;
+                document.getElementById('pulse-uptime').innerText = `UP: ${data.uptime}s`;
+            });
+
+            // CHAT
+            socket.on('discord_message', (msg) => {
+                if (currentChannelId === msg.channelId) {
+                    addMessageBubble(msg, 'in');
+                    const container = document.getElementById('message-container');
+                    container.scrollTop = container.scrollHeight;
+                }
+            });
+
+        } catch (e) { console.error('Socket Error', e); }
+
+        function changeGuild() {
+            currentGuildId = document.getElementById('guild-select').value;
+            loadChannels();
+            loadRoles();
+        }
+
+        function showTab(id) {
+            document.querySelectorAll('.tab-content').forEach(d => d.style.display = 'none');
+            document.querySelectorAll('.nav-item').forEach(d => d.classList.remove('active'));
+            document.getElementById(`tab-${id}`).style.display = 'block';
+            event.target.classList.add('active');
+            if (id === 'chat' || id === 'channels') loadChannels();
+            if (id === 'roles') loadRoles();
+        }
+
+        // FRAUD LOGIC
+        async function lookupUser() {
+            const query = document.getElementById('fraud-search').value;
+            const btn = event.target;
+            btn.innerText = 'Searching...';
+
+            const res = await API.post('/admin/bot/lookup', { query, guildId: currentGuildId });
+            btn.innerText = '🔍 Investigate';
+
+            if (!res.success) return alert(res.message || 'Error');
+
+            document.getElementById('fraud-results').style.display = 'block';
+
+            // Web Data
+            const web = res.web;
+            currentWebId = web ? web.id : null;
+            document.getElementById('web-data').innerHTML = web ?
+                `<b>Name:</b> ${web.name}<br><b>Email:</b> ${web.email}<br><b>IP:</b> ${web.ip_address}<br><b>Joined:</b> ${new Date(web.created_at).toLocaleDateString()}` :
+                '<span style="color:red">Not Found</span>';
+
+            // Discord Data
+            const dis = res.discord;
+            currentDiscordId = dis ? dis.id : null;
+            document.getElementById('discord-data').innerHTML = dis ?
+                `<div style="display:flex; align-items:center; gap:10px;"><img src="${dis.avatar}" style="width:40px; border-radius:50%;"> <b>${dis.username}</b></div>
+                <b>ID:</b> ${dis.id}<br><b>Created:</b> ${new Date(dis.createdAt).toLocaleDateString()}<br><b>Roles:</b> ${dis.roles.join(', ')}` :
+                '<span style="color:red">Not Found in Server</span>';
+
+            // Analysis
+            document.getElementById('risk-score').innerText = `Flags: ${res.analysis && res.analysis.flags ? res.analysis.flags.join(', ') : 'Clean'}`;
+        }
+
+        async function banAll() {
+            if (!confirm('Are you sure you want to ban this user from WEB and DISCORD?')) return;
+            const reason = prompt('Ban Reason:', 'Fraud / TOS Violation');
+
+            const res = await API.post('/admin/bot/ban-all', {
+                webId: currentWebId,
+                discordId: currentDiscordId,
+                guildId: currentGuildId,
+                reason
+            });
+
+            alert(`Ban Executed.\nWeb: ${res.results.web}\nDiscord: ${res.results.discord}`);
+        }
+
+        // --- BACKUPS ---
+        async function loadBackups() {
+            const res = await API.get('/admin/bot/backups');
+            const tbody = document.getElementById('backups-tbody');
+            tbody.innerHTML = '';
+
+            if (res.success) {
+                if (res.data.length === 0) tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:20px;">No backups found.<br><br>Type <code>!backup create</code> in Discord Admin Channel.</td></tr>';
+
+                res.data.forEach(f => {
+                    tbody.insertAdjacentHTML('beforeend', `
+                        <tr>
+                            <td style="font-family:monospace; color:#4CAF50;">${f.name}</td>
+                            <td>${new Date(f.created).toLocaleString()}</td>
+                            <td>${(f.size / 1024).toFixed(1)} KB</td>
+                            <td>
+                                <button class="btn-primary" style="background:#FF9800; color:black; padding:5px 10px; font-size:0.8rem;" onclick="restoreBackup('${f.name}')">⚡ Restore</button>
+                            </td>
+                        </tr>
+                    `);
+                });
+            }
+        }
+
+        async function restoreBackup(id) {
+            if (!confirm('⚠️ GHOST PROTOCOL INITIATED:\n\nThis will:\n1. Create a "📦 RESTORED" category.\n2. Recreate channels from backup.\n3. Replay messages using Webhook Mimicry.\n\nProceed?')) return;
+
+            const res = await API.post('/admin/bot/restore', { guildId: currentGuildId, backupId: id });
+            if (res.success) alert(res.message);
+            else alert('Error: ' + res.error);
+        }
+        async function loadChannels() {
+            const res = await API.get(`/admin/bot/guild/${currentGuildId}/channels`);
+            if (!res.success) return;
+            const list = document.getElementById('channel-list');
+            list.innerHTML = '';
+            const tbody = document.getElementById('channels-tbody');
+            tbody.innerHTML = '';
+
+            res.data.forEach(c => {
+                if (c.type === 0) {
+                    const div = document.createElement('div');
+                    div.className = 'channel-item';
+                    div.innerText = c.name;
+                    div.onclick = () => selectChannel(c.id, div);
+                    list.appendChild(div);
+                }
+                tbody.insertAdjacentHTML('beforeend', `<tr><td>${c.name}</td><td>${c.id}</td></tr>`);
+            });
+        }
+
+        async function loadRoles() {
+            const res = await API.get(`/admin/bot/guild/${currentGuildId}/roles`);
+            const tbody = document.getElementById('roles-tbody');
+            tbody.innerHTML = '';
+            if (res.success) res.data.forEach(r => {
+                tbody.insertAdjacentHTML('beforeend', `<tr><td style="color:${r.color}">${r.name}</td><td>${r.position}</td></tr>`);
+            });
+        }
+
+        // --- Chat ---
+        async function selectChannel(id, el) {
+            currentChannelId = id;
+            document.querySelectorAll('.channel-item').forEach(e => e.classList.remove('active'));
+            el.classList.add('active');
+            document.getElementById('msg-input').disabled = false;
+            document.getElementById('msg-btn').disabled = false;
+            // Preset channel for Embed too
+            document.getElementById('emb-channel').value = id;
+
+            const res = await API.get(`/admin/bot/channel/${id}/history`);
+            const container = document.getElementById('message-container');
+            container.innerHTML = '';
+            if (res.success) res.data.forEach(msg => addMessageBubble(msg, msg.bot ? 'out' : 'in'));
+        }
+
+        function addMessageBubble(msg, type) {
+            const container = document.getElementById('message-container');
+            const div = document.createElement('div');
+            div.className = `chat-bubble chat-${type}`;
+            div.innerHTML = `<div class="chat-meta">${msg.author}</div><div>${msg.content}</div>`;
+            container.prepend(div);
+        }
+
+        async function sendMessage() {
+            const txt = document.getElementById('msg-input').value;
+            if (!txt) return;
+            const res = await API.post('/admin/bot/announce', { channelId: currentChannelId, content: txt, plainText: txt }); // Use plain text mode for simple chat
+            if (res.success) document.getElementById('msg-input').value = '';
+        }
+
+        // --- Embed Builder ---
+        function updatePreview() {
+            document.getElementById('preview-title').innerText = document.getElementById('emb-title').value || 'Title';
+            document.getElementById('preview-desc').innerText = document.getElementById('emb-desc').value || 'Content...';
+            document.getElementById('preview-box').style.borderLeftColor = document.getElementById('emb-color').value;
+
+            const imgUrl = document.getElementById('emb-img').value;
+            const imgEl = document.getElementById('preview-img');
+            if (imgUrl) { imgEl.src = imgUrl; imgEl.style.display = 'block'; }
+            else { imgEl.style.display = 'none'; }
+        }
+
+        async function sendEmbed() {
+            const payload = {
+                channelId: document.getElementById('emb-channel').value,
+                title: document.getElementById('emb-title').value,
+                content: document.getElementById('emb-desc').value,
+                image: document.getElementById('emb-img').value,
+                color: document.getElementById('emb-color').value,
+                url: document.getElementById('emb-url').value,
+                plainText: document.getElementById('emb-plain').value
+            };
+
+            if (!payload.channelId) return alert('Enter Channel ID (or select from Chat tab)');
+
+            AdminAuth.verifySudo(async () => {
+                const res = await API.post('/admin/bot/announce', payload);
+                if (res.success) alert('Announcement Sent!');
+                else alert('Failed');
+            });
+        }
+
+        // Init
+        loadChannels();
+    </script>
+</body>
+
+</html>

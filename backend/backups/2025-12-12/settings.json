@@ -1,0 +1,23 @@
+{
+    "site_name": "Bettrion",
+    "default_language": "en",
+    "supported_languages": [
+        "en",
+        "de",
+        "fr",
+        "es",
+        "it",
+        "pt"
+    ],
+    "blocked_countries": [
+        "AF",
+        "IR",
+        "KP",
+        "SY",
+        "SD"
+    ],
+    "admin_credentials": {
+        "username": "admin",
+        "password_hash": "$2b$10$/a.a8xApgkYV58rcQHb0EOr94JXSYVOJbBS5xUxkvyJDl56bOMZ1e"
+    }
+}

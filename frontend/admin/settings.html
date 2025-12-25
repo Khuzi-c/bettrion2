@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Bettrion Admin</title>
+    <link rel="stylesheet" href="/assets/css/admin-v2.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <main class="admin-main">
+        <h1 class="page-title">System Settings</h1>
+
+        <div class="grid-stats" style="grid-template-columns: 1fr 1fr;">
+
+            <!-- Maintenance Mode -->
+            <div class="form-card">
+                <h2 style="color:var(--accent); border-bottom:1px solid #333; padding-bottom:10px; margin-bottom:20px;">
+                    General
+                </h2>
+                <div class="form-group">
+                    <label>Maintenance Mode</label>
+                    <select id="maint-mode">
+                        <option value="false">Off (Site Live)</option>
+                        <option value="true">On (Maintenance Page)</option>
+                    </select>
+                    <p style="font-size:0.8rem; color:#666; margin-top:5px;">If On, all visitors will show maintenance
+                        page.</p>
+                </div>
+                <button class="btn btn-primary" onclick="toggleMaint()">Save Maintenance Mode</button>
+            </div>
+
+            <!-- Public Status -->
+            <div class="form-card">
+                <h2
+                    style="color:var(--primary); border-bottom:1px solid #333; padding-bottom:10px; margin-bottom:20px;">
+                    Public Status (/status)
+                </h2>
+                <p style="color:#aaa; font-size:0.9rem; margin-bottom:20px;">Inform users of outages.</p>
+
+                <div class="form-group">
+                    <label>Status Level</label>
+                    <select id="sys-status">
+                        <option value="operational">🟢 Operational (Green)</option>
+                        <option value="issues">🟡 Issues (Yellow)</option>
+                        <option value="down">🔴 Outage (Red)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Status Message</label>
+                    <textarea id="sys-msg" rows="3" placeholder="e.g. All systems operational."></textarea>
+                </div>
+                <button class="btn btn-primary" onclick="saveStatus()">Update Status Page</button>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/admin-v2.js"></script>
+    <script>
+        async function loadSettings() {
+            try {
+                const res = await api.get('/admin/settings/all');
+                if (res && !res.error) {
+                    const settings = res;
+                    document.getElementById('maint-mode').value = settings.maintenance_mode || 'false';
+                    document.getElementById('sys-status').value = settings.system_status || 'operational';
+                    document.getElementById('sys-msg').value = settings.system_status_message || '';
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        async function toggleMaint() {
+            const enabled = document.getElementById('maint-mode').value === 'true';
+            await api.post('/admin/settings/maintenance/toggle', { enabled });
+            alert('Maintenance Mode Updated');
+        }
+
+        async function saveStatus() {
+            await api.put('/admin/settings/system_status', { value: document.getElementById('sys-status').value });
+            await api.put('/admin/settings/system_status_message', { value: document.getElementById('sys-msg').value });
+            alert('Public Status Page Updated!');
+        }
+
+        window.addEventListener('load', loadSettings);
+    </script>
+</body>
+
+</html>

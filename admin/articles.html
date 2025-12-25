@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Articles - Bettrion Admin</title>
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="stylesheet" href="/assets/css/components.css">
+    <link rel="stylesheet" href="/assets/css/admin.css">
+</head>
+
+<body>
+    <div class="main-content">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h1>Articles</h1>
+            <a href="/admin/edit-article.html" class="btn">Add New</a>
+        </div>
+
+        <table style="margin-top: 20px;">
+            <thead>
+                <tr>
+                    <th>Thumbnail</th>
+                    <th>Title</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="articles-table"></tbody>
+        </table>
+    </div>
+
+    <script src="/assets/js/utils.js"></script>
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/admin.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const articles = await API.get('/articles');
+            const tbody = document.getElementById('articles-table');
+
+            tbody.innerHTML = articles.map(a => `
+                <tr>
+                    <td><img src="${a.thumbnail || '/assets/img/default-item.png'}" width="50"></td>
+                    <td>${a.title}</td>
+                    <td>${new Date(a.created_at).toLocaleDateString()}</td>
+                    <td class="actions">
+                        <a href="/admin/edit-article.html?id=${a.id}" class="btn" style="background:#f39c12">Edit</a>
+                        <button onclick="deleteArticle('${a.id}')" class="btn" style="background:#c0392b">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        });
+
+        async function deleteArticle(id) {
+            if (confirm('Are you sure?')) {
+                await API.delete(`/articles/${id}`);
+                location.reload();
+            }
+        }
+    </script>
+</body>
+
+</html>

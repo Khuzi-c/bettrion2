@@ -1,0 +1,2988 @@
+<html lang="en" style="--bg-body: #0d0d0d; --text-main: #fff;"><plasmo-csui id="ff-overlay-container"></plasmo-csui>
+
+<head>
+    <style type="text/css">
+        :root {
+            --toastify-color-light: #fff;
+            --toastify-color-dark: #121212;
+            --toastify-color-info: #3498db;
+            --toastify-color-success: #07bc0c;
+            --toastify-color-warning: #f1c40f;
+            --toastify-color-error: hsl(6, 78%, 57%);
+            --toastify-color-transparent: rgba(255, 255, 255, .7);
+            --toastify-icon-color-info: var(--toastify-color-info);
+            --toastify-icon-color-success: var(--toastify-color-success);
+            --toastify-icon-color-warning: var(--toastify-color-warning);
+            --toastify-icon-color-error: var(--toastify-color-error);
+            --toastify-container-width: fit-content;
+            --toastify-toast-width: 320px;
+            --toastify-toast-offset: 16px;
+            --toastify-toast-top: max(var(--toastify-toast-offset), env(safe-area-inset-top));
+            --toastify-toast-right: max(var(--toastify-toast-offset), env(safe-area-inset-right));
+            --toastify-toast-left: max(var(--toastify-toast-offset), env(safe-area-inset-left));
+            --toastify-toast-bottom: max(var(--toastify-toast-offset), env(safe-area-inset-bottom));
+            --toastify-toast-background: #fff;
+            --toastify-toast-padding: 14px;
+            --toastify-toast-min-height: 64px;
+            --toastify-toast-max-height: 800px;
+            --toastify-toast-bd-radius: 6px;
+            --toastify-toast-shadow: 0px 4px 12px rgba(0, 0, 0, .1);
+            --toastify-font-family: sans-serif;
+            --toastify-z-index: 9999;
+            --toastify-text-color-light: #757575;
+            --toastify-text-color-dark: #fff;
+            --toastify-text-color-info: #fff;
+            --toastify-text-color-success: #fff;
+            --toastify-text-color-warning: #fff;
+            --toastify-text-color-error: #fff;
+            --toastify-spinner-color: #616161;
+            --toastify-spinner-color-empty-area: #e0e0e0;
+            --toastify-color-progress-light: linear-gradient(to right, #4cd964, #5ac8fa, #007aff, #34aadc, #5856d6, #ff2d55);
+            --toastify-color-progress-dark: #bb86fc;
+            --toastify-color-progress-info: var(--toastify-color-info);
+            --toastify-color-progress-success: var(--toastify-color-success);
+            --toastify-color-progress-warning: var(--toastify-color-warning);
+            --toastify-color-progress-error: var(--toastify-color-error);
+            --toastify-color-progress-bgo: .2
+        }
+
+        .Toastify__toast-container {
+            z-index: var(--toastify-z-index);
+            -webkit-transform: translate3d(0, 0, var(--toastify-z-index));
+            position: fixed;
+            width: var(--toastify-container-width);
+            box-sizing: border-box;
+            color: #fff;
+            display: flex;
+            flex-direction: column
+        }
+
+        .Toastify__toast-container--top-left {
+            top: var(--toastify-toast-top);
+            left: var(--toastify-toast-left)
+        }
+
+        .Toastify__toast-container--top-center {
+            top: var(--toastify-toast-top);
+            left: 50%;
+            transform: translate(-50%);
+            align-items: center
+        }
+
+        .Toastify__toast-container--top-right {
+            top: var(--toastify-toast-top);
+            right: var(--toastify-toast-right);
+            align-items: end
+        }
+
+        .Toastify__toast-container--bottom-left {
+            bottom: var(--toastify-toast-bottom);
+            left: var(--toastify-toast-left)
+        }
+
+        .Toastify__toast-container--bottom-center {
+            bottom: var(--toastify-toast-bottom);
+            left: 50%;
+            transform: translate(-50%);
+            align-items: center
+        }
+
+        .Toastify__toast-container--bottom-right {
+            bottom: var(--toastify-toast-bottom);
+            right: var(--toastify-toast-right);
+            align-items: end
+        }
+
+        .Toastify__toast {
+            --y: 0;
+            position: relative;
+            touch-action: none;
+            width: var(--toastify-toast-width);
+            min-height: var(--toastify-toast-min-height);
+            box-sizing: border-box;
+            margin-bottom: 1rem;
+            padding: var(--toastify-toast-padding);
+            border-radius: var(--toastify-toast-bd-radius);
+            box-shadow: var(--toastify-toast-shadow);
+            max-height: var(--toastify-toast-max-height);
+            font-family: var(--toastify-font-family);
+            z-index: 0;
+            display: flex;
+            flex: 1 auto;
+            align-items: center;
+            word-break: break-word
+        }
+
+        @media only screen and (max-width: 480px) {
+            .Toastify__toast-container {
+                width: 100vw;
+                left: env(safe-area-inset-left);
+                margin: 0
+            }
+
+            .Toastify__toast-container--top-left,
+            .Toastify__toast-container--top-center,
+            .Toastify__toast-container--top-right {
+                top: env(safe-area-inset-top);
+                transform: translate(0)
+            }
+
+            .Toastify__toast-container--bottom-left,
+            .Toastify__toast-container--bottom-center,
+            .Toastify__toast-container--bottom-right {
+                bottom: env(safe-area-inset-bottom);
+                transform: translate(0)
+            }
+
+            .Toastify__toast-container--rtl {
+                right: env(safe-area-inset-right);
+                left: initial
+            }
+
+            .Toastify__toast {
+                --toastify-toast-width: 100%;
+                margin-bottom: 0;
+                border-radius: 0
+            }
+        }
+
+        .Toastify__toast-container[data-stacked=true] {
+            width: var(--toastify-toast-width)
+        }
+
+        .Toastify__toast--stacked {
+            position: absolute;
+            width: 100%;
+            transform: translate3d(0, var(--y), 0) scale(var(--s));
+            transition: transform .3s
+        }
+
+        .Toastify__toast--stacked[data-collapsed] .Toastify__toast-body,
+        .Toastify__toast--stacked[data-collapsed] .Toastify__close-button {
+            transition: opacity .1s
+        }
+
+        .Toastify__toast--stacked[data-collapsed=false] {
+            overflow: visible
+        }
+
+        .Toastify__toast--stacked[data-collapsed=true]:not(:last-child)>* {
+            opacity: 0
+        }
+
+        .Toastify__toast--stacked:after {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: calc(var(--g) * 1px);
+            bottom: 100%
+        }
+
+        .Toastify__toast--stacked[data-pos=top] {
+            top: 0
+        }
+
+        .Toastify__toast--stacked[data-pos=bot] {
+            bottom: 0
+        }
+
+        .Toastify__toast--stacked[data-pos=bot].Toastify__toast--stacked:before {
+            transform-origin: top
+        }
+
+        .Toastify__toast--stacked[data-pos=top].Toastify__toast--stacked:before {
+            transform-origin: bottom
+        }
+
+        .Toastify__toast--stacked:before {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 100%;
+            transform: scaleY(3);
+            z-index: -1
+        }
+
+        .Toastify__toast--rtl {
+            direction: rtl
+        }
+
+        .Toastify__toast--close-on-click {
+            cursor: pointer
+        }
+
+        .Toastify__toast-icon {
+            margin-inline-end: 10px;
+            width: 22px;
+            flex-shrink: 0;
+            display: flex
+        }
+
+        .Toastify--animate {
+            animation-fill-mode: both;
+            animation-duration: .5s
+        }
+
+        .Toastify--animate-icon {
+            animation-fill-mode: both;
+            animation-duration: .3s
+        }
+
+        .Toastify__toast-theme--dark {
+            background: var(--toastify-color-dark);
+            color: var(--toastify-text-color-dark)
+        }
+
+        .Toastify__toast-theme--light,
+        .Toastify__toast-theme--colored.Toastify__toast--default {
+            background: var(--toastify-color-light);
+            color: var(--toastify-text-color-light)
+        }
+
+        .Toastify__toast-theme--colored.Toastify__toast--info {
+            color: var(--toastify-text-color-info);
+            background: var(--toastify-color-info)
+        }
+
+        .Toastify__toast-theme--colored.Toastify__toast--success {
+            color: var(--toastify-text-color-success);
+            background: var(--toastify-color-success)
+        }
+
+        .Toastify__toast-theme--colored.Toastify__toast--warning {
+            color: var(--toastify-text-color-warning);
+            background: var(--toastify-color-warning)
+        }
+
+        .Toastify__toast-theme--colored.Toastify__toast--error {
+            color: var(--toastify-text-color-error);
+            background: var(--toastify-color-error)
+        }
+
+        .Toastify__progress-bar-theme--light {
+            background: var(--toastify-color-progress-light)
+        }
+
+        .Toastify__progress-bar-theme--dark {
+            background: var(--toastify-color-progress-dark)
+        }
+
+        .Toastify__progress-bar--info {
+            background: var(--toastify-color-progress-info)
+        }
+
+        .Toastify__progress-bar--success {
+            background: var(--toastify-color-progress-success)
+        }
+
+        .Toastify__progress-bar--warning {
+            background: var(--toastify-color-progress-warning)
+        }
+
+        .Toastify__progress-bar--error {
+            background: var(--toastify-color-progress-error)
+        }
+
+        .Toastify__progress-bar-theme--colored.Toastify__progress-bar--info,
+        .Toastify__progress-bar-theme--colored.Toastify__progress-bar--success,
+        .Toastify__progress-bar-theme--colored.Toastify__progress-bar--warning,
+        .Toastify__progress-bar-theme--colored.Toastify__progress-bar--error {
+            background: var(--toastify-color-transparent)
+        }
+
+        .Toastify__close-button {
+            color: #fff;
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            background: transparent;
+            outline: none;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            opacity: .7;
+            transition: .3s ease;
+            z-index: 1
+        }
+
+        .Toastify__toast--rtl .Toastify__close-button {
+            left: 6px;
+            right: unset
+        }
+
+        .Toastify__close-button--light {
+            color: #000;
+            opacity: .3
+        }
+
+        .Toastify__close-button>svg {
+            fill: currentColor;
+            height: 16px;
+            width: 14px
+        }
+
+        .Toastify__close-button:hover,
+        .Toastify__close-button:focus {
+            opacity: 1
+        }
+
+        @keyframes Toastify__trackProgress {
+            0% {
+                transform: scaleX(1)
+            }
+
+            to {
+                transform: scaleX(0)
+            }
+        }
+
+        .Toastify__progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            opacity: .7;
+            transform-origin: left
+        }
+
+        .Toastify__progress-bar--animated {
+            animation: Toastify__trackProgress linear 1 forwards
+        }
+
+        .Toastify__progress-bar--controlled {
+            transition: transform .2s
+        }
+
+        .Toastify__progress-bar--rtl {
+            right: 0;
+            left: initial;
+            transform-origin: right;
+            border-bottom-left-radius: initial
+        }
+
+        .Toastify__progress-bar--wrp {
+            position: absolute;
+            overflow: hidden;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            border-bottom-left-radius: var(--toastify-toast-bd-radius);
+            border-bottom-right-radius: var(--toastify-toast-bd-radius)
+        }
+
+        .Toastify__progress-bar--wrp[data-hidden=true] {
+            opacity: 0
+        }
+
+        .Toastify__progress-bar--bg {
+            opacity: var(--toastify-color-progress-bgo);
+            width: 100%;
+            height: 100%
+        }
+
+        .Toastify__spinner {
+            width: 20px;
+            height: 20px;
+            box-sizing: border-box;
+            border: 2px solid;
+            border-radius: 100%;
+            border-color: var(--toastify-spinner-color-empty-area);
+            border-right-color: var(--toastify-spinner-color);
+            animation: Toastify__spin .65s linear infinite
+        }
+
+        @keyframes Toastify__bounceInRight {
+
+            0%,
+            60%,
+            75%,
+            90%,
+            to {
+                animation-timing-function: cubic-bezier(.215, .61, .355, 1)
+            }
+
+            0% {
+                opacity: 0;
+                transform: translate3d(3000px, 0, 0)
+            }
+
+            60% {
+                opacity: 1;
+                transform: translate3d(-25px, 0, 0)
+            }
+
+            75% {
+                transform: translate3d(10px, 0, 0)
+            }
+
+            90% {
+                transform: translate3d(-5px, 0, 0)
+            }
+
+            to {
+                transform: none
+            }
+        }
+
+        @keyframes Toastify__bounceOutRight {
+            20% {
+                opacity: 1;
+                transform: translate3d(-20px, var(--y), 0)
+            }
+
+            to {
+                opacity: 0;
+                transform: translate3d(2000px, var(--y), 0)
+            }
+        }
+
+        @keyframes Toastify__bounceInLeft {
+
+            0%,
+            60%,
+            75%,
+            90%,
+            to {
+                animation-timing-function: cubic-bezier(.215, .61, .355, 1)
+            }
+
+            0% {
+                opacity: 0;
+                transform: translate3d(-3000px, 0, 0)
+            }
+
+            60% {
+                opacity: 1;
+                transform: translate3d(25px, 0, 0)
+            }
+
+            75% {
+                transform: translate3d(-10px, 0, 0)
+            }
+
+            90% {
+                transform: translate3d(5px, 0, 0)
+            }
+
+            to {
+                transform: none
+            }
+        }
+
+        @keyframes Toastify__bounceOutLeft {
+            20% {
+                opacity: 1;
+                transform: translate3d(20px, var(--y), 0)
+            }
+
+            to {
+                opacity: 0;
+                transform: translate3d(-2000px, var(--y), 0)
+            }
+        }
+
+        @keyframes Toastify__bounceInUp {
+
+            0%,
+            60%,
+            75%,
+            90%,
+            to {
+                animation-timing-function: cubic-bezier(.215, .61, .355, 1)
+            }
+
+            0% {
+                opacity: 0;
+                transform: translate3d(0, 3000px, 0)
+            }
+
+            60% {
+                opacity: 1;
+                transform: translate3d(0, -20px, 0)
+            }
+
+            75% {
+                transform: translate3d(0, 10px, 0)
+            }
+
+            90% {
+                transform: translate3d(0, -5px, 0)
+            }
+
+            to {
+                transform: translateZ(0)
+            }
+        }
+
+        @keyframes Toastify__bounceOutUp {
+            20% {
+                transform: translate3d(0, calc(var(--y) - 10px), 0)
+            }
+
+            40%,
+            45% {
+                opacity: 1;
+                transform: translate3d(0, calc(var(--y) + 20px), 0)
+            }
+
+            to {
+                opacity: 0;
+                transform: translate3d(0, -2000px, 0)
+            }
+        }
+
+        @keyframes Toastify__bounceInDown {
+
+            0%,
+            60%,
+            75%,
+            90%,
+            to {
+                animation-timing-function: cubic-bezier(.215, .61, .355, 1)
+            }
+
+            0% {
+                opacity: 0;
+                transform: translate3d(0, -3000px, 0)
+            }
+
+            60% {
+                opacity: 1;
+                transform: translate3d(0, 25px, 0)
+            }
+
+            75% {
+                transform: translate3d(0, -10px, 0)
+            }
+
+            90% {
+                transform: translate3d(0, 5px, 0)
+            }
+
+            to {
+                transform: none
+            }
+        }
+
+        @keyframes Toastify__bounceOutDown {
+            20% {
+                transform: translate3d(0, calc(var(--y) - 10px), 0)
+            }
+
+            40%,
+            45% {
+                opacity: 1;
+                transform: translate3d(0, calc(var(--y) + 20px), 0)
+            }
+
+            to {
+                opacity: 0;
+                transform: translate3d(0, 2000px, 0)
+            }
+        }
+
+        .Toastify__bounce-enter--top-left,
+        .Toastify__bounce-enter--bottom-left {
+            animation-name: Toastify__bounceInLeft
+        }
+
+        .Toastify__bounce-enter--top-right,
+        .Toastify__bounce-enter--bottom-right {
+            animation-name: Toastify__bounceInRight
+        }
+
+        .Toastify__bounce-enter--top-center {
+            animation-name: Toastify__bounceInDown
+        }
+
+        .Toastify__bounce-enter--bottom-center {
+            animation-name: Toastify__bounceInUp
+        }
+
+        .Toastify__bounce-exit--top-left,
+        .Toastify__bounce-exit--bottom-left {
+            animation-name: Toastify__bounceOutLeft
+        }
+
+        .Toastify__bounce-exit--top-right,
+        .Toastify__bounce-exit--bottom-right {
+            animation-name: Toastify__bounceOutRight
+        }
+
+        .Toastify__bounce-exit--top-center {
+            animation-name: Toastify__bounceOutUp
+        }
+
+        .Toastify__bounce-exit--bottom-center {
+            animation-name: Toastify__bounceOutDown
+        }
+
+        @keyframes Toastify__zoomIn {
+            0% {
+                opacity: 0;
+                transform: scale3d(.3, .3, .3)
+            }
+
+            50% {
+                opacity: 1
+            }
+        }
+
+        @keyframes Toastify__zoomOut {
+            0% {
+                opacity: 1
+            }
+
+            50% {
+                opacity: 0;
+                transform: translate3d(0, var(--y), 0) scale3d(.3, .3, .3)
+            }
+
+            to {
+                opacity: 0
+            }
+        }
+
+        .Toastify__zoom-enter {
+            animation-name: Toastify__zoomIn
+        }
+
+        .Toastify__zoom-exit {
+            animation-name: Toastify__zoomOut
+        }
+
+        @keyframes Toastify__flipIn {
+            0% {
+                transform: perspective(400px) rotateX(90deg);
+                animation-timing-function: ease-in;
+                opacity: 0
+            }
+
+            40% {
+                transform: perspective(400px) rotateX(-20deg);
+                animation-timing-function: ease-in
+            }
+
+            60% {
+                transform: perspective(400px) rotateX(10deg);
+                opacity: 1
+            }
+
+            80% {
+                transform: perspective(400px) rotateX(-5deg)
+            }
+
+            to {
+                transform: perspective(400px)
+            }
+        }
+
+        @keyframes Toastify__flipOut {
+            0% {
+                transform: translate3d(0, var(--y), 0) perspective(400px)
+            }
+
+            30% {
+                transform: translate3d(0, var(--y), 0) perspective(400px) rotateX(-20deg);
+                opacity: 1
+            }
+
+            to {
+                transform: translate3d(0, var(--y), 0) perspective(400px) rotateX(90deg);
+                opacity: 0
+            }
+        }
+
+        .Toastify__flip-enter {
+            animation-name: Toastify__flipIn
+        }
+
+        .Toastify__flip-exit {
+            animation-name: Toastify__flipOut
+        }
+
+        @keyframes Toastify__slideInRight {
+            0% {
+                transform: translate3d(110%, 0, 0);
+                visibility: visible
+            }
+
+            to {
+                transform: translate3d(0, var(--y), 0)
+            }
+        }
+
+        @keyframes Toastify__slideInLeft {
+            0% {
+                transform: translate3d(-110%, 0, 0);
+                visibility: visible
+            }
+
+            to {
+                transform: translate3d(0, var(--y), 0)
+            }
+        }
+
+        @keyframes Toastify__slideInUp {
+            0% {
+                transform: translate3d(0, 110%, 0);
+                visibility: visible
+            }
+
+            to {
+                transform: translate3d(0, var(--y), 0)
+            }
+        }
+
+        @keyframes Toastify__slideInDown {
+            0% {
+                transform: translate3d(0, -110%, 0);
+                visibility: visible
+            }
+
+            to {
+                transform: translate3d(0, var(--y), 0)
+            }
+        }
+
+        @keyframes Toastify__slideOutRight {
+            0% {
+                transform: translate3d(0, var(--y), 0)
+            }
+
+            to {
+                visibility: hidden;
+                transform: translate3d(110%, var(--y), 0)
+            }
+        }
+
+        @keyframes Toastify__slideOutLeft {
+            0% {
+                transform: translate3d(0, var(--y), 0)
+            }
+
+            to {
+                visibility: hidden;
+                transform: translate3d(-110%, var(--y), 0)
+            }
+        }
+
+        @keyframes Toastify__slideOutDown {
+            0% {
+                transform: translate3d(0, var(--y), 0)
+            }
+
+            to {
+                visibility: hidden;
+                transform: translate3d(0, 500px, 0)
+            }
+        }
+
+        @keyframes Toastify__slideOutUp {
+            0% {
+                transform: translate3d(0, var(--y), 0)
+            }
+
+            to {
+                visibility: hidden;
+                transform: translate3d(0, -500px, 0)
+            }
+        }
+
+        .Toastify__slide-enter--top-left,
+        .Toastify__slide-enter--bottom-left {
+            animation-name: Toastify__slideInLeft
+        }
+
+        .Toastify__slide-enter--top-right,
+        .Toastify__slide-enter--bottom-right {
+            animation-name: Toastify__slideInRight
+        }
+
+        .Toastify__slide-enter--top-center {
+            animation-name: Toastify__slideInDown
+        }
+
+        .Toastify__slide-enter--bottom-center {
+            animation-name: Toastify__slideInUp
+        }
+
+        .Toastify__slide-exit--top-left,
+        .Toastify__slide-exit--bottom-left {
+            animation-name: Toastify__slideOutLeft;
+            animation-timing-function: ease-in;
+            animation-duration: .3s
+        }
+
+        .Toastify__slide-exit--top-right,
+        .Toastify__slide-exit--bottom-right {
+            animation-name: Toastify__slideOutRight;
+            animation-timing-function: ease-in;
+            animation-duration: .3s
+        }
+
+        .Toastify__slide-exit--top-center {
+            animation-name: Toastify__slideOutUp;
+            animation-timing-function: ease-in;
+            animation-duration: .3s
+        }
+
+        .Toastify__slide-exit--bottom-center {
+            animation-name: Toastify__slideOutDown;
+            animation-timing-function: ease-in;
+            animation-duration: .3s
+        }
+
+        @keyframes Toastify__spin {
+            0% {
+                transform: rotate(0)
+            }
+
+            to {
+                transform: rotate(360deg)
+            }
+        }
+    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bettrion - Exclusive Casino Bonuses</title>
+    <link rel="icon" type="image/webp" href="/assets/img/logo.webp">
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&amp;display=swap" rel="stylesheet">
+
+    <!-- SEO Meta Tags -->
+    <meta name="description"
+        content="Bettrion is the #1 Crypto Casino Guide for 2025. Find exclusive bonuses, trusted reviews, and huge jackpots at the best Bitcoin casinos.">
+    <meta name="keywords" content="crypto casino, bitcoin gambling, casino bonuses, online slots, bettrion">
+    <meta property="og:title" content="Bettrion - Best Crypto Casinos 2025">
+    <meta property="og:description" content="Exclusive bonuses and trusted reviews for the top crypto casinos.">
+    <meta property="og:image" content="https://bettrion.com/assets/img/logo.webp">
+    <meta property="og:url" content="https://bettrion.com">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <link rel="stylesheet" href="/assets/css/main.css?v=9">
+    <!-- Note: components.css is optional if main.css covers it, but keeping for safety -->
+
+    <!-- Google Ads -->
+    <script
+        src="https://pagead2.googlesyndication.com/pagead/managed/js/adsense/m202512100101/show_ads_impl_fy2021.js"></script>
+    <script async="" src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6753511493243956"
+        crossorigin="anonymous" data-checked-head="true"></script>
+    <meta http-equiv="origin-trial"
+        content="AlK2UR5SkAlj8jjdEc9p3F3xuFYlF6LYjAML3EOqw1g26eCwWPjdmecULvBH5MVPoqKYrOfPhYVL71xAXI1IBQoAAAB8eyJvcmlnaW4iOiJodHRwczovL2RvdWJsZWNsaWNrLm5ldDo0NDMiLCJmZWF0dXJlIjoiV2ViVmlld1hSZXF1ZXN0ZWRXaXRoRGVwcmVjYXRpb24iLCJleHBpcnkiOjE3NTgwNjcxOTksImlzU3ViZG9tYWluIjp0cnVlfQ==">
+    <meta http-equiv="origin-trial"
+        content="Amm8/NmvvQfhwCib6I7ZsmUxiSCfOxWxHayJwyU1r3gRIItzr7bNQid6O8ZYaE1GSQTa69WwhPC9flq/oYkRBwsAAACCeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXN5bmRpY2F0aW9uLmNvbTo0NDMiLCJmZWF0dXJlIjoiV2ViVmlld1hSZXF1ZXN0ZWRXaXRoRGVwcmVjYXRpb24iLCJleHBpcnkiOjE3NTgwNjcxOTksImlzU3ViZG9tYWluIjp0cnVlfQ==">
+    <meta http-equiv="origin-trial"
+        content="A9nrunKdU5m96PSN1XsSGr3qOP0lvPFUB2AiAylCDlN5DTl17uDFkpQuHj1AFtgWLxpLaiBZuhrtb2WOu7ofHwEAAACKeyJvcmlnaW4iOiJodHRwczovL2RvdWJsZWNsaWNrLm5ldDo0NDMiLCJmZWF0dXJlIjoiQUlQcm9tcHRBUElNdWx0aW1vZGFsSW5wdXQiLCJleHBpcnkiOjE3NzQzMTA0MDAsImlzU3ViZG9tYWluIjp0cnVlLCJpc1RoaXJkUGFydHkiOnRydWV9">
+    <meta http-equiv="origin-trial"
+        content="A93bovR+QVXNx2/38qDbmeYYf1wdte9EO37K9eMq3r+541qo0byhYU899BhPB7Cv9QqD7wIbR1B6OAc9kEfYCA4AAACQeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXN5bmRpY2F0aW9uLmNvbTo0NDMiLCJmZWF0dXJlIjoiQUlQcm9tcHRBUElNdWx0aW1vZGFsSW5wdXQiLCJleHBpcnkiOjE3NzQzMTA0MDAsImlzU3ViZG9tYWluIjp0cnVlLCJpc1RoaXJkUGFydHkiOnRydWV9">
+    <meta http-equiv="origin-trial"
+        content="A1S5fojrAunSDrFbD8OfGmFHdRFZymSM/1ss3G+NEttCLfHkXvlcF6LGLH8Mo5PakLO1sCASXU1/gQf6XGuTBgwAAACQeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXRhZ3NlcnZpY2VzLmNvbTo0NDMiLCJmZWF0dXJlIjoiQUlQcm9tcHRBUElNdWx0aW1vZGFsSW5wdXQiLCJleHBpcnkiOjE3NzQzMTA0MDAsImlzU3ViZG9tYWluIjp0cnVlLCJpc1RoaXJkUGFydHkiOnRydWV9">
+    <style data-emotion="css" data-s=""></style>
+    <style>
+        @font-face {
+            font-family: DMSans;
+            src: url('chrome-extension://meimoidfecamngeoanhnpdjjdcefoldn/assets/fonts/DMSans-Regular.ttf');
+        }
+
+        @font-face {
+            font-family: PoppinsMedium;
+            src: url('chrome-extension://meimoidfecamngeoanhnpdjjdcefoldn/assets/fonts/Poppins-Medium.otf');
+        }
+
+        @font-face {
+            font-family: PoppinsRegular;
+            src: url('chrome-extension://meimoidfecamngeoanhnpdjjdcefoldn/assets/fonts/Poppins-Regular.otf');
+        }
+
+        @font-face {
+            font-family: Roboto;
+            src: url('chrome-extension://meimoidfecamngeoanhnpdjjdcefoldn/assets/fonts/Roboto-Regular.ttf');
+        }
+
+        @font-face {
+            font-family: Inter;
+            src: url('chrome-extension://meimoidfecamngeoanhnpdjjdcefoldn/assets/fonts/Inter-VariableFont_opsz,wght.ttf');
+        }
+    </style>
+    <style class="gtranslate_css">
+        a.glink {
+            text-decoration: none
+        }
+
+        a.glink.gt-current-lang {
+            font-weight: bold
+        }
+
+        .gt_container-unisv1 a.glink span {
+            margin-right: 5px;
+            font-size: 15px;
+            vertical-align: middle
+        }
+
+        a.glink img {
+            vertical-align: middle;
+            display: inline;
+            border: 0;
+            padding: 0;
+            margin: 0;
+            opacity: 0.8;
+            height: auto
+        }
+
+        a.glink:hover img {
+            opacity: 1
+        }
+
+        .gt_black_overlay {
+            display: none;
+            position: fixed;
+            top: 0%;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            z-index: 10000;
+            -moz-opacity: 0.8;
+            opacity: .80;
+            filter: alpha(opacity=80)
+        }
+
+        .gt_white_content {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 980px;
+            height: 375px;
+            margin: -187.5px 0 0 -490px;
+            padding: 6px 16px;
+            background-color: white;
+            color: black;
+            z-index: 19881205;
+            overflow: auto;
+            text-align: left
+        }
+
+        .gt_white_content a {
+            display: block;
+            padding: 6px 0;
+            border-bottom: 1px solid #e7e7e7;
+            white-space: nowrap;
+            line-height: 0;
+            flex-basis: 37px;
+            box-sizing: border-box;
+        }
+
+        .gt_white_content .gt_languages {
+            display: flex;
+            flex-flow: column wrap;
+            max-height: 666px;
+            overflow-x: hidden;
+        }
+
+        .gt_white_content::-webkit-scrollbar-track {
+            background-color: #F5F5F5
+        }
+
+        .gt_white_content::-webkit-scrollbar {
+            width: 5px
+        }
+
+        .gt_white_content::-webkit-scrollbar-thumb {
+            background-color: #888
+        }
+
+        div.skiptranslate,
+        #google_translate_element2 {
+            display: none !important
+        }
+
+        body {
+            top: 0 !important
+        }
+
+        font font {
+            background-color: transparent !important;
+            box-shadow: none !important;
+            position: initial !important
+        }
+    </style>
+    <link href="https://core.service.elfsight.com" rel="preconnect" crossorigin="">
+    <link href="https://static.elfsight.com" rel="preconnect" crossorigin="">
+    <link href="https://service-reviews-ultimate.elfsight.com" rel="preconnect" crossorigin="">
+    <link href="https://storage.elfsight.com" rel="preconnect" crossorigin="">
+    <style type="text/css">
+        div.eapps-widget {
+            position: relative
+        }
+
+        div.eapps-widget.eapps-widget-show-toolbar:before {
+            position: absolute;
+            content: "";
+            display: block;
+            bottom: 0;
+            top: 0;
+            left: 0;
+            right: 0;
+            pointer-events: none;
+            border: 1px solid transparent;
+            transition: border .3s ease;
+            z-index: 1
+        }
+
+        .eapps-widget-toolbar {
+            position: absolute;
+            top: -32px;
+            left: 0;
+            right: 0;
+            display: block;
+            z-index: 99999;
+            padding-bottom: 4px;
+            transition: all .3s ease;
+            pointer-events: none;
+            opacity: 0
+        }
+
+        .eapps-widget:hover .eapps-widget-toolbar {
+            opacity: 1;
+            pointer-events: auto
+        }
+
+        .eapps-widget-toolbar a {
+            text-decoration: none;
+            box-shadow: none !important
+        }
+
+        .eapps-widget-toolbar-panel {
+            border-radius: 6px;
+            background-color: #222;
+            color: #fff;
+            display: -ms-inline-flexbox;
+            display: inline-flex;
+            -ms-flex-align: center;
+            align-items: center;
+            top: 0;
+            position: relative;
+            transition: all .3s ease;
+            opacity: 0;
+            overflow: hidden;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            box-shadow: 0 0 0 1px hsla(0, 0%, 100%, .2);
+            height: 28px
+        }
+
+        .eapps-widget:hover .eapps-widget-toolbar-panel {
+            opacity: 1
+        }
+
+        .eapps-widget-toolbar-panel-wrapper {
+            width: 100%;
+            position: relative
+        }
+
+        .eapps-widget-toolbar-panel-only-you {
+            position: absolute;
+            top: -24px;
+            font-size: 11px;
+            line-height: 14px;
+            color: #9c9c9c;
+            padding: 5px 4px
+        }
+
+        .eapps-widget-toolbar-panel-logo {
+            width: 28px;
+            height: 28px;
+            border-right: 1px solid hsla(0, 0%, 100%, .2);
+            display: -ms-flexbox;
+            display: flex;
+            -ms-flex-align: center;
+            align-items: center;
+            -ms-flex-pack: center;
+            justify-content: center
+        }
+
+        .eapps-widget-toolbar-panel-logo svg {
+            display: block;
+            width: 15px;
+            height: 15px;
+            fill: #f93262
+        }
+
+        .eapps-widget-toolbar-panel-edit {
+            font-size: 12px;
+            font-weight: 400;
+            line-height: 14px;
+            display: -ms-inline-flexbox;
+            display: inline-flex;
+            -ms-flex-align: center;
+            align-items: center;
+            padding: 9px;
+            border-right: 1px solid hsla(0, 0%, 100%, .2);
+            color: #fff;
+            text-decoration: none
+        }
+
+        .eapps-widget-toolbar-panel-edit-icon {
+            width: 14px;
+            height: 14px;
+            margin-right: 8px
+        }
+
+        .eapps-widget-toolbar-panel-edit-icon svg {
+            display: block;
+            width: 100%;
+            height: 100%;
+            fill: #fff
+        }
+
+        .eapps-widget-toolbar-panel-views {
+            display: -ms-inline-flexbox;
+            display: inline-flex;
+            -ms-flex-pack: center;
+            justify-content: center;
+            -ms-flex-align: center;
+            align-items: center
+        }
+
+        .eapps-widget-toolbar-panel-views-label {
+            font-size: 12px;
+            font-weight: 400;
+            line-height: 14px;
+            margin-left: 8px
+        }
+
+        .eapps-widget-toolbar-panel-views-bar {
+            display: -ms-inline-flexbox;
+            display: inline-flex;
+            width: 70px;
+            height: 3px;
+            border-radius: 2px;
+            margin-left: 8px;
+            background-color: hsla(0, 0%, 100%, .3)
+        }
+
+        .eapps-widget-toolbar-panel-views-bar-inner {
+            border-radius: 2px;
+            background-color: #4ad504
+        }
+
+        .eapps-widget-toolbar-panel-views-green .eapps-widget-toolbar-panel-views-bar-inner {
+            background-color: #4ad504
+        }
+
+        .eapps-widget-toolbar-panel-views-red .eapps-widget-toolbar-panel-views-bar-inner {
+            background-color: #ff4734
+        }
+
+        .eapps-widget-toolbar-panel-views-orange .eapps-widget-toolbar-panel-views-bar-inner {
+            background-color: #ffb400
+        }
+
+        .eapps-widget-toolbar-panel-views-percent {
+            display: -ms-inline-flexbox;
+            display: inline-flex;
+            margin-left: 8px;
+            margin-right: 8px;
+            font-size: 12px;
+            font-weight: 400;
+            line-height: 14px
+        }
+
+        .eapps-widget-toolbar-panel-views-get-more {
+            padding: 9px 16px;
+            background-color: #f93262;
+            color: #fff;
+            font-size: 12px;
+            font-weight: 400;
+            border-radius: 0 6px 6px 0
+        }
+
+        .eapps-widget-toolbar-panel-share {
+            position: absolute;
+            top: 0;
+            display: inline-block;
+            margin-left: 8px;
+            width: 83px;
+            height: 28px;
+            padding-bottom: 4px;
+            box-sizing: content-box !important
+        }
+
+        .eapps-widget-toolbar-panel-share:hover .eapps-widget-toolbar-panel-share-block {
+            opacity: 1;
+            pointer-events: all
+        }
+
+        .eapps-widget-toolbar-panel-share-button {
+            padding: 0 18px;
+            height: 28px;
+            background-color: #1c91ff;
+            color: #fff;
+            font-size: 12px;
+            font-weight: 400;
+            border-radius: 6px;
+            position: absolute;
+            top: 0;
+            display: -ms-flexbox;
+            display: flex;
+            -ms-flex-direction: row;
+            flex-direction: row;
+            cursor: default;
+            -ms-flex-align: center;
+            align-items: center
+        }
+
+        .eapps-widget-toolbar-panel-share-button svg {
+            display: inline-block;
+            margin-right: 6px;
+            fill: #fff;
+            position: relative;
+            top: -1px
+        }
+
+        .eapps-widget-toolbar-panel-share-block {
+            position: absolute;
+            background: #fff;
+            border: 1px solid hsla(0, 0%, 7%, .1);
+            border-radius: 10px;
+            width: 209px;
+            top: 32px;
+            transform: translateX(-63px);
+            opacity: 0;
+            pointer-events: none;
+            transition: all .3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, .05)
+        }
+
+        .eapps-widget-toolbar-panel-share-block:hover {
+            opacity: 1;
+            pointer-events: all
+        }
+
+        .eapps-widget-toolbar-panel-share-block-text {
+            color: #111;
+            font-size: 15px;
+            font-weight: 400;
+            padding: 12px 0;
+            text-align: center
+        }
+
+        .eapps-widget-toolbar-panel-share-block-text-icon {
+            padding-bottom: 4px
+        }
+
+        .eapps-widget-toolbar-panel-share-block-actions {
+            display: -ms-flexbox;
+            display: flex;
+            -ms-flex-direction: row;
+            flex-direction: row;
+            border-top: 1px solid hsla(0, 0%, 7%, .1)
+        }
+
+        .eapps-widget-toolbar-panel-share-block-actions-item {
+            width: 33.333333%;
+            display: -ms-flexbox;
+            display: flex;
+            -ms-flex-pack: center;
+            justify-content: center;
+            -ms-flex-align: center;
+            align-items: center;
+            height: 39px;
+            transition: all .3s ease;
+            background-color: transparent
+        }
+
+        .eapps-widget-toolbar-panel-share-block-actions-item:hover {
+            background-color: #fafafa
+        }
+
+        .eapps-widget-toolbar-panel-share-block-actions-item a {
+            width: 100%;
+            height: 100%;
+            display: -ms-flexbox;
+            display: flex;
+            -ms-flex-pack: center;
+            justify-content: center;
+            -ms-flex-align: center;
+            align-items: center
+        }
+
+        .eapps-widget-toolbar-panel-share-block-actions-item-icon {
+            width: 16px;
+            height: 16px;
+            display: block
+        }
+
+        .eapps-widget-toolbar-panel-share-block-actions-item-facebook .eapps-widget-toolbar-panel-share-block-actions-item-icon {
+            fill: #3c5a9b
+        }
+
+        .eapps-widget-toolbar-panel-share-block-actions-item-twitter .eapps-widget-toolbar-panel-share-block-actions-item-icon {
+            fill: #1ab2e8
+        }
+
+        .eapps-widget-toolbar-panel-share-block-actions-item-google .eapps-widget-toolbar-panel-share-block-actions-item-icon {
+            fill: #dd4b39
+        }
+
+        .eapps-widget-toolbar-panel-share-block-actions-item:not(:last-child) {
+            border-right: 1px solid hsla(0, 0%, 7%, .1)
+        }
+    </style>
+    <style>
+        @keyframes scroll-announcement {
+            0% {
+                transform: translateX(100%);
+            }
+
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+    </style>
+    <script
+        src="https://universe-static.elfsightcdn.com/app-releases/ai-chatbot/stable/v1.10.5/5d30338c332fd22e661411d545411d3c65ad264f/widget/aiChatbot.js"
+        async="" charset="UTF-8"></script>
+    <style data-styled="active" data-styled-version="6.1.16"></style>
+    <style data-styled="active" data-styled-version="6.1.16"></style>
+    <style>
+        .grecaptcha-badge {
+            visibility: hidden;
+        }
+    </style>
+    <link rel="stylesheet" href="chrome-extension://aiamjjeggglngiggkmmbnpnpeejjejaf/index.css">
+</head>
+
+<body style="background: rgb(13, 13, 13); color: white;">
+    <div id="rss-app"></div>
+    <div id="announcement-banner"
+        style="display: block; width: 100%; padding: 12px 0px; text-align: center; font-weight: bold; font-size: 1rem; position: relative; overflow: hidden; z-index: 999; background: rgb(155, 89, 182); color: rgb(255, 255, 255); margin-top: 0px;">
+        <div
+            style="display: inline-block; white-space: nowrap; animation: 20s linear 0s infinite normal none running scroll-announcement;">
+            [BETTRION] New Affiliate System is Out Now! Go Enjoy the Money Perks!
+        </div>
+    </div>
+    <aside id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <div class="brand-link">
+                <img src="/assets/img/3869-cardsndice.png" alt="Casino" style="height:40px;">
+                <span class="brand-name">Bettrion</span>
+            </div>
+            <button id="menu-close" class="close-btn">×</button>
+        </div>
+        <div class="sidebar-content">
+            <div class="sidebar-section">
+                <h4 class="sidebar-title">Menu</h4>
+                <a href="/" class="sidebar-link active"><img src="/assets/img/2666-casino-chip.png" class="icon">
+                    Home</a>
+                <a href="/top-3-casinos" class="sidebar-link"><img src="/assets/img/3753-save-money-bag.png"
+                        class="icon"> Top 3 Casinos</a>
+                <a href="/top-10-casinos" class="sidebar-link"><img src="/assets/img/777.png" class="icon"> Top 10
+                    Casinos</a>
+                <a href="/casinos" class="sidebar-link"><img src="/assets/img/3869-cardsndice.png" class="icon"> All
+                    Casinos</a>
+                <a href="/slots" class="sidebar-link"><img src="/assets/img/777.png" class="icon"> Slots</a>
+                <a href="/promotions" class="sidebar-link"><img src="/assets/img/3753-save-money-bag.png" class="icon">
+                    Promotions</a>
+                <a href="/articles" class="sidebar-link"><img src="/assets/img/81912-news-paper.png" class="icon">
+                    News</a>
+            </div>
+            <div class="sidebar-section">
+                <h4 class="sidebar-title">Account</h4>
+                <a href="/login" class="sidebar-link">🔑 Login</a>
+                <a href="/signup" class="sidebar-link">📝 Sign Up</a>
+                <a href="/affiliate" class="sidebar-link">🤝 Affiliate Program</a>
+            </div>
+            <div class="sidebar-section">
+                <h4 class="sidebar-title">Support</h4>
+                <a href="/support" class="sidebar-link">🎫 Live Support</a>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Header Placeholder (Router will inject Header here) -->
+    <header id="header">
+        <div class="header-container">
+            <!-- LEFT: Menu & Logo -->
+            <div class="header-left">
+                <button id="menu-toggle" class="menu-btn" style="background:none; border:none; cursor:pointer;">
+                    <img src="/assets/img/icon-menu.png" alt="Menu"
+                        style="width:24px; vertical-align:middle; filter: invert(1);">
+                </button>
+                <a href="/" class="brand-link">
+                    <img src="/assets/img/logo.webp" onerror="this.src='/assets/img/2666-casino-chip.png'"
+                        alt="Bettrion" class="brand-logo" style="height: 36px; width: auto; object-fit: contain;">
+                    <span class="brand-name">Bettrion</span>
+                </a>
+            </div>
+
+            <!-- RIGHT: Language & Auth -->
+            <div class="header-right">
+                <!-- GTranslate Wrapper -->
+                <div class="gtranslate_wrapper gt_container-unisv1"><!-- GTranslate: https://gtranslate.com --><a
+                        href="#" class="gt_switcher-popup glink nturl notranslate"><img
+                            src="https://cdn.gtranslate.net/flags/24/en-us.png" height="24" width="24" alt="en">
+                        <span>English</span><span style="color:#666;font-size:8px;font-weight:bold;">▼</span></a>
+                    <div class="gt_black_overlay"></div>
+                    <div class="gt_white_content notranslate">
+                        <div class="gt_languages"><a href="#" class="glink nturl gt-current-lang" data-gt-lang="en"><img
+                                    width="24" height="24" alt="en"
+                                    data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/en-us.png">
+                                <span>English</span></a><a href="#" class="glink nturl" data-gt-lang="af"><img
+                                    width="24" height="24" alt="af"
+                                    data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/af.png">
+                                <span>Afrikaans</span></a><a href="#" class="glink nturl" data-gt-lang="sq"><img
+                                    width="24" height="24" alt="sq"
+                                    data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/sq.png">
+                                <span>Shqip</span></a><a href="#" class="glink nturl" data-gt-lang="am"><img width="24"
+                                    height="24" alt="am" data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/am.png">
+                                <span>አማርኛ</span></a><a href="#" class="glink nturl" data-gt-lang="ar"><img width="24"
+                                    height="24" alt="ar" data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/ar.png">
+                                <span>العربية</span></a><a href="#" class="glink nturl" data-gt-lang="hy"><img
+                                    width="24" height="24" alt="hy"
+                                    data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/hy.png">
+                                <span>Հայերեն</span></a><a href="#" class="glink nturl" data-gt-lang="az"><img
+                                    width="24" height="24" alt="az"
+                                    data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/az.png"> <span>Azərbaycan
+                                    dili</span></a><a href="#" class="glink nturl" data-gt-lang="eu"><img width="24"
+                                    height="24" alt="eu" data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/eu.png">
+                                <span>Euskara</span></a><a href="#" class="glink nturl" data-gt-lang="be"><img
+                                    width="24" height="24" alt="be"
+                                    data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/be.png"> <span>Беларуская
+                                    мова</span></a><a href="#" class="glink nturl" data-gt-lang="bn"><img width="24"
+                                    height="24" alt="bn" data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/bn.png">
+                                <span>বাংলা</span></a><a href="#" class="glink nturl" data-gt-lang="bs"><img width="24"
+                                    height="24" alt="bs" data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/bs.png">
+                                <span>Bosanski</span></a><a href="#" class="glink nturl" data-gt-lang="bg"><img
+                                    width="24" height="24" alt="bg"
+                                    data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/bg.png">
+                                <span>Български</span></a><a href="#" class="glink nturl" data-gt-lang="ca"><img
+                                    width="24" height="24" alt="ca"
+                                    data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/ca.png">
+                                <span>Català</span></a><a href="#" class="glink nturl" data-gt-lang="ceb"><img
+                                    width="24" height="24" alt="ceb"
+                                    data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/ceb.png">
+                                <span>Cebuano</span></a><a href="#" class="glink nturl" data-gt-lang="ny"><img
+                                    width="24" height="24" alt="ny"
+                                    data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/ny.png">
+                                <span>Chichewa</span></a><a href="#" class="glink nturl" data-gt-lang="zh-CN"><img
+                                    width="24" height="24" alt="zh-CN"
+                                    data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/zh-CN.png">
+                                <span>简体中文</span></a><a href="#" class="glink nturl" data-gt-lang="zh-TW"><img
+                                    width="24" height="24" alt="zh-TW"
+                                    data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/zh-TW.png">
+                                <span>繁體中文</span></a><a href="#" class="glink nturl" data-gt-lang="co"><img width="24"
+                                    height="24" alt="co" data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/co.png">
+                                <span>Corsu</span></a><a href="#" class="glink nturl" data-gt-lang="hr"><img width="24"
+                                    height="24" alt="hr" data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/hr.png">
+                                <span>Hrvatski</span></a><a href="#" class="glink nturl" data-gt-lang="cs"><img
+                                    width="24" height="24" alt="cs"
+                                    data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/cs.png">
+                                <span>Čeština&lrm;</span></a><a href="#" class="glink nturl" data-gt-lang="da"><img
+                                    width="24" height="24" alt="da"
+                                    data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/da.png">
+                                <span>Dansk</span></a><a href="#" class="glink nturl" data-gt-lang="nl"><img width="24"
+                                    height="24" alt="nl" data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/nl.png">
+                                <span>Nederlands</span></a><a href="#" class="glink nturl" data-gt-lang="eo"><img
+                                    width="24" height="24" alt="eo"
+                                    data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/eo.png">
+                                <span>Esperanto</span></a><a href="#" class="glink nturl" data-gt-lang="et"><img
+                                    width="24" height="24" alt="et"
+                                    data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/et.png">
+                                <span>Eesti</span></a><a href="#" class="glink nturl" data-gt-lang="tl"><img width="24"
+                                    height="24" alt="tl" data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/tl.png">
+                                <span>Filipino</span></a><a href="#" class="glink nturl" data-gt-lang="fi"><img
+                                    width="24" height="24" alt="fi"
+                                    data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/fi.png">
+                                <span>Suomi</span></a><a href="#" class="glink nturl" data-gt-lang="fr"><img width="24"
+                                    height="24" alt="fr" data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/fr.png">
+                                <span>Français</span></a><a href="#" class="glink nturl" data-gt-lang="fy"><img
+                                    width="24" height="24" alt="fy"
+                                    data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/fy.png">
+                                <span>Frysk</span></a><a href="#" class="glink nturl" data-gt-lang="gl"><img width="24"
+                                    height="24" alt="gl" data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/gl.png">
+                                <span>Galego</span></a><a href="#" class="glink nturl" data-gt-lang="ka"><img width="24"
+                                    height="24" alt="ka" data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/ka.png">
+                                <span>ქართული</span></a><a href="#" class="glink nturl" data-gt-lang="de"><img
+                                    width="24" height="24" alt="de"
+                                    data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/de.png">
+                                <span>Deutsch</span></a><a href="#" class="glink nturl" data-gt-lang="el"><img
+                                    width="24" height="24" alt="el"
+                                    data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/el.png">
+                                <span>Ελληνικά</span></a><a href="#" class="glink nturl" data-gt-lang="gu"><img
+                                    width="24" height="24" alt="gu"
+                                    data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/gu.png">
+                                <span>ગુજરાતી</span></a><a href="#" class="glink nturl" data-gt-lang="ht"><img
+                                    width="24" height="24" alt="ht"
+                                    data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/ht.png"> <span>Kreyol
+                                    ayisyen</span></a><a href="#" class="glink nturl" data-gt-lang="ha"><img width="24"
+                                    height="24" alt="ha" data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/ha.png">
+                                <span>Harshen Hausa</span></a><a href="#" class="glink nturl" data-gt-lang="haw"><img
+                                    width="24" height="24" alt="haw"
+                                    data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/haw.png"> <span>Ōlelo
+                                    Hawaiʻi</span></a><a href="#" class="glink nturl" data-gt-lang="iw"><img width="24"
+                                    height="24" alt="iw" data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/iw.png">
+                                <span>עִבְרִית</span></a><a href="#" class="glink nturl" data-gt-lang="hi"><img
+                                    width="24" height="24" alt="hi"
+                                    data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/hi.png">
+                                <span>हिन्दी</span></a><a href="#" class="glink nturl" data-gt-lang="hmn"><img
+                                    width="24" height="24" alt="hmn"
+                                    data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/hmn.png">
+                                <span>Hmong</span></a><a href="#" class="glink nturl" data-gt-lang="hu"><img width="24"
+                                    height="24" alt="hu" data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/hu.png">
+                                <span>Magyar</span></a><a href="#" class="glink nturl" data-gt-lang="is"><img width="24"
+                                    height="24" alt="is" data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/is.png">
+                                <span>Íslenska</span></a><a href="#" class="glink nturl" data-gt-lang="ig"><img
+                                    width="24" height="24" alt="ig"
+                                    data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/ig.png">
+                                <span>Igbo</span></a><a href="#" class="glink nturl" data-gt-lang="id"><img width="24"
+                                    height="24" alt="id" data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/id.png">
+                                <span>Bahasa Indonesia</span></a><a href="#" class="glink nturl" data-gt-lang="ga"><img
+                                    width="24" height="24" alt="ga"
+                                    data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/ga.png">
+                                <span>Gaeilge</span></a><a href="#" class="glink nturl" data-gt-lang="it"><img
+                                    width="24" height="24" alt="it"
+                                    data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/it.png">
+                                <span>Italiano</span></a><a href="#" class="glink nturl" data-gt-lang="ja"><img
+                                    width="24" height="24" alt="ja"
+                                    data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/ja.png">
+                                <span>日本語</span></a><a href="#" class="glink nturl" data-gt-lang="jw"><img width="24"
+                                    height="24" alt="jw" data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/jw.png">
+                                <span>Basa Jawa</span></a><a href="#" class="glink nturl" data-gt-lang="kn"><img
+                                    width="24" height="24" alt="kn"
+                                    data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/kn.png">
+                                <span>ಕನ್ನಡ</span></a><a href="#" class="glink nturl" data-gt-lang="kk"><img width="24"
+                                    height="24" alt="kk" data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/kk.png">
+                                <span>Қазақ тілі</span></a><a href="#" class="glink nturl" data-gt-lang="km"><img
+                                    width="24" height="24" alt="km"
+                                    data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/km.png">
+                                <span>ភាសាខ្មែរ</span></a><a href="#" class="glink nturl" data-gt-lang="ko"><img
+                                    width="24" height="24" alt="ko"
+                                    data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/ko.png">
+                                <span>한국어</span></a><a href="#" class="glink nturl" data-gt-lang="ku"><img width="24"
+                                    height="24" alt="ku" data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/ku.png">
+                                <span>كوردی&lrm;</span></a><a href="#" class="glink nturl" data-gt-lang="ky"><img
+                                    width="24" height="24" alt="ky"
+                                    data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/ky.png">
+                                <span>Кыргызча</span></a><a href="#" class="glink nturl" data-gt-lang="lo"><img
+                                    width="24" height="24" alt="lo"
+                                    data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/lo.png">
+                                <span>ພາສາລາວ</span></a><a href="#" class="glink nturl" data-gt-lang="la"><img
+                                    width="24" height="24" alt="la"
+                                    data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/la.png">
+                                <span>Latin</span></a><a href="#" class="glink nturl" data-gt-lang="lv"><img width="24"
+                                    height="24" alt="lv" data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/lv.png">
+                                <span>Latviešu valoda</span></a><a href="#" class="glink nturl" data-gt-lang="lt"><img
+                                    width="24" height="24" alt="lt"
+                                    data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/lt.png"> <span>Lietuvių
+                                    kalba</span></a><a href="#" class="glink nturl" data-gt-lang="lb"><img width="24"
+                                    height="24" alt="lb" data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/lb.png">
+                                <span>Lëtzebuergesch</span></a><a href="#" class="glink nturl" data-gt-lang="mk"><img
+                                    width="24" height="24" alt="mk"
+                                    data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/mk.png"> <span>Македонски
+                                    јазик</span></a><a href="#" class="glink nturl" data-gt-lang="mg"><img width="24"
+                                    height="24" alt="mg" data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/mg.png">
+                                <span>Malagasy</span></a><a href="#" class="glink nturl" data-gt-lang="ms"><img
+                                    width="24" height="24" alt="ms"
+                                    data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/ms.png"> <span>Bahasa
+                                    Melayu</span></a><a href="#" class="glink nturl" data-gt-lang="ml"><img width="24"
+                                    height="24" alt="ml" data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/ml.png">
+                                <span>മലയാളം</span></a><a href="#" class="glink nturl" data-gt-lang="mt"><img width="24"
+                                    height="24" alt="mt" data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/mt.png">
+                                <span>Maltese</span></a><a href="#" class="glink nturl" data-gt-lang="mi"><img
+                                    width="24" height="24" alt="mi"
+                                    data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/mi.png"> <span>Te Reo
+                                    Māori</span></a><a href="#" class="glink nturl" data-gt-lang="mr"><img width="24"
+                                    height="24" alt="mr" data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/mr.png">
+                                <span>मराठी</span></a><a href="#" class="glink nturl" data-gt-lang="mn"><img width="24"
+                                    height="24" alt="mn" data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/mn.png">
+                                <span>Монгол</span></a><a href="#" class="glink nturl" data-gt-lang="my"><img width="24"
+                                    height="24" alt="my" data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/my.png">
+                                <span>ဗမာစာ</span></a><a href="#" class="glink nturl" data-gt-lang="ne"><img width="24"
+                                    height="24" alt="ne" data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/ne.png">
+                                <span>नेपाली</span></a><a href="#" class="glink nturl" data-gt-lang="no"><img width="24"
+                                    height="24" alt="no" data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/no.png">
+                                <span>Norsk bokmål</span></a><a href="#" class="glink nturl" data-gt-lang="ps"><img
+                                    width="24" height="24" alt="ps"
+                                    data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/ps.png">
+                                <span>پښتو</span></a><a href="#" class="glink nturl" data-gt-lang="fa"><img width="24"
+                                    height="24" alt="fa" data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/fa.png">
+                                <span>فارسی</span></a><a href="#" class="glink nturl" data-gt-lang="pl"><img width="24"
+                                    height="24" alt="pl" data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/pl.png">
+                                <span>Polski</span></a><a href="#" class="glink nturl" data-gt-lang="pt"><img width="24"
+                                    height="24" alt="pt" data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/pt.png">
+                                <span>Português</span></a><a href="#" class="glink nturl" data-gt-lang="pa"><img
+                                    width="24" height="24" alt="pa"
+                                    data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/pa.png">
+                                <span>ਪੰਜਾਬੀ</span></a><a href="#" class="glink nturl" data-gt-lang="ro"><img width="24"
+                                    height="24" alt="ro" data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/ro.png">
+                                <span>Română</span></a><a href="#" class="glink nturl" data-gt-lang="ru"><img width="24"
+                                    height="24" alt="ru" data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/ru.png">
+                                <span>Русский</span></a><a href="#" class="glink nturl" data-gt-lang="sm"><img
+                                    width="24" height="24" alt="sm"
+                                    data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/sm.png">
+                                <span>Samoan</span></a><a href="#" class="glink nturl" data-gt-lang="gd"><img width="24"
+                                    height="24" alt="gd" data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/gd.png">
+                                <span>Gàidhlig</span></a><a href="#" class="glink nturl" data-gt-lang="sr"><img
+                                    width="24" height="24" alt="sr"
+                                    data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/sr.png"> <span>Српски
+                                    језик</span></a><a href="#" class="glink nturl" data-gt-lang="st"><img width="24"
+                                    height="24" alt="st" data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/st.png">
+                                <span>Sesotho</span></a><a href="#" class="glink nturl" data-gt-lang="sn"><img
+                                    width="24" height="24" alt="sn"
+                                    data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/sn.png">
+                                <span>Shona</span></a><a href="#" class="glink nturl" data-gt-lang="sd"><img width="24"
+                                    height="24" alt="sd" data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/sd.png">
+                                <span>سنڌي</span></a><a href="#" class="glink nturl" data-gt-lang="si"><img width="24"
+                                    height="24" alt="si" data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/si.png">
+                                <span>සිංහල</span></a><a href="#" class="glink nturl" data-gt-lang="sk"><img width="24"
+                                    height="24" alt="sk" data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/sk.png">
+                                <span>Slovenčina</span></a><a href="#" class="glink nturl" data-gt-lang="sl"><img
+                                    width="24" height="24" alt="sl"
+                                    data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/sl.png">
+                                <span>Slovenščina</span></a><a href="#" class="glink nturl" data-gt-lang="so"><img
+                                    width="24" height="24" alt="so"
+                                    data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/so.png">
+                                <span>Afsoomaali</span></a><a href="#" class="glink nturl" data-gt-lang="es"><img
+                                    width="24" height="24" alt="es"
+                                    data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/es.png">
+                                <span>Español</span></a><a href="#" class="glink nturl" data-gt-lang="su"><img
+                                    width="24" height="24" alt="su"
+                                    data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/su.png"> <span>Basa
+                                    Sunda</span></a><a href="#" class="glink nturl" data-gt-lang="sw"><img width="24"
+                                    height="24" alt="sw" data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/sw.png">
+                                <span>Kiswahili</span></a><a href="#" class="glink nturl" data-gt-lang="sv"><img
+                                    width="24" height="24" alt="sv"
+                                    data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/sv.png">
+                                <span>Svenska</span></a><a href="#" class="glink nturl" data-gt-lang="tg"><img
+                                    width="24" height="24" alt="tg"
+                                    data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/tg.png">
+                                <span>Тоҷикӣ</span></a><a href="#" class="glink nturl" data-gt-lang="ta"><img width="24"
+                                    height="24" alt="ta" data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/ta.png">
+                                <span>தமிழ்</span></a><a href="#" class="glink nturl" data-gt-lang="te"><img width="24"
+                                    height="24" alt="te" data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/te.png">
+                                <span>తెలుగు</span></a><a href="#" class="glink nturl" data-gt-lang="th"><img width="24"
+                                    height="24" alt="th" data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/th.png">
+                                <span>ไทย</span></a><a href="#" class="glink nturl" data-gt-lang="tr"><img width="24"
+                                    height="24" alt="tr" data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/tr.png">
+                                <span>Türkçe</span></a><a href="#" class="glink nturl" data-gt-lang="uk"><img width="24"
+                                    height="24" alt="uk" data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/uk.png">
+                                <span>Українська</span></a><a href="#" class="glink nturl" data-gt-lang="ur"><img
+                                    width="24" height="24" alt="ur"
+                                    data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/ur.png">
+                                <span>اردو</span></a><a href="#" class="glink nturl" data-gt-lang="uz"><img width="24"
+                                    height="24" alt="uz" data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/uz.png">
+                                <span>O‘zbekcha</span></a><a href="#" class="glink nturl" data-gt-lang="vi"><img
+                                    width="24" height="24" alt="vi"
+                                    data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/vi.png"> <span>Tiếng
+                                    Việt</span></a><a href="#" class="glink nturl" data-gt-lang="cy"><img width="24"
+                                    height="24" alt="cy" data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/cy.png">
+                                <span>Cymraeg</span></a><a href="#" class="glink nturl" data-gt-lang="xh"><img
+                                    width="24" height="24" alt="xh"
+                                    data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/xh.png">
+                                <span>isiXhosa</span></a><a href="#" class="glink nturl" data-gt-lang="yi"><img
+                                    width="24" height="24" alt="yi"
+                                    data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/yi.png">
+                                <span>יידיש</span></a><a href="#" class="glink nturl" data-gt-lang="yo"><img width="24"
+                                    height="24" alt="yo" data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/yo.png">
+                                <span>Yorùbá</span></a><a href="#" class="glink nturl" data-gt-lang="zu"><img width="24"
+                                    height="24" alt="zu" data-gt-lazy-src="https://cdn.gtranslate.net/flags/24/zu.png">
+                                <span>Zulu</span></a></div>
+                    </div>
+                    <div id="google_translate_element2"></div>
+                </div>
+                <div id="auth-container">
+                    <a href="/profile.html" class="header-icon-btn" title="Profile">👤</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Announcement Banner (Below Header) -->
+        <div id="announcement-bar"
+            style="background:#000; color:white; border-bottom:1px solid #222; height:40px; display:flex; align-items:center; justify-content:center; overflow:hidden; position:relative; z-index:90;">
+            <div id="annc-content"
+                style="font-weight:bold; font-size:0.9rem; opacity:0; transition: opacity 0.5s ease-in-out;">
+                <!-- JS Injected -->
+            </div>
+        </div>
+
+        <script>
+            (function () {
+                const announcements = [
+                    "Are You The Creator? tscl.fun",
+                    "Welcome to Bettrion! Exclusive Bonuses Available!",
+                    "Join our Discord for Daily Giveaways!"
+                ];
+
+                let currentIndex = 0;
+                const el = document.getElementById('annc-content');
+
+                function showNext() {
+                    if (!el) return;
+                    el.style.opacity = '0';
+                    setTimeout(() => {
+                        el.innerText = announcements[currentIndex];
+                        el.style.opacity = '1';
+                        currentIndex = (currentIndex + 1) % announcements.length;
+                    }, 500);
+                }
+
+                if (announcements.length > 0) {
+                    showNext();
+                    setInterval(showNext, 5000);
+                }
+            })();
+        </script>
+    </header>
+
+    <!-- Hero Section (New Split Design) -->
+    <section class="hero-split"
+        style="background: radial-gradient(circle at 30% 50%, #1a1a1a 0%, #000000 100%); position: relative; min-height: 450px; display: flex; align-items: center; overflow: hidden; padding: 0;">
+        <div class="container"
+            style="display: flex; justify-content: space-between; align-items: center; width: 100%; height: 100%; position: relative; z-index: 2;">
+
+            <!-- Left: Large Text (Tall/Long) -->
+            <div class="hero-left"
+                style="position: absolute; left: 0; top: 50%; transform: translateY(-50%); z-index: 0; width: 100%; pointer-events: none;">
+                <h1
+                    style="font-family: 'Impact', 'Anton', sans-serif; font-size: 14rem; color: #444; margin: 0; line-height: 1; user-select: none; letter-spacing: 20px; transform: scaleY(1.8); transform-origin: left center; opacity: 0.15; white-space: nowrap; margin-left: 5%;">
+                    CASINO
+                </h1>
+            </div>
+
+            <!-- Right: Random Image -->
+            <div class="hero-right"
+                style="flex: 1; display: flex; justify-content: flex-end; position: relative; z-index: 5; margin-left: auto; width: 100%;">
+                <img id="hero-random-img" src="" alt="Casino Fun"
+                    style="max-width: 90%; height: auto; max-height: 450px; filter: drop-shadow(0 0 40px rgba(0,0,0,0.9)); transform: rotate(-3deg);">
+            </div>
+        </div>
+
+        <!-- Random Image Script -->
+        <script>
+            (function () {
+                const images = [
+                    '/assets/img/roulettehomepageimg.png',
+                    '/assets/img/cardHomePageIMg.png'
+                ];
+                const imgEl = document.getElementById('hero-random-img');
+                if (imgEl) {
+                    const randomSrc = images[Math.floor(Math.random() * images.length)];
+                    imgEl.src = randomSrc;
+                }
+            })();
+        </script>
+    </section>
+
+    <!-- Navigation Buttons (Below Banner) -->
+    <div class="container" style="margin-top: -30px; position: relative; z-index: 5; margin-bottom: 40px;">
+        <div class="hero-nav-buttons"
+            style="display:flex; gap:15px; justify-content:center; flex-wrap:wrap; background: rgba(20,20,30,0.8); backdrop-filter: blur(10px); padding: 15px 30px; border-radius: 50px; border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+            <a href="/casinos" class="btn-nav"
+                style="color:white; text-decoration:none; font-weight:bold; display:flex; align-items:center;">
+                <img src="/assets/img/2666-casino-chip.png" style="width:20px; margin-right:8px;"> Casinos
+            </a>
+            <a href="/slots" class="btn-nav"
+                style="color:white; text-decoration:none; font-weight:bold; display:flex; align-items:center;">
+                <img src="/assets/img/43091-slots.gif" style="width:20px; margin-right:8px;"> Slots
+            </a>
+            <a href="/articles" class="btn-nav"
+                style="color:white; text-decoration:none; font-weight:bold; display:flex; align-items:center;">
+                <img src="/assets/img/81912-news-paper.png" style="width:20px; margin-right:8px;"> News
+            </a>
+            <a href="/sports" class="btn-nav"
+                style="color:white; text-decoration:none; font-weight:bold; display:flex; align-items:center;">
+                <img src="/assets/img/18502-beta-pogo-os.png" style="width:20px; margin-right:8px;"> Sports
+            </a>
+        </div>
+    </div>
+
+
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Top 3 Featured -->
+        <h2 style="text-align:center; margin-bottom: 20px; color: #ffd700;">Featured Top 3</h2>
+        <div id="top3-list" class="platforms-grid" style="margin-bottom: 50px;">
+            <div class="affiliate-card" style="position: relative;">
+
+
+                <div class="aff-card-header">
+                    <img src="https://www.foxygold.com/cdn/50d37b85-8c92-4707-9970-ea21b741689f.png"
+                        class="aff-card-logo" alt="FoxyGold">
+                </div>
+                <div class="aff-card-body">
+                    <h3 class="aff-card-title">FoxyGold</h3>
+                    <div class="aff-bonus">Welcome Bonus</div>
+
+                    <ul class="aff-features">
+                        <li>Instant Payouts</li>
+                        <li>Exclusive Bonuses</li>
+                        <li>Verified License</li>
+                    </ul>
+                    <div class="aff-payments"></div>
+
+                    <div class="aff-actions">
+                        <a href="https://record.epcaffiliates.com/_WRQROeillklw9PUHBV5BDWNd7ZgqdRLk/1?pg=1"
+                            target="_blank" class="btn-green">PLAY NOW &gt;</a>
+                        <a href="/casinos/foxygold" class="link-review">Read Review</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="affiliate-card" style="position: relative;">
+
+
+                <div class="aff-card-header">
+                    <img src="https://www.slotmonster.com/cdn/c4e2f86d-7b11-46e6-a79f-f82d24b783eb.png"
+                        class="aff-card-logo" alt="SlotMonster">
+                </div>
+                <div class="aff-card-body">
+                    <h3 class="aff-card-title">SlotMonster</h3>
+                    <div class="aff-bonus">Welcome Bonus</div>
+
+                    <ul class="aff-features">
+                        <li>Instant Payouts</li>
+                        <li>Exclusive Bonuses</li>
+                        <li>Verified License</li>
+                    </ul>
+                    <div class="aff-payments"></div>
+
+                    <div class="aff-actions">
+                        <a href="https://record.epcaffiliates.com/_WRQROeillkn6PBA04iUMN2Nd7ZgqdRLk/1?pg=1"
+                            target="_blank" class="btn-green">PLAY NOW &gt;</a>
+                        <a href="/casinos/slotmonster" class="link-review">Read Review</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="affiliate-card" style="position: relative;">
+
+
+                <div class="aff-card-header">
+                    <img src="https://www.incognitocasino.com/cdn/28268536-b16c-49b4-b265-7ef9396b7842.png"
+                        class="aff-card-logo" alt="Incognito Casino">
+                </div>
+                <div class="aff-card-body">
+                    <h3 class="aff-card-title">Incognito Casino</h3>
+                    <div class="aff-bonus">Welcome Bonus</div>
+
+                    <ul class="aff-features">
+                        <li>Instant Payouts</li>
+                        <li>Exclusive Bonuses</li>
+                        <li>Verified License</li>
+                    </ul>
+                    <div class="aff-payments"></div>
+
+                    <div class="aff-actions">
+                        <a href="https://record.epcaffiliates.com/_WRQROeillklhg6WO2I1rgWNd7ZgqdRLk/1?pg=1"
+                            target="_blank" class="btn-green">PLAY NOW &gt;</a>
+                        <a href="/casinos/incognito-casino" class="link-review">Read Review</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top 10 List -->
+        <h2 style="text-align:center; margin-bottom: 20px;">Top 10 Casinos</h2>
+        <div class="top-list" id="platforms-list">
+            <div class="platforms-grid">
+
+                <div class="affiliate-card" style="position: relative;">
+
+
+                    <div class="aff-card-header">
+                        <img src="https://www.foxygold.com/cdn/50d37b85-8c92-4707-9970-ea21b741689f.png"
+                            class="aff-card-logo" alt="FoxyGold">
+                    </div>
+                    <div class="aff-card-body">
+                        <h3 class="aff-card-title">FoxyGold</h3>
+                        <div class="aff-bonus">Welcome Bonus</div>
+
+                        <ul class="aff-features">
+                            <li>Instant Payouts</li>
+                            <li>Exclusive Bonuses</li>
+                            <li>Verified License</li>
+                        </ul>
+                        <div class="aff-payments"></div>
+
+                        <div class="aff-actions">
+                            <a href="https://record.epcaffiliates.com/_WRQROeillklw9PUHBV5BDWNd7ZgqdRLk/1?pg=1"
+                                target="_blank" class="btn-green">PLAY NOW &gt;</a>
+                            <a href="/casinos/foxygold" class="link-review">Read Review</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="affiliate-card" style="position: relative;">
+
+
+                    <div class="aff-card-header">
+                        <img src="https://www.slotmonster.com/cdn/c4e2f86d-7b11-46e6-a79f-f82d24b783eb.png"
+                            class="aff-card-logo" alt="SlotMonster">
+                    </div>
+                    <div class="aff-card-body">
+                        <h3 class="aff-card-title">SlotMonster</h3>
+                        <div class="aff-bonus">Welcome Bonus</div>
+
+                        <ul class="aff-features">
+                            <li>Instant Payouts</li>
+                            <li>Exclusive Bonuses</li>
+                            <li>Verified License</li>
+                        </ul>
+                        <div class="aff-payments"></div>
+
+                        <div class="aff-actions">
+                            <a href="https://record.epcaffiliates.com/_WRQROeillkn6PBA04iUMN2Nd7ZgqdRLk/1?pg=1"
+                                target="_blank" class="btn-green">PLAY NOW &gt;</a>
+                            <a href="/casinos/slotmonster" class="link-review">Read Review</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="affiliate-card" style="position: relative;">
+
+
+                    <div class="aff-card-header">
+                        <img src="https://www.incognitocasino.com/cdn/28268536-b16c-49b4-b265-7ef9396b7842.png"
+                            class="aff-card-logo" alt="Incognito Casino">
+                    </div>
+                    <div class="aff-card-body">
+                        <h3 class="aff-card-title">Incognito Casino</h3>
+                        <div class="aff-bonus">Welcome Bonus</div>
+
+                        <ul class="aff-features">
+                            <li>Instant Payouts</li>
+                            <li>Exclusive Bonuses</li>
+                            <li>Verified License</li>
+                        </ul>
+                        <div class="aff-payments"></div>
+
+                        <div class="aff-actions">
+                            <a href="https://record.epcaffiliates.com/_WRQROeillklhg6WO2I1rgWNd7ZgqdRLk/1?pg=1"
+                                target="_blank" class="btn-green">PLAY NOW &gt;</a>
+                            <a href="/casinos/incognito-casino" class="link-review">Read Review</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="affiliate-card" style="position: relative;">
+
+
+                    <div class="aff-card-header">
+                        <img src="https://www.luckypays.io/cdn/Banners/Welcome_Offer/WO-EN-CTA/bd91cb25-31a5-4e91-8f91-b233d210bfb5.png"
+                            class="aff-card-logo" alt="LuckyPays">
+                    </div>
+                    <div class="aff-card-body">
+                        <h3 class="aff-card-title">LuckyPays</h3>
+                        <div class="aff-bonus">Welcome Bonus</div>
+
+                        <ul class="aff-features">
+                            <li>Instant Payouts</li>
+                            <li>Exclusive Bonuses</li>
+                            <li>Verified License</li>
+                        </ul>
+                        <div class="aff-payments"></div>
+
+                        <div class="aff-actions">
+                            <a href="https://record.epcaffiliates.com/_WRQROeillkmZM7hnoUx_dWNd7ZgqdRLk/1?pg=1"
+                                target="_blank" class="btn-green">PLAY NOW &gt;</a>
+                            <a href="/casinos/luckypays" class="link-review">Read Review</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="affiliate-card" style="position: relative;">
+
+
+                    <div class="aff-card-header">
+                        <img src="https://lh3.googleusercontent.com/a-/ALV-UjUKMCQSnIwHRPqOnnMJu-eFgdef2VuFbBkxUwulUD0UADwxKvE=s80-p"
+                            class="aff-card-logo" alt="HolyLuck">
+                    </div>
+                    <div class="aff-card-body">
+                        <h3 class="aff-card-title">HolyLuck</h3>
+                        <div class="aff-bonus">HolyLuck is a well-designed online casino offering a strong bonus,
+                            excellent slot providers, and fas...</div>
+
+                        <ul class="aff-features">
+                            <li>Instant Payouts</li>
+                            <li>Exclusive Bonuses</li>
+                            <li>Verified License</li>
+                        </ul>
+                        <div class="aff-payments">
+                            <img src="/assets/img/.png" alt="" title="" class="pay-icon"
+                                style="height:25px; width:auto; margin-right:8px; object-fit:contain;">
+                        </div>
+
+                        <div class="aff-actions">
+                            <a href="https://clickholyluck.com/tczzvw7we" target="_blank" class="btn-green">PLAY NOW
+                                &gt;</a>
+                            <a href="/casinos/holyluck" class="link-review">Read Review</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Banner Ads -->
+        <div id="home-banner-ads" class="container" style="margin: 40px auto; text-align:center;"></div>
+    </main>
+
+    <style>
+        .btn-nav {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .btn-nav:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(229, 9, 20, 0.4);
+        }
+    </style>
+
+    <!-- Banner Ads -->
+    <div id="home-banner-ads" class="container" style="margin: 40px auto; text-align:center;"></div>
+
+
+    <!-- Footer -->
+
+
+    <!-- Core Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script src="/assets/js/utils.js?v=4"></script>
+    <script src="/assets/js/api.js?v=4"></script>
+    <script src="/assets/js/render.js?v=4"></script>
+    <script src="/assets/js/notification-bar.js?v=2"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Init Notification Bar if class exists
+            if (window.NotificationBar) {
+                new NotificationBar().init();
+            } else {
+                console.warn('NotificationBar class not found');
+            }
+
+            // --- CHRISTMAS BANNER LOGIC ---
+            // Automatically switch back to Welcome after Jan 5, 2026
+            const now = new Date();
+            const endDate = new Date('2026-01-05'); // Jan 5th 2026
+
+            if (now < endDate) {
+                const hero = document.querySelector('.hero');
+                if (hero) {
+                    // Apply Christmas Banner v2
+                    hero.style.backgroundImage = `url('/assets/banners/christmas_v2.png')`;
+                    hero.style.backgroundSize = 'cover';
+                    hero.style.backgroundPosition = 'center';
+                    hero.style.padding = '120px 20px'; // Increase padding
+                    hero.style.minHeight = '350px'; // Ensure height
+                    hero.style.display = 'flex';
+                    hero.style.flexDirection = 'column';
+                    hero.style.justifyContent = 'flex-end'; // Align buttons to bottom
+
+                    // Hide default H1 and P as the banner has its own text
+                    const h1 = hero.querySelector('h1');
+                    const p = hero.querySelector('p');
+                    if (h1) h1.style.display = 'none';
+                    if (p) p.style.display = 'none';
+                }
+            }
+        });
+    </script>
+
+    <!-- Router (Injects Header/Sidebar) -->
+    <script src="/assets/js/router.js?v=4"></script>
+
+    <!-- Page Specific Logic -->
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Fetch Home Banners
+            try {
+                const res = await fetch('/api/ads?position=home_banner');
+                const json = await res.json();
+                if (json.success && json.data.length > 0) {
+                    const container = document.getElementById('home-banner-ads');
+                    if (container) {
+                        container.innerHTML = json.data.map(ad => `
+                            <a href="${ad.link_url || '#'}" target="_blank" style="display:block; margin-bottom:20px;">
+                                <img src="${ad.image_url}" alt="${ad.title}" style="max-width:100%; border-radius:12px; box-shadow:0 5px 15px rgba(0,0,0,0.3);">
+                            </a>
+                        `).join('');
+                    }
+                }
+            } catch (e) { console.error('Ad Fetch Error', e); }
+
+            // Check for Google Auth Token in URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
+            if (token) {
+                localStorage.setItem('user_token', token);
+                window.history.replaceState({}, document.title, "/");
+            }
+
+            // Fetch Data
+            try {
+                console.log('Fetching top lists...');
+                const res = await API.get('/platforms/top-lists');
+                const top3Container = document.getElementById('top3-list');
+                const listContainer = document.getElementById('platforms-list');
+
+                if (res && (res.top3 || res.top10)) {
+                    // Render Top 3
+                    if (res.top3 && res.top3.length > 0) {
+                        top3Container.innerHTML = res.top3.map((p, i) => Render.platformListItem(p, i)).join('');
+                    } else {
+                        top3Container.innerHTML = '<p style="text-align:center; color:#888;">No featured casinos.</p>';
+                    }
+
+                    // Render Top 10
+                    if (res.top10 && res.top10.length > 0) {
+                        listContainer.innerHTML = `<div class="platforms-grid">
+                        ${res.top10.map((p, i) => Render.platformListItem(p, i)).join('')}
+                        </div>`;
+                    } else {
+                        listContainer.innerHTML = '<p style="text-align:center; color:#888;">No top 10 casinos configured.</p>';
+                    }
+                } else {
+                    listContainer.innerHTML = '<p style="text-align:center">Error loading lists.</p>';
+                }
+
+                // Articles
+                const articles = await API.get('/articles');
+                const articleContainer = document.getElementById('articles-grid');
+                if (articleContainer && Array.isArray(articles)) {
+                    articleContainer.innerHTML = articles.slice(0, 3).map(a => Render.articleCard(a)).join('');
+                }
+
+                // Subscribe Form
+                const subForm = document.getElementById('subscribe-form');
+                if (subForm) {
+                    subForm.addEventListener('submit', async (e) => {
+                        e.preventDefault();
+                        const email = document.getElementById('sub-email').value;
+                        const msgDiv = document.getElementById('sub-msg');
+
+                        try {
+                            const res = await API.post('/api/email/signup', { email });
+                            if (res.success) {
+                                msgDiv.innerText = '✅ Subscribed successfully!';
+                                msgDiv.style.color = '#46d369';
+                                subForm.reset();
+                            } else {
+                                throw new Error(res.message);
+                            }
+                        } catch (err) {
+                            msgDiv.innerText = '❌ ' + (err.message || 'Error subscribing');
+                            msgDiv.style.color = '#e50914';
+                        }
+                    });
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        });
+    </script>
+
+
+    <ins class="adsbygoogle adsbygoogle-noablate" style="display: none !important;" data-adsbygoogle-status="done"
+        data-ad-status="unfilled">
+        <div id="aswift_0_host"
+            style="border: none; height: 0px; width: 0px; margin: 0px; padding: 0px; position: relative; visibility: visible; background-color: transparent; display: inline-block;">
+            <iframe id="aswift_0" name="aswift_0"
+                style="left:0;position:absolute;top:0;border:0;width:undefinedpx;height:undefinedpx;min-height:auto;max-height:none;min-width:auto;max-width:none;"
+                sandbox="allow-forms allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts allow-top-navigation-by-user-activation"
+                frameborder="0" marginwidth="0" marginheight="0" vspace="0" hspace="0" allowtransparency="true"
+                scrolling="no" allow="attribution-reporting; run-ad-auction"
+                src="https://googleads.g.doubleclick.net/pagead/ads?client=ca-pub-6753511493243956&amp;output=html&amp;adk=1812271804&amp;adf=3025194257&amp;lmt=1766593868&amp;plat=2%3A16777216%2C3%3A16%2C9%3A32776%2C16%3A8388608%2C17%3A32%2C24%3A32%2C25%3A32%2C30%3A1081344%2C32%3A32%2C41%3A32%2C42%3A32&amp;format=0x0&amp;url=http%3A%2F%2Flocalhost%3A3002%2F&amp;pra=5&amp;wgl=1&amp;asro=0&amp;aiapm=0.1542&amp;aiapmd=0.1423&amp;aiapmi=0.16&amp;aiapmid=1&amp;aiact=0.5423&amp;aiactd=0.7&amp;aicct=0.7&amp;aicctd=0.5799&amp;ailct=0.5849&amp;ailctd=0.65&amp;aimart=4&amp;aimartd=4&amp;aieuf=1&amp;aicrs=1&amp;uach=WyJXaW5kb3dzIiwiMTUuMC4wIiwieDg2IiwiIiwiMTQzLjAuNzQ5OS4xNzAiLG51bGwsMCxudWxsLCI2NCIsW1siR29vZ2xlIENocm9tZSIsIjE0My4wLjc0OTkuMTcwIl0sWyJDaHJvbWl1bSIsIjE0My4wLjc0OTkuMTcwIl0sWyJOb3QgQShCcmFuZCIsIjI0LjAuMC4wIl1dLDBd&amp;abgtt=6&amp;dt=1766616201258&amp;bpp=6&amp;bdt=780&amp;idt=302&amp;shv=r20251211&amp;mjsv=m202512100101&amp;ptt=9&amp;saldr=aa&amp;abxe=1&amp;cookie_enabled=1&amp;eoidce=1&amp;nras=1&amp;correlator=2995918283518&amp;frm=20&amp;pv=2&amp;u_tz=240&amp;u_his=26&amp;u_h=800&amp;u_w=1280&amp;u_ah=752&amp;u_aw=1280&amp;u_cd=24&amp;u_sd=1&amp;dmc=8&amp;adx=-12245933&amp;ady=-12245933&amp;biw=1544&amp;bih=998&amp;scr_x=0&amp;scr_y=0&amp;eid=31096041%2C95376242%2C95378750%2C95379215%2C95379652%2C95379897%2C95372614&amp;oid=2&amp;pvsid=3928164817187541&amp;tmod=1355349924&amp;uas=0&amp;nvt=2&amp;fsapi=1&amp;ref=http%3A%2F%2Flocalhost%3A3002%2Fcasinos&amp;fc=1920&amp;brdim=0%2C0%2C0%2C0%2C1280%2C0%2C1280%2C752%2C1544%2C998&amp;vis=1&amp;rsz=%7C%7Cs%7C&amp;abl=NS&amp;fu=32768&amp;bc=31&amp;plas=136x784_r&amp;bz=0.83&amp;ifi=1&amp;uci=a!1&amp;fsb=1&amp;dtd=322"
+                data-google-container-id="a!1" tabindex="0" title="Advertisement" aria-label="Advertisement"
+                data-load-complete="true"></iframe>
+        </div>
+    </ins>
+    <script src="/assets/js/notification-bar.js"></script>
+    <div id="screenity-ui">
+        <div class="screenity-shadow-dom">
+            <div>
+                <div class="screenity-scrollbar"></div>
+                <div class="screenity-scrollbar"></div>
+            </div>
+            <style type="text/css">
+                #screenity-ui,
+                #screenity-ui div {
+                    background-color: unset;
+                    padding: unset;
+                    width: unset;
+                    box-shadow: unset;
+                    display: unset;
+                    margin: unset;
+                    border-radius: unset;
+                }
+
+                .screenity-outline {
+                    position: absolute;
+                    z-index: 99999999999;
+                    border: 2px solid #0978EF;
+                    outline-offset: -2px;
+                    pointer-events: none;
+                    border-radius: 5px !important;
+                }
+
+                .screenity-blur {
+                    filter: blur(10px) !important;
+                }
+
+                .screenity-shadow-dom * {
+                    transition: unset;
+                }
+
+                .screenity-shadow-dom .TooltipContent {
+                    border-radius: 8px !important;
+                    background-color: #29292F !important;
+                    padding: 10px 15px !important;
+                    font-size: 12px;
+                    margin-bottom: 10px !important;
+                    bottom: 100px;
+                    line-height: 1;
+                    font-family: 'Inter-Medium', sans-serif;
+                    z-index: 99999999 !important;
+                    color: #FFF;
+                    box-shadow: hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px !important;
+                    user-select: none;
+                    transition: opacity 0.3 ease-in-out;
+                    will-change: transform, opacity;
+                    animation-duration: 400ms;
+                    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+                    will-change: transform, opacity;
+                }
+
+                .screenity-shadow-dom .hide-tooltip {
+                    display: none !important;
+                }
+
+                .screenity-shadow-dom .tooltip-tall {
+                    margin-bottom: 20px;
+                }
+
+                .screenity-shadow-dom .tooltip-small {
+                    margin-bottom: 5px;
+                }
+
+                .screenity-shadow-dom .TooltipContent[data-state='delayed-open'][data-side='top'] {
+                    animation-name: slideDownAndFade;
+                }
+
+                .screenity-shadow-dom .TooltipContent[data-state='delayed-open'][data-side='right'] {
+                    animation-name: slideLeftAndFade;
+                }
+
+                .screenity-shadow-dom.TooltipContent[data-state='delayed-open'][data-side='bottom'] {
+                    animation-name: slideUpAndFade;
+                }
+
+                .screenity-shadow-dom.TooltipContent[data-state='delayed-open'][data-side='left'] {
+                    animation-name: slideRightAndFade;
+                }
+
+                @keyframes slideUpAndFade {
+                    from {
+                        opacity: 0;
+                        transform: translateY(2px);
+                    }
+
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+
+                @keyframes slideRightAndFade {
+                    from {
+                        opacity: 0;
+                        transform: translateX(-2px);
+                    }
+
+                    to {
+                        opacity: 1;
+                        transform: translateX(0);
+                    }
+                }
+
+                @keyframes slideDownAndFade {
+                    from {
+                        opacity: 0;
+                        transform: translateY(-2px);
+                    }
+
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+
+                @keyframes slideLeftAndFade {
+                    from {
+                        opacity: 0;
+                        transform: translateX(2px);
+                    }
+
+                    to {
+                        opacity: 1;
+                        transform: translateX(0);
+                    }
+                }
+
+                #screenity-ui [data-radix-popper-content-wrapper] {
+                    z-index: 999999999999 !important;
+                }
+
+                .screenity-shadow-dom .CanvasContainer {
+                    position: fixed;
+                    pointer-events: all !important;
+                    top: 0px !important;
+                    left: 0px !important;
+                    z-index: 99999999999 !important;
+                }
+
+                .screenity-shadow-dom .canvas {
+                    position: fixed;
+                    top: 0px !important;
+                    left: 0px !important;
+                    z-index: 99999999999 !important;
+                    background: transparent !important;
+                }
+
+                .screenity-shadow-dom .canvas-container {
+                    top: 0px !important;
+                    left: 0px !important;
+                    z-index: 99999999999;
+                    position: fixed !important;
+                    background: transparent !important;
+                }
+
+                .ScreenityDropdownMenuContent {
+                    z-index: 99999999999 !important;
+                    min-width: 200px;
+                    background-color: white;
+                    margin-top: 4px;
+                    margin-right: 8px;
+                    padding-top: 12px;
+                    padding-bottom: 12px;
+                    border-radius: 15px;
+                    z-index: 99999;
+                    font-family: 'Inter-Medium', sans-serif;
+                    color: #29292F;
+                    box-shadow: 0px 10px 38px -10px rgba(22, 23, 24, 0.35),
+                        0px 10px 20px -15px rgba(22, 23, 24, 0.2);
+                    animation-duration: 400ms;
+                    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+                    will-change: transform, opacity;
+                }
+
+                .ScreenityDropdownMenuContent[data-side="top"] {
+                    animation-name: slideDownAndFade;
+                }
+
+                .ScreenityDropdownMenuContent[data-side="right"] {
+                    animation-name: slideLeftAndFade;
+                }
+
+                .ScreenityDropdownMenuContent[data-side="bottom"] {
+                    animation-name: slideUpAndFade;
+                }
+
+                .ScreenityDropdownMenuContent[data-side="left"] {
+                    animation-name: slideRightAndFade;
+                }
+
+                .ScreenityItemIndicator {
+                    position: absolute;
+                    right: 12px;
+                    width: 18px;
+                    height: 18px;
+                    background: #0978EF;
+                    border-radius: 50%;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+
+                .ScreenityDropdownMenuItem,
+                .ScreenityDropdownMenuRadioItem {
+                    font-size: 14px;
+                    line-height: 1;
+                    display: flex;
+                    align-items: center;
+                    height: 40px;
+                    padding: 0 5px;
+                    position: relative;
+                    padding-left: 22px;
+                    padding-right: 22px;
+                    user-select: none;
+                    outline: none;
+                }
+
+                .ScreenityDropdownMenuItem:hover {
+                    background-color: #F6F7FB !important;
+                    cursor: pointer;
+                }
+
+
+
+
+                @keyframes slideUpAndFade {
+                    from {
+                        opacity: 0;
+                        transform: translateY(2px);
+                    }
+
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+
+                @keyframes slideRightAndFade {
+                    from {
+                        opacity: 0;
+                        transform: translateX(-2px);
+                    }
+
+                    to {
+                        opacity: 1;
+                        transform: translateX(0);
+                    }
+                }
+
+                @keyframes slideDownAndFade {
+                    from {
+                        opacity: 0;
+                        transform: translateY(-2px);
+                    }
+
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+
+                @keyframes slideLeftAndFade {
+                    from {
+                        opacity: 0;
+                        transform: translateX(2px);
+                    }
+
+                    to {
+                        opacity: 1;
+                        transform: translateX(0);
+                    }
+                }
+            </style>
+        </div>
+    </div><!-- PREMIUM USER SIDEBAR V2 -->
+    <div id="sidebar-v2" class="sidebar-v2">
+        <div class="sidebar-v2-header" style="flex-direction:column; align-items:flex-start;">
+            <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
+                <div class="brand-row">
+                    <span style="font-size:24px; margin-right:10px;">🎰</span>
+                    <span class="brand-text">BETTRION</span>
+                </div>
+                <button id="sidebar-v2-close" class="close-btn-v2">×</button>
+            </div>
+
+            <!-- Stats Row -->
+            <div id="sidebar-stats"
+                style="width:100%; background:rgba(255,255,255,0.05); border-radius:8px; padding:10px; margin-top:15px; font-size:0.85rem; color:#ccc;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                    <span>💰 Balance:</span> <span id="user-balance-sidebar"
+                        style="color:#4caf50; font-weight:bold;">$0.00</span>
+                </div>
+                <div style="display:flex; justify-content:space-between;">
+                    <span>🕒 UTC Time:</span> <span id="utc-clock" style="font-family:monospace;">22:47:37 UTC</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-v2-content">
+            <!-- Main Navigation -->
+            <div class="nav-group">
+                <label>Menu</label>
+                <a href="/" class="nav-link"><img src="/assets/img/2666-casino-chip.png" class="nav-icon"> Home</a>
+                <a href="/casinos.html" class="nav-link"><img src="/assets/img/3869-cardsndice.png" class="nav-icon">
+                    Casinos</a>
+                <a href="/sports.html" class="nav-link"><img src="/assets/img/18502-beta-pogo-os.png" class="nav-icon">
+                    Sports</a>
+                <a href="/promotions.html" class="nav-link"><img src="/assets/img/22134-luckyclover.gif"
+                        class="nav-icon">
+                    Promotions</a>
+                <a href="/articles.html" class="nav-link"><img src="/assets/img/81912-news-paper.png" class="nav-icon">
+                    News
+                    &amp; Guides</a>
+            </div>
+
+            <!-- Games -->
+            <div class="nav-group">
+                <label>Games</label>
+                <a href="/slots.html" class="nav-link"><img src="/assets/img/43091-slots.gif" class="nav-icon">
+                    Slots</a>
+                <a href="/live-dealers.html" class="nav-link"><img src="/assets/img/3869-cardsndice.png"
+                        class="nav-icon">
+                    Live Dealers</a>
+            </div>
+
+            <!-- User Section (Dynamic) -->
+            <div class="nav-group" id="user-nav-group">
+                <label>My Account</label>
+                <div id="sidebar-auth-placeholder">
+                    <a href="/profile.html" class="nav-link">👤 My Profile</a>
+                    <a href="/affiliate" class="nav-link">🤝 Affiliate Program</a>
+                    <a href="/settings.html" class="nav-link">⚙️ Settings</a>
+                    <a href="#" onclick="logout()" class="nav-link" style="color:var(--primary);">🚪 Logout</a>
+                </div>
+            </div>
+
+            <!-- Support & Legal -->
+            <div class="nav-group">
+                <label>Support &amp; Info</label>
+                <a href="/contact.html" class="nav-link"><img src="/assets/img/1881-ping.png" class="nav-icon">
+                    Contact Us</a>
+                <!-- <a href="/status.html" class="nav-link"><span>🟢</span> System Status</a> -->
+                <a href="/about-us.html" class="nav-link"><img src="/assets/img/81912-news-paper.png" class="nav-icon">
+                    About Us</a>
+                <a href="/legal.html" class="nav-link"><img src="/assets/img/80012-verified.png" class="nav-icon"> Legal
+                    &amp;
+                    Laws</a>
+                <a href="/terms.html" class="nav-link"><img src="/assets/img/80012-verified.png" class="nav-icon"> Terms
+                    &amp;
+                    Policy</a>
+                <a href="/responsible-gambling.html" class="nav-link"><img src="/assets/img/2879-securitywarning.png"
+                        class="nav-icon"> Responsible Gambling</a>
+                <a href="/underage-policy.html" class="nav-link"><img src="/assets/img/2879-securitywarning.png"
+                        class="nav-icon"> Underage Policy</a>
+            </div>
+
+            <!-- Ads Placeholder -->
+            <div class="nav-group">
+                <label>Sponsors</label>
+                <div class="sidebar-ad"
+                    style="background:#111; padding:10px; border-radius:8px; text-align:center; color:#555; font-size:0.8rem;">
+                    Ad Space Available
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="sidebar-v2-overlay" class="sidebar-v2-overlay"></div>
+    <div id="cookie-consent"
+        style="position: fixed; bottom: -100px; left: 0; right: 0; background: #111; border-top: 1px solid #333; padding: 20px; z-index: 10000; transition: bottom 0.5s ease; display: flex; justify-content: center; align-items: center; gap: 20px; box-shadow: 0 -5px 20px rgba(0,0,0,0.5);">
+        <div style="max-width: 800px; color: #ccc; font-size: 0.9rem;">
+            <span style="display:block; font-weight:bold; color:#fff; margin-bottom:5px;">🍪 We use cookies</span>
+            We use cookies to enhance your browsing experience, serve personalized ads or content, and analyze our
+            traffic.
+            By clicking "Accept All", you consent to our use of cookies.
+        </div>
+        <div style="display:flex; gap:10px;">
+            <button id="accept-cookies"
+                style="background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer;">Accept
+                All</button>
+            <button id="reject-cookies"
+                style="background: transparent; border: 1px solid #444; color: #888; padding: 10px 20px; border-radius: 6px; font-weight: 600; cursor: pointer;">Necessary
+                Only</button>
+        </div>
+    </div>
+    <!-- Elfsight Comments | Untitled Comments -->
+    <div class="container" style="margin-bottom: 50px; padding: 20px;">
+        <h2 class="section-title"><span>User Reviews</span></h2>
+        <script src="https://elfsightcdn.com/platform.js" async></script>
+        <div class="elfsight-app-6b9234e4-0f58-444f-bdea-1d6cee551ffc" data-elfsight-app-lazy></div>
+    </div>
+
+    <footer class="site-footer">
+        <div class="footer-container">
+            <!-- Brand & Socials -->
+            <div class="footer-column brand-section">
+                <img src="/assets/img/logo.webp" alt="Bettrion" class="footer-logo-img">
+                <p class="footer-tagline">Exclusive Casino Bonuses &amp; Reviews</p>
+                <div class="social-icons">
+                    <a href="/discord" target="_blank" aria-label="Discord">
+                        <img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/discord.svg" alt="">
+                    </a>
+                    <a href="/instagram" target="_blank" aria-label="Instagram">
+                        <img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/instagram.svg" alt="">
+                    </a>
+                    <a href="/youtube" target="_blank" aria-label="YouTube">
+                        <img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/youtube.svg" alt="">
+                    </a>
+                </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="footer-column">
+                <h4 class="footer-heading">Platform</h4>
+                <nav class="footer-nav">
+                    <a href="/about.html">About Us</a>
+                    <a href="/contact">Contact</a>
+                    <a href="/sitemap.xml">Sitemap</a>
+                </nav>
+            </div>
+
+            <!-- Legal/Safety -->
+            <div class="footer-column">
+                <h4 class="footer-heading">Safety</h4>
+                <nav class="footer-nav">
+                    <a href="/responsible-gambling">Responsible Gambling</a>
+                    <a href="/legal">Terms &amp; Privacy</a>
+                </nav>
+            </div>
+
+            <!-- Newsletter -->
+            <div class="footer-column newsletter-section">
+                <h4 class="footer-heading">Stay Updated</h4>
+                <p>Get the latest bonuses delivered to your inbox.</p>
+                <form id="subscribe-form" class="footer-form" onsubmit="event.preventDefault(); alert('Subscribed!');">
+                    <input type="email" id="sub-email" placeholder="Enter your email" required="">
+                    <button type="submit">Join</button>
+                </form>
+                <div id="sub-msg"></div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>© 2025 Bettrion.com. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <style>
+        :root {
+            --footer-bg: #000000;
+            /* Pure Black as requested */
+            --footer-text: #888888;
+            --footer-heading: #ffffff;
+            --accent-footer: #e50914;
+            /* Bettrion Red */
+            --accent-footer-hover: #ff0f1f;
+        }
+
+        .site-footer {
+            background: var(--footer-bg);
+            color: var(--footer-text);
+            padding: 60px 20px 20px;
+            font-family: 'Inter', sans-serif;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            margin-top: auto;
+            /* Push to bottom if flex container */
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1.5fr 0.8fr 0.8fr 1.5fr;
+            gap: 40px;
+        }
+
+        .footer-logo-img {
+            height: 32px;
+            margin-bottom: 15px;
+        }
+
+        .footer-tagline {
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .footer-heading {
+            color: var(--footer-heading);
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .footer-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .footer-nav a {
+            color: var(--footer-text);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s ease;
+        }
+
+        .footer-nav a:hover {
+            color: var(--accent-footer);
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .social-icons img {
+            width: 20px;
+            height: 20px;
+            filter: invert(0.5);
+            /* Greyish */
+            transition: 0.3s;
+        }
+
+        .social-icons a:hover img {
+            filter: invert(1) sepia(1) saturate(5) hue-rotate(-50deg);
+            /* Attempt Red-ish or just keep it simple */
+            filter: brightness(0) saturate(100%) invert(14%) sepia(96%) saturate(4590%) hue-rotate(352deg) brightness(88%) contrast(98%);
+            /* Red hex #e50914 filter generator approximation */
+        }
+
+        /* Newsletter Form Styling */
+        .footer-form {
+            display: flex;
+            margin-top: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 5px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-form input {
+            background: transparent;
+            border: none;
+            padding: 10px 15px;
+            color: white;
+            flex-grow: 1;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .footer-form button {
+            background: var(--accent-footer);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .footer-form button:hover {
+            background: var(--accent-footer-hover);
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 40px auto 0;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            text-align: center;
+            font-size: 13px;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .footer-container {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .footer-container {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .footer-nav,
+            .social-icons,
+            .footer-form {
+                justify-content: center;
+                align-items: center;
+            }
+
+            .footer-logo-img {
+                margin: 0 auto 15px;
+                display: block;
+            }
+        }
+    </style>
+    <script src="https://cdn.gtranslate.net/widgets/latest/popup.js" defer="" id="gtranslate-script"></script>
+    <script src="/assets/js/christmas.js"></script>
+    <div class="elfsight-app-9d38424e-e3ae-4b5f-adaa-db397cca9d5f eapps-widget eapps-widget-show-toolbar"
+        data-elfsight-app-lazy="" data-miwrid="606f7668-d857-4843-9d56-ce173a019d93">
+        <div class="eapps-widget-toolbar">
+            <div class="eapps-widget-toolbar-panel-wrapper">
+                <div class="eapps-widget-toolbar-panel-only-you">Panel only seen by widget owner</div>
+
+                <div class="eapps-widget-toolbar-panel">
+                    <a href="https://dash.elfsight.com/apps/ai-chatbot?utm_source=clients&amp;utm_medium=user-panel&amp;utm_campaign=elfsight-icon&amp;utm_content=ai-chatbot&amp;utm_term=localhost%3A3002"
+                        target="_blank" title="Panel only seen by widget owner">
+                        <div class="eapps-widget-toolbar-panel-logo">
+                            <svg width="15px" height="15px" viewBox="0 0 15 15">
+                                <path
+                                    d="M9.3907705,9.84479984 C9.39084949,9.84789591 9.39120496,9.85095229 9.39120496,9.85408806 C9.39120496,10.061247 9.22563696,10.22907 9.0213232,10.22907 C8.95852427,10.22907 8.89943798,10.2130737 8.84761899,10.1850899 L8.84754,10.1851296 L7.07973033,9.29155556 L7.08206061,9.28885642 C6.36524438,8.95487756 5.87944133,8.32105601 5.8725295,7.59228825 C5.8724505,7.59197071 5.87205554,7.5920104 5.87205554,7.59161347 C5.87205554,7.04563305 5.78595386,6.41089856 4.91573446,5.65760038 C3.20314046,4.17545506 0.437578214,1.75392969 0.14052742,1.49378024 C0.133220626,1.48790564 0.126229802,1.4816738 0.119396962,1.47528319 C0.116118779,1.47238559 0.113906992,1.47048031 0.113906992,1.47048031 L0.114025481,1.47032154 C0.0438802595,1.40204918 0,1.30619002 0,1.19981216 C0,0.992653173 0.165568,0.824830183 0.369763267,0.824830183 C0.437222748,0.824830183 0.500298153,0.84344631 0.554763389,0.875439056 L0.554881878,0.875240589 L8.16441401,4.79566183 C8.18708482,4.80685532 8.20940017,4.81848544 8.23159702,4.83027433 L8.26027125,4.84504021 C8.26027125,4.84504021 8.25995528,4.84539745 8.25991578,4.84543714 C8.94031653,5.21748181 9.39013856,5.85916262 9.39013856,6.58888301 C9.39013856,6.59412252 9.38970411,6.59924295 9.38966461,6.60448246 L9.39013856,6.60392675 C9.39013856,6.60392675 9.39013856,7.81560238 9.39013856,8.75974562 C9.39013856,9.47057204 9.39065201,9.79137275 9.3907705,9.84479984 Z M7.53431857,14.7455202 C3.55890924,14.6059985 0.437604872,11.2422351 0.576433956,7.24703185 C0.583108811,7.05447997 0.592627391,6.86419061 0.614903238,6.67604469 C0.626238643,6.5803443 0.774902276,5.85483139 1.42366658,5.94136264 C1.91002258,6.00626108 2.06393921,6.43383658 2.02799768,6.75971802 C2.02108585,6.82235395 2.00698571,6.9880335 2.00698571,6.9880335 C1.99805957,7.0901245 1.99174018,7.19296966 1.98810654,7.296569 C1.87645083,10.5094981 4.38663075,13.2146316 7.58357031,13.3268443 C10.7804309,13.4390571 13.4722142,10.9164331 13.58387,7.70354372 C13.6955257,4.49049559 11.1853457,1.78536206 7.98852467,1.67314929 C7.62634467,1.66044746 7.27060255,1.68180242 6.924458,1.73395933 C6.924458,1.73395933 6.08816582,1.8731238 5.90186232,1.30555026 C5.72160174,0.756354691 6.14271005,0.438650054 6.4277935,0.379070511 C6.94780024,0.279003871 7.48672566,0.235103155 8.03781591,0.254473453 C12.0131067,0.393995167 15.1343716,3.75771881 14.9955425,7.75308087 C14.8567529,11.7482842 11.5095699,14.8850419 7.53431857,14.7455202 Z"
+                                    id="path-1"></path>
+                            </svg>
+                        </div>
+                    </a>
+
+                    <a href="https://dash.elfsight.com/widget/9d38424e-e3ae-4b5f-adaa-db397cca9d5f?utm_source=clients&amp;utm_medium=user-panel&amp;utm_campaign=edit-widget&amp;utm_content=ai-chatbot&amp;utm_term=localhost%3A3002"
+                        target="_blank">
+                        <div class="eapps-widget-toolbar-panel-edit">
+                            <div class="eapps-widget-toolbar-panel-edit-icon">
+                                <svg width="15px" height="15px" viewBox="0 0 15 15">
+                                    <path
+                                        d="M11.8409658,5.0838519 C11.9103036,5.1860702 12.0261968,5.24949902 12.1508333,5.25 L12.25,5.25 C13.2164983,5.25 14,6.03350169 14,7 C14,7.96649831 13.2164983,8.75 12.25,8.75 L12.1998265,8.74999536 C12.0487015,8.7505981 11.9123649,8.84088722 11.8528316,8.97979334 C11.7877518,9.12733583 11.817782,9.29295657 11.9216456,9.39918771 L11.9564161,9.43395833 C12.2850259,9.76220278 12.4696678,10.2076171 12.4696678,10.6720833 C12.4696678,11.1365495 12.2850259,11.5819639 11.956875,11.9097495 C11.6286306,12.2383593 11.1832162,12.4230011 10.71875,12.4230011 C10.2542838,12.4230011 9.80886945,12.2383593 9.48085438,11.909979 L9.45042877,11.8795032 C9.33962324,11.7711153 9.1740025,11.7410852 9.02646001,11.8061649 C8.88755388,11.8656983 8.79726477,12.0020348 8.79666667,12.1508333 L8.79666667,12.25 C8.79666667,13.2164983 8.01316498,14 7.04666667,14 C6.08016835,14 5.29666667,13.2164983 5.29666667,12.25 C5.2931854,12.0554921 5.19476641,11.9178878 5.01447022,11.8503365 C4.87266417,11.7877518 4.70704343,11.817782 4.60081229,11.9216456 L4.56604167,11.9564161 C4.23779722,12.2850259 3.79238285,12.4696678 3.32791667,12.4696678 C2.86345048,12.4696678 2.41803612,12.2850259 2.09025055,11.956875 C1.76164072,11.6286306 1.5769989,11.1832162 1.5769989,10.71875 C1.5769989,10.2542838 1.76164072,9.80886945 2.09002104,9.48085438 L2.12049683,9.45042877 C2.22888469,9.33962324 2.25891482,9.1740025 2.1938351,9.02646001 C2.13430173,8.88755388 1.99796517,8.79726477 1.84916667,8.79666667 L1.75,8.79666667 C0.783501688,8.79666667 1.94289029e-16,8.01316498 0,7.04666667 C-1.2952602e-16,6.08016835 0.783501688,5.29666667 1.75,5.29666667 C1.94450787,5.2931854 2.0821122,5.19476641 2.14966349,5.01447022 C2.21224816,4.87266417 2.18221802,4.70704343 2.07835438,4.60081229 L2.04358388,4.56604167 C1.71497406,4.23779722 1.53033223,3.79238285 1.53033223,3.32791667 C1.53033223,2.86345048 1.71497406,2.41803612 2.043125,2.09025055 C2.37136945,1.76164072 2.81678382,1.5769989 3.28125,1.5769989 C3.74571618,1.5769989 4.19113055,1.76164072 4.51914562,2.09002104 L4.54957123,2.12049683 C4.66037676,2.22888469 4.8259975,2.25891482 4.96780355,2.19633016 C5.00517877,2.17983498 5.04407976,2.16735698 5.0838519,2.15903418 C5.1860702,2.08969644 5.24949902,1.97380324 5.25,1.84916667 L5.25,1.75 C5.25,0.783501688 6.03350169,1.94289029e-16 7,0 C7.96649831,0 8.75,0.783501688 8.75,1.75 L8.74999536,1.80017349 C8.7505981,1.9512985 8.84088722,2.08763507 8.98552978,2.14966349 C9.12733583,2.21224816 9.29295657,2.18221802 9.39918771,2.07835438 L9.43395833,2.04358388 C9.76220278,1.71497406 10.2076171,1.53033223 10.6720833,1.53033223 C11.1365495,1.53033223 11.5819639,1.71497406 11.9097495,2.043125 C12.2383593,2.37136945 12.4230011,2.81678382 12.4230011,3.28125 C12.4230011,3.74571618 12.2383593,4.19113055 11.909979,4.51914562 L11.8795032,4.54957123 C11.7711153,4.66037676 11.7410852,4.8259975 11.8036698,4.96780355 C11.820165,5.00517877 11.832643,5.04407976 11.8409658,5.0838519 Z M5.32570846,3.30839955 C4.77441872,3.50165553 4.15603406,3.36755835 3.72918771,2.94997896 L3.69395833,2.91474945 C3.58454352,2.80521284 3.43607206,2.74366557 3.28125,2.74366557 C3.12642794,2.74366557 2.97795648,2.80521284 2.86808278,2.91520833 C2.75854618,3.02462315 2.6969989,3.17309461 2.6969989,3.32791667 C2.6969989,3.48273873 2.75854618,3.63121018 2.86831229,3.74085438 L2.90783651,3.78042877 C3.3497255,4.23217443 3.47215604,4.90739742 3.23081273,5.45135564 C3.01171177,6.04708399 2.45070951,6.44833064 1.8025,6.46333333 L1.75,6.46333333 C1.4278339,6.46333333 1.16666667,6.72450056 1.16666667,7.04666667 C1.16666667,7.36883277 1.4278339,7.63 1.75,7.63 L1.85149318,7.63000464 C2.46761824,7.63246196 3.02345194,8.00056374 3.26366984,8.56113688 C3.51882271,9.13926925 3.39639217,9.81449224 2.94997896,10.2708123 L2.91474945,10.3060417 C2.80521284,10.4154565 2.74366557,10.5639279 2.74366557,10.71875 C2.74366557,10.8735721 2.80521284,11.0220435 2.91520833,11.1319172 C3.02462315,11.2414538 3.17309461,11.3030011 3.32791667,11.3030011 C3.48273873,11.3030011 3.63121018,11.2414538 3.74085438,11.1316877 L3.78042877,11.0921635 C4.23217443,10.6502745 4.90739742,10.527844 5.45135564,10.7691873 C6.04708399,10.9882882 6.44833064,11.5492905 6.46333333,12.1975 L6.46333333,12.25 C6.46333333,12.5721661 6.72450056,12.8333333 7.04666667,12.8333333 C7.36883277,12.8333333 7.63,12.5721661 7.63,12.25 L7.63000464,12.1485068 C7.63246196,11.5323818 8.00056374,10.9765481 8.56113688,10.7363302 C9.13926925,10.4811773 9.81449224,10.6036078 10.2708123,11.050021 L10.3060417,11.0852505 C10.4154565,11.1947872 10.5639279,11.2563344 10.71875,11.2563344 C10.8735721,11.2563344 11.0220435,11.1947872 11.1319172,11.0847917 C11.2414538,10.9753769 11.3030011,10.8269054 11.3030011,10.6720833 C11.3030011,10.5172613 11.2414538,10.3687898 11.1316877,10.2591456 L11.0921635,10.2195712 C10.6502745,9.76782557 10.527844,9.09260258 10.7829968,8.51447022 C11.0232147,7.95389707 11.5790484,7.58579529 12.1975,7.58333333 L12.25,7.58333333 C12.5721661,7.58333333 12.8333333,7.3221661 12.8333333,7 C12.8333333,6.6778339 12.5721661,6.41666667 12.25,6.41666667 L12.1485068,6.41666203 C11.5323818,6.41420471 10.9765481,6.04610293 10.7338351,5.47979334 C10.7127093,5.43050161 10.6985296,5.37864558 10.6916004,5.32570846 C10.4983445,4.77441872 10.6324417,4.15603406 11.050021,3.72918771 L11.0852505,3.69395833 C11.1947872,3.58454352 11.2563344,3.43607206 11.2563344,3.28125 C11.2563344,3.12642794 11.1947872,2.97795648 11.0847917,2.86808278 C10.9753769,2.75854618 10.8269054,2.6969989 10.6720833,2.6969989 C10.5172613,2.6969989 10.3687898,2.75854618 10.2591456,2.86831229 L10.2195712,2.90783651 C9.76782557,3.3497255 9.09260258,3.47215604 8.52020666,3.21949823 C7.95389707,2.97678527 7.58579529,2.42095158 7.58333333,1.8025 L7.58333333,1.75 C7.58333333,1.4278339 7.3221661,1.16666667 7,1.16666667 C6.6778339,1.16666667 6.41666667,1.4278339 6.41666667,1.75 L6.41666203,1.85149318 C6.41420471,2.46761824 6.04610293,3.02345194 5.47979334,3.2661649 C5.43050161,3.2872907 5.37864558,3.3014704 5.32570846,3.30839955 Z M7,9.33333333 C5.71133558,9.33333333 4.66666667,8.28866442 4.66666667,7 C4.66666667,5.71133558 5.71133558,4.66666667 7,4.66666667 C8.28866442,4.66666667 9.33333333,5.71133558 9.33333333,7 C9.33333333,8.28866442 8.28866442,9.33333333 7,9.33333333 Z M7,8.16666667 C7.64433221,8.16666667 8.16666667,7.64433221 8.16666667,7 C8.16666667,6.35566779 7.64433221,5.83333333 7,5.83333333 C6.35566779,5.83333333 5.83333333,6.35566779 5.83333333,7 C5.83333333,7.64433221 6.35566779,8.16666667 7,8.16666667 Z">
+                                    </path>
+                                </svg>
+                            </div>
+
+                            <div class="eapps-widget-toolbar-panel-edit-label">Edit widget</div>
+                        </div>
+                    </a>
+
+                    <div class="eapps-widget-toolbar-panel-views eapps-widget-toolbar-panel-views-green">
+                        <div class="eapps-widget-toolbar-panel-views-label">Views</div>
+
+                        <div class="eapps-widget-toolbar-panel-views-bar">
+                            <div class="eapps-widget-toolbar-panel-views-bar-inner" style="width:0%"></div>
+                        </div>
+
+                        <div class="eapps-widget-toolbar-panel-views-percent">0%</div>
+                    </div>
+
+                    <a href="https://dash.elfsight.com/apps/ai-chatbot/pricing?utm_source=clients&amp;utm_medium=user-panel&amp;utm_campaign=extend-limits&amp;utm_content=ai-chatbot&amp;utm_term=localhost%3A3002"
+                        target="_blank" style="display:none">
+                        <div class="eapps-widget-toolbar-panel-views-get-more">
+                            Extend Limit
+                        </div>
+                    </a>
+                </div>
+
+                <div class="eapps-widget-toolbar-panel-share" style="display:inline-flex">
+                    <div class="eapps-widget-toolbar-panel-share-button">
+                        <svg width="12px" height="12px" viewBox="0 0 24 24">
+                            <path id="XMLID_31_"
+                                d="M12.7,15.3c-4.5,0.1-8.4,2.5-10.7,6c-0.2,0.3-0.6,0.5-0.9,0.5c-0.1,0-0.2,0-0.3,0c-0.5-0.1-0.8-0.6-0.8-1c0,0,0-0.1,0-0.1c0-7.1,5.7-12.9,12.7-13V5.5c0-0.5,0.3-0.9,0.7-1.1c0.2-0.1,0.4-0.1,0.6-0.1c0.3,0,0.5,0.1,0.7,0.2l8.8,6c0.3,0.2,0.5,0.6,0.5,0.9c0,0.4-0.2,0.7-0.5,1l-8.8,6.1c-0.2,0.2-0.5,0.2-0.7,0.2c-0.2,0-0.4,0-0.6-0.1c-0.4-0.2-0.7-0.7-0.7-1.1V15.3z">
+                            </path>
+                        </svg>
+
+                        <span>Share</span>
+                    </div>
+
+                    <div class="eapps-widget-toolbar-panel-share-block">
+                        <div class="eapps-widget-toolbar-panel-share-block-text">
+                            <div class="eapps-widget-toolbar-panel-share-block-text-icon">🔥</div>
+                            Tell your customers about<br>new website functionality!
+                        </div>
+
+                        <div class="eapps-widget-toolbar-panel-share-block-actions">
+                            <div
+                                class="eapps-widget-toolbar-panel-share-block-actions-item-facebook eapps-widget-toolbar-panel-share-block-actions-item">
+                                <a href="javascript:void(0)"
+                                    onclick="window.open('http://www.facebook.com/sharer.php?u=localhost%3A3002', 'facebook', 'width=555,height=640,toolbar=0,status=0'); return false;"
+                                    target="_blank" title="Share on Facebook">
+
+                                    <svg class="eapps-widget-toolbar-panel-share-block-actions-item-icon"
+                                        viewBox="0 0 1024 1024">
+                                        <path
+                                            d="M234.747 554.565V346.624h152.512v-81.02C387.259 125.893 492.2.068 621.186.068h168.068v207.918H621.186c-18.412 0-39.85 22.329-39.85 55.801v82.826h207.918v207.929H581.336v469.39H387.247V554.564H234.746z">
+                                        </path>
+                                    </svg>
+                                </a>
+                            </div>
+
+                            <div
+                                class="eapps-widget-toolbar-panel-share-block-actions-item-twitter eapps-widget-toolbar-panel-share-block-actions-item">
+                                <a href="https://twitter.com/share?url=localhost%3A3002&amp;via=elfsight&amp;text=Now my site is cool as ever with a widget by Elfsight from https://elfsight.com/"
+                                    onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=300,width=600');return false;"
+                                    target="_blank" title="Share on Twitter">
+
+                                    <svg class="eapps-widget-toolbar-panel-share-block-actions-item-icon"
+                                        viewBox="0 0 1024 1024">
+                                        <path
+                                            d="M912.964 321.322c13.032 289.559-202.954 612.433-585.152 612.433-116.254 0-224.521-34.104-315.596-92.559 109.203 12.898 218.206-17.38 304.798-85.227-90.111-1.646-166.12-61.158-192.344-142.973 32.258 6.181 64.008 4.388 92.974-3.532-98.995-19.869-167.378-109.096-165.13-204.452 27.789 15.427 59.512 24.699 93.255 25.742-91.676-61.278-117.633-182.336-63.713-274.868C183.633 280.463 335.317 362.425 506.4 370.988c-29.983-128.778 67.66-252.779 200.585-252.779 59.204 0 112.682 25.006 150.238 65.011 46.882-9.232 90.927-26.384 130.744-49.959-15.386 48.059-48.046 88.438-90.526 113.926 41.61-4.977 81.307-16.069 118.208-32.445-27.562 41.316-62.456 77.574-102.688 106.581z">
+                                        </path>
+                                    </svg>
+                                </a>
+                            </div>
+
+                            <div
+                                class="eapps-widget-toolbar-panel-share-block-actions-item-google eapps-widget-toolbar-panel-share-block-actions-item">
+                                <a href="https://plus.google.com/share?url=localhost%3A3002"
+                                    onclick="javascript:window.open(this.href, 'google+', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=350,width=480');return false;"
+                                    target="_blank" title="Share on Google+">
+
+                                    <svg class="eapps-widget-toolbar-panel-share-block-actions-item-icon"
+                                        viewBox="0 0 1024 1024">
+                                        <path
+                                            d="M327.072 448.23v127.536s123.72-.164 174.097-.164c-27.28 82.677-69.698 127.7-174.097 127.7-105.651 0-188.112-85.65-188.112-191.302s82.461-191.302 188.112-191.302c55.861 0 91.937 19.633 125.029 47.001 26.49-26.49 24.274-30.264 91.669-93.908-57.209-52.071-133.245-83.815-216.695-83.815C149.223 189.976 5.051 334.151 5.051 512s144.175 322.024 322.024 322.024c265.837 0 330.813-231.474 309.271-385.793H327.072zm580.285 6.38V343.018h-79.709V454.61H712.866v79.709h114.782v114.782h79.709V534.319h111.592V454.61H907.357z">
+                                        </path>
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://elfsightcdn.com/platform.js" async=""></script>
+    <div id="__EAAPS_PORTAL"
+        class="portal-nest-provider__ElfsightPortalNest-sc-da3126b9-0 csMGxI es-portal-root eapps-ai-chatbot-9d38424e-e3ae-4b5f-adaa-db397cca9d5f-custom-css-root">
+        <div class="FloatingButton__FloatingButtonContainer-sc-78e7a0be-0 kimcfv" style="margin: 20px;">
+            <div class="AnimationFrame__Frame-sc-ccdeb6ae-0 fsfThc"></div>
+            <div class="AnimationFrame__Frame-sc-ccdeb6ae-0 kTVCdT"></div><button role="button" tabindex="0"
+                aria-label="Open chatbot window"
+                class="ButtonBase__ButtonContainer-sc-597a44ae-3 eeMdww es-button-base-container bubble__StyledFloatingButton-sc-15e2b53f-0 bwhgFQ es-bubble-floating-button"
+                type="button"
+                style="border-radius: 100px; border-color: rgba(0, 0, 0, 0); width: 64px; height: 64px; line-height: normal; color: rgb(17, 17, 17); padding: 0px; font-family: inherit; font-size: 0px; background-color: rgb(255, 214, 0); text-transform: none; border-width: 0px;"><span
+                    class="ButtonBase__Overlay-sc-597a44ae-4 ebHiwd es-button-base-overlay"
+                    style="padding: 0px; border-radius: calc(100px); background-color: rgba(0, 0, 0, 0);">
+                    <div
+                        class="Icon__IconContainer-sc-1013a803-0 eapJlh ButtonBase__ButtonIcon-sc-597a44ae-0 izRsIG es-button-base-icon">
+                        <div>
+                            <div><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none" class="injected-svg"
+                                    data-src="https://universe-static.elfsightcdn.com/app-static/ai-chatbot/bubble-icons/bubble-1.svg"
+                                    xmlns:xlink="http://www.w3.org/1999/xlink">
+                                    <path fill-rule="evenodd" clip-rule="evenodd"
+                                        d="M11.7209 4C8.73493 4 5.94981 5.50411 4.31229 8.00105C2.96622 10.0536 2.96622 12.7091 4.31229 14.7617C5.02705 15.8515 5.96015 16.7521 7.03345 17.4211L7.04953 17.4312C7.2083 17.5301 7.3534 17.6206 7.47025 17.7006C7.59014 17.7827 7.73473 17.8896 7.86408 18.0324C8.03125 18.2169 8.14481 18.3955 8.24095 18.6252C8.35538 18.8985 8.39166 19.2089 8.42238 19.4717C8.4253 19.4966 8.42816 19.5211 8.43103 19.5451L8.6117 21.0529L10.6524 19.3516C10.661 19.3444 10.6697 19.3372 10.6785 19.3298C10.7778 19.2467 10.8972 19.1469 11.0323 19.0648C11.2681 18.9215 11.5301 18.8266 11.803 18.7857C11.9593 18.7622 12.1149 18.7625 12.2443 18.7627C12.2559 18.7627 12.2672 18.7627 12.2783 18.7627C15.2643 18.7627 18.0495 17.2586 19.687 14.7617C21.033 12.7091 21.033 10.0536 19.687 8.00105C18.0495 5.50411 15.2643 4 12.2783 4H11.7209ZM2.63985 6.90425C4.64703 3.84365 8.06087 2 11.7209 2H12.2783C15.9384 2 19.3522 3.84365 21.3594 6.90425C23.1422 9.62276 23.1422 13.1399 21.3594 15.8585C19.3522 18.9191 15.9384 20.7627 12.2783 20.7627C12.1903 20.7627 12.1452 20.7628 12.1118 20.7638C12.1038 20.764 12.0983 20.7643 12.0949 20.7644C12.088 20.7659 12.0814 20.7683 12.0752 20.7716C12.0724 20.7736 12.068 20.777 12.0617 20.7819C12.0355 20.8025 12.0007 20.8314 11.9331 20.8877L8.4795 23.767L8.47713 23.769L8.46629 23.7778C8.45843 23.7841 8.43539 23.8026 8.40429 23.8239L8.40316 23.8247C8.35969 23.8545 8.16191 23.99 7.86813 23.9987C7.59227 24.0068 7.32529 23.9007 7.13029 23.7054C6.92261 23.4975 6.87185 23.2631 6.86069 23.2116L6.8604 23.2103C6.85241 23.1734 6.84832 23.1442 6.84694 23.1342L6.84513 23.1204L6.84475 23.1173L6.44524 19.783C6.42354 19.602 6.41127 19.5019 6.39883 19.4288C6.39541 19.4087 6.39267 19.3952 6.39086 19.3869C6.38134 19.3797 6.36523 19.3679 6.3404 19.3509C6.26338 19.2981 6.1555 19.2306 5.97541 19.1184C4.65989 18.2983 3.51584 17.1942 2.63985 15.8585C0.857027 13.1399 0.857028 9.62276 2.63985 6.90425Z">
+                                    </path>
+                                </svg></div>
+                        </div>
+                    </div><span class="ButtonBase__Ellipsis-sc-597a44ae-5 hjYZnC es-button-base-ellipsis">
+                        <div class="bubble__BadgeSlot-sc-15e2b53f-1 hYLLmq"></div>
+                    </span>
+                </span></button>
+        </div>
+    </div><iframe src="https://www.google.com/recaptcha/api2/aframe" width="0" height="0"
+        style="display: none;"></iframe>
+    <!-- Elfsight Back to Top | Untitled Back to Top -->
+    <script src="https://elfsightcdn.com/platform.js" async></script>
+    <div class="elfsight-app-989fdc0c-c9e2-440a-a6b4-e78c4cd11c76" data-elfsight-app-lazy></div>
+</body><iframe id="google_esf" name="google_esf"
+    src="https://googleads.g.doubleclick.net/pagead/html/r20251211/r20190131/zrt_lookup_fy2021.html"
+    style="display: none;"></iframe>
+
+</html>

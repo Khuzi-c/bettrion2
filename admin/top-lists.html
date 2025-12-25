@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Top Lists - Admin</title>
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="stylesheet" href="/assets/css/admin.css">
+    <style>
+        .list-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .drop-zone {
+            background: #1a1a1e;
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px dashed #444;
+            min-height: 200px;
+        }
+
+        .drop-zone h3 {
+            margin-top: 0;
+            color: var(--primary);
+        }
+
+        .draggable-item {
+            background: #2a2a2e;
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            cursor: grab;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .draggable-item:active {
+            cursor: grabbing;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            background: #111;
+            border: 1px solid #333;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-sidebar">
+        <h3>Bettrion Admin</h3>
+        <a href="/admin/dashboard.html">Dashboard</a>
+        <a href="/admin/users.html">Users</a>
+        <a href="/admin/platforms.html">Platforms</a>
+        <a href="/admin/articles.html">Articles</a>
+        <a href="/admin/ads.html">Ads Manager</a>
+        <a href="/admin/top-lists.html" class="active">Top Lists</a>
+        <a href="/admin/settings.html">Settings</a>
+        <a href="/" target="_blank">View Site ↗</a>
+    </div>
+
+    <div class="main-content">
+        <h1>Top Lists Management</h1>
+        <p>Drag and drop casinos to organize the Top 3 and Top 10 lists. (Not implemented as drag/drop yet, using
+            selection for simplicity first).</p>
+
+        <div class="card">
+            <div class="form-group">
+                <label>Top 3 Casinos (Homepage Header)</label>
+                <div id="top3-container">Loading...</div>
+                <button onclick="addSlot('top3')" class="btn-sm btn-primary" style="margin-top:10px;">+ Add
+                    Slot</button>
+            </div>
+
+            <hr style="border-color:#333; margin:20px 0;">
+
+            <div class="form-group">
+                <label>Top 10 Casinos (Homepage List)</label>
+                <div id="top10-container">Loading...</div>
+                <button onclick="addSlot('top10')" class="btn-sm btn-primary" style="margin-top:10px;">+ Add
+                    Slot</button>
+            </div>
+
+            <button onclick="saveLists()" class="btn-primary" style="margin-top:20px; width:100%;">Save All
+                Changes</button>
+        </div>
+    </div>
+
+    <script src="/assets/js/utils.js"></script>
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/admin.js"></script>
+    <script>
+        let allPlatforms = [];
+        let currentConfig = { top3: [], top10: [] };
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            // 1. Fetch all active casinos
+            try {
+                const pRes = await API.get('/platforms');
+                if (pRes) allPlatforms = pRes;
+
+                // 2. Fetch current settings (We need a way to get settings, likely via public or admin endpoint)
+                // Assuming we use the public /platforms/top-lists to see current state, OR better, fetch from site_settings 
+                // But simplified: we just load what is currently displayed via the public endpoint for 'current state' if settings endpoint missing
+                // Actually, let's assume we start empty or fetch from a dedicated admin settings endpoint if available.
+                // Re-using the public endpoint is easiest to seed.
+
+                const currentRes = await API.get('/platforms/top-lists');
+                if (currentRes) {
+                    currentConfig.top3 = currentRes.top3 ? currentRes.top3.map(c => c.id) : [];
+                    currentConfig.top10 = currentRes.top10 ? currentRes.top10.map(c => c.id) : [];
+                }
+
+                renderLists();
+            } catch (e) {
+                console.error(e);
+            }
+        });
+
+        function renderLists() {
+            renderSection('top3', currentConfig.top3);
+            renderSection('top10', currentConfig.top10);
+        }
+
+        function renderSection(key, ids) {
+            const container = document.getElementById(key + '-container');
+            container.innerHTML = '';
+
+            ids.forEach((id, index) => {
+                const div = document.createElement('div');
+                div.className = 'draggable-item';
+                div.innerHTML = `
+                    <select onchange="updateSlot('${key}', ${index}, this.value)" style="flex:1; margin-right:10px;">
+                        <option value="">Select Casino...</option>
+                        ${allPlatforms.map(p => `
+                            <option value="${p.id}" ${p.id === id ? 'selected' : ''}>${p.name}</option>
+                        `).join('')}
+                    </select>
+                    <button onclick="removeSlot('${key}', ${index})" class="btn-sm btn-danger">X</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        window.addSlot = (key) => {
+            currentConfig[key].push('');
+            renderLists();
+        };
+
+        window.removeSlot = (key, index) => {
+            currentConfig[key].splice(index, 1);
+            renderLists();
+        };
+
+        window.updateSlot = (key, index, value) => {
+            currentConfig[key][index] = value;
+        };
+
+        window.saveLists = async () => {
+            try {
+                // Filter empty
+                const payload = {
+                    top3: currentConfig.top3.filter(x => x),
+                    top10: currentConfig.top10.filter(x => x)
+                };
+
+                // We need an endpoint to save 'top_lists' setting key.
+                // Re-use admin update settings logic or create new one.
+                // Assuming POST /admin/settings/top-lists exists or we use a generic one.
+                // I'll create a generic POST /admin/settings endpoint next.
+                await API.post('/admin/settings', { key: 'top_lists', value: JSON.stringify(payload) });
+                alert('Lists Saved!');
+            } catch (e) {
+                alert('Error: ' + e.message);
+            }
+        };
+
+    </script>
+</body>
+
+</html>
