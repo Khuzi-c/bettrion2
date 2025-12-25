@@ -299,16 +299,9 @@
             } catch (e) { alert(e.message); }
         }
 
-        async function handleGoogleLogin() {
-            try {
-                const res = await firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider());
-                const apiRes = await fetch('/api/auth/google', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ idToken: await res.user.getIdToken() }) // Login doesn't need ref code usually
-                }).then(r => r.json());
-                if (apiRes.success) { localStorage.setItem('user_token', apiRes.token); window.location.href = '/'; }
-            } catch (e) { console.error(e); }
+        // Google (Passport-based)
+        function handleGoogleLogin() {
+            window.location.href = '/api/auth/google';
         }
     </script>
 </body>
