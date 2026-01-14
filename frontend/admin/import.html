@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bulk Import Casinos - Bettrion Admin</title>
+    <link rel="stylesheet" href="/assets/css/admin.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <script src="/assets/js/admin-auth.js"></script>
+    <style>
+        .template-box {
+            background: #111;
+            padding: 15px;
+            border: 1px solid #333;
+            border-radius: 8px;
+            font-family: monospace;
+            color: #46d369;
+            white-space: pre-wrap;
+            margin-bottom: 20px;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+
+<body>
+    <script src="/assets/js/admin-sidebar.js"></script>
+    <script>document.body.insertAdjacentHTML('afterbegin', ADMIN_SIDEBAR_HTML);</script>
+
+    <main class="main-content admin-main">
+        <h1>Bulk Import Casinos (HTML Mode)</h1>
+
+        <div class="card">
+            <h3>1. Use this HTML Template</h3>
+            <p>Copy and paste this block for EACH casino you want to add. Change the data attributes.</p>
+            <div class="template-box">
+                &lt;div class="import-casino"
+                data-name="Casino Name"
+                data-logo="https://example.com/logo.png"
+                data-rating="5.0"
+                data-link="https://affiliate-link.com"
+                data-category="Casino"&gt;
+                &lt;!-- The content inside becomes the description --&gt;
+                &lt;p&gt;This is a great casino. It supports Crypto.&lt;/p&gt;
+
+                &lt;!-- Optional: Features (comma separated in a hidden span) --&gt;
+                &lt;span class="features" style="display:none"&gt;Instant Payouts, No KYC, VPN Friendly&lt;/span&gt;
+                &lt;/div&gt;
+            </div>
+
+            <h3>2. Paste Your HTML Here</h3>
+            <textarea id="import-input" rows="15"
+                style="width:100%; background:#111; color:#fff; border:1px solid #333; padding:10px;"
+                placeholder="Paste multiple <div class='import-casino'>...</div> blocks here..."></textarea>
+
+            <button onclick="parseAndImport()" class="btn btn-primary" style="margin-top:20px;">🚀 Import All</button>
+
+            <div id="logs" style="margin-top:20px; font-family:monospace;"></div>
+        </div>
+    </main>
+
+    <script src="/assets/js/api.js"></script>
+    <script>
+        async function parseAndImport() {
+            const input = document.getElementById('import-input').value;
+            const logDiv = document.getElementById('logs');
+            logDiv.innerHTML = 'Starting...<br>';
+
+            // Create a dummy container to parse HTML string
+            const parser = document.createElement('div');
+            parser.innerHTML = input;
+
+            const items = parser.querySelectorAll('.import-casino');
+
+            if (items.length === 0) {
+                logDiv.innerHTML += '<span style="color:red">No casinos found! Make sure you use class="import-casino"</span>';
+                return;
+            }
+
+            logDiv.innerHTML += `Found ${items.length} casinos. Processing...<br>`;
+
+            for (let i = 0; i < items.length; i++) {
+                const item = items[i];
+                const data = item.dataset;
+
+                // Extract features
+                const featureSpan = item.querySelector('.features');
+                const features = featureSpan ? featureSpan.innerText.split(',').map(s => s.trim()) : [];
+
+                // Payload
+                const payload = {
+                    name: data.name,
+                    logo: data.logo || '/assets/img/default.png',
+                    rating: parseFloat(data.rating || 5.0),
+                    affiliate_link: data.link || '#',
+                    category: data.category || 'Casino',
+                    ranking: 999,
+                    description: item.innerHTML.replace(featureSpan ? featureSpan.outerHTML : '', '').trim(), // Remove the hidden feature span from desc
+                    features: features,
+                    status: 'active'
+                };
+
+                try {
+                    logDiv.innerHTML += `Uploading <b>${payload.name}</b>... `;
+                    const res = await api.post('/platforms', payload);
+
+                    if (res.success || res.id) {
+                        logDiv.innerHTML += '<span style="color:green">OK</span><br>';
+                    } else {
+                        logDiv.innerHTML += `<span style="color:red">Failed: ${res.message}</span><br>`;
+                    }
+                } catch (e) {
+                    logDiv.innerHTML += `<span style="color:red">Error: ${e.message}</span><br>`;
+                }
+
+                // Small delay to be safe
+                await new Promise(r => setTimeout(r, 200));
+            }
+
+            logDiv.innerHTML += '<br><b>Done!</b> <a href="/admin/platforms.html">View All Casinos</a>';
+        }
+    </script>
+</body>
+
+</html>
