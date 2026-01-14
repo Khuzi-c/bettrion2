@@ -96,20 +96,8 @@ const Router = {
             }, 1000);
 
             // 10. Global Chatbot (Public Only)
-            if (!window.location.pathname.startsWith('/admin')) {
-                // Check if already exists to avoid dupes
-                if (!document.querySelector('.elfsight-app-9d38424e-e3ae-4b5f-adaa-db397cca9d5f')) {
-                    const chatDiv = document.createElement('div');
-                    chatDiv.className = 'elfsight-app-9d38424e-e3ae-4b5f-adaa-db397cca9d5f';
-                    chatDiv.setAttribute('data-elfsight-app-lazy', '');
-                    document.body.appendChild(chatDiv);
+            // Removed Elfsight (Limit Reached) - Replaced with internal widget later if needed
 
-                    const chatScript = document.createElement('script');
-                    chatScript.src = 'https://elfsightcdn.com/platform.js';
-                    chatScript.async = true;
-                    document.body.appendChild(chatScript);
-                }
-            }
 
         } catch (error) {
             console.error('Error loading components:', error);
