@@ -127,33 +127,6 @@ const Router = {
             } catch (e) { console.error('Profile Fetch Error', e); }
         }
 
-        // Sidebar Balance Fetch
-        if (userData) {
-            const balEl = document.getElementById('user-balance-sidebar');
-            if (balEl) {
-                balEl.innerHTML = `<a href="/affiliate/payout.html" style="color:#4caf50; text-decoration:none; cursor:pointer;" title="Click to Cashout">$${parseFloat(userData.balance || 0).toFixed(2)}</a>`;
-            }
-        }
-
-        // Header Auth
-        const authContainer = document.getElementById('auth-container');
-        if (authContainer) {
-            if (token) {
-                const avatarContent = userData && userData.avatar_url
-                    ? `<img src="${userData.avatar_url}" alt="Profile" style="width:32px; height:32px; border-radius:50%; object-fit:cover; border: 2px solid #333;">`
-                    : `<span class="header-icon-btn" title="Profile">👤</span>`;
-
-                authContainer.innerHTML = `
-                    <a href="/profile.html" style="text-decoration:none; display:flex; align-items:center;">${avatarContent}</a>
-                `;
-            } else {
-                authContainer.innerHTML = `
-                    <a href="/login.html" class="btn-login-plain">Sign In</a>
-                    <a href="/signup.html" class="btn-signup">Sign Up</a>
-                `;
-            }
-        }
-
         // Sidebar Auth (V2)
         const userLinksPlaceholder = document.getElementById('sidebar-auth-placeholder');
 
@@ -161,7 +134,6 @@ const Router = {
             if (token) {
                 userLinksPlaceholder.innerHTML = `
                     <a href="/profile.html" class="nav-link">👤 My Profile</a>
-                    <a href="/affiliate" class="nav-link">🤝 Affiliate Program</a>
                     <a href="/settings.html" class="nav-link">⚙️ Settings</a>
                     <a href="#" onclick="logout()" class="nav-link" style="color:var(--primary);">🚪 Logout</a>
                 `;
