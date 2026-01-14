@@ -1,14 +1,15 @@
-init: () => {
-    const now = new Date();
-    const endDate = new Date('2026-01-05');
+const Christmas = {
+    init: () => {
+        const now = new Date();
+        const endDate = new Date('2026-01-05');
 
-    if (now < endDate) {
-        console.log('🎄 Christmas Mode Active');
-        Christmas.enableTheme();
-        // Christmas.fixBanner(); // Disabled: User defined layout in HTML
-        // Christmas.startSnow(); // Disabled: User requested removal
-    }
-},
+        if (now < endDate) {
+            console.log('🎄 Christmas Mode Active');
+            Christmas.enableTheme();
+            // Christmas.fixBanner(); // Disabled: User defined layout in HTML
+            // Christmas.startSnow(); // Disabled: User requested removal
+        }
+    },
 
     enableTheme: () => {
         document.body.classList.add('christmas-theme');
@@ -42,68 +43,68 @@ init: () => {
         document.head.appendChild(style);
     },
 
-        fixBanner: () => {
-            // Only on Home
-            if (window.location.pathname !== '/' && window.location.pathname !== '/index.html') return;
+    fixBanner: () => {
+        // Only on Home
+        if (window.location.pathname !== '/' && window.location.pathname !== '/index.html') return;
 
-            const hero = document.querySelector('.hero');
-            if (hero) {
-                // Force Layout
-                hero.style.display = 'flex';
-                // 3. Force "Smaller" Banner Layout
-                hero.style.display = 'flex';
-                hero.style.flexDirection = 'column';
-                hero.style.justifyContent = 'center';
-                hero.style.paddingTop = '10px';
-                hero.style.paddingBottom = '50px';
-                hero.style.minHeight = 'auto'; // reduced
-                hero.style.height = '180px'; // Ultra-Compact
+        const hero = document.querySelector('.hero');
+        if (hero) {
+            // Force Layout
+            hero.style.display = 'flex';
+            // 3. Force "Smaller" Banner Layout
+            hero.style.display = 'flex';
+            hero.style.flexDirection = 'column';
+            hero.style.justifyContent = 'center';
+            hero.style.paddingTop = '10px';
+            hero.style.paddingBottom = '50px';
+            hero.style.minHeight = 'auto'; // reduced
+            hero.style.height = '180px'; // Ultra-Compact
 
-                // Move Buttons OUT of Hero
-                const buttons = hero.querySelector('.hero-buttons');
-                const container = document.querySelector('.container'); // Main container below hero
+            // Move Buttons OUT of Hero
+            const buttons = hero.querySelector('.hero-buttons');
+            const container = document.querySelector('.container'); // Main container below hero
 
-                if (buttons) {
-                    // formatting
-                    buttons.style.marginTop = '50px'; // "Buttons a little Go down" - Increased Gap
-                    buttons.style.marginBottom = '20px';
-                    buttons.style.position = 'relative';
-                    buttons.style.zIndex = '10';
-                    buttons.style.display = 'flex';
-                    buttons.style.gap = '15px';
-                    buttons.style.justifyContent = 'center';
-                    buttons.style.flexWrap = 'wrap';
+            if (buttons) {
+                // formatting
+                buttons.style.marginTop = '50px'; // "Buttons a little Go down" - Increased Gap
+                buttons.style.marginBottom = '20px';
+                buttons.style.position = 'relative';
+                buttons.style.zIndex = '10';
+                buttons.style.display = 'flex';
+                buttons.style.gap = '15px';
+                buttons.style.justifyContent = 'center';
+                buttons.style.flexWrap = 'wrap';
 
-                    // Insert AFTER hero
-                    hero.parentNode.insertBefore(buttons, hero.nextSibling);
+                // Insert AFTER hero
+                hero.parentNode.insertBefore(buttons, hero.nextSibling);
 
-                    // Add a wrapper for spacing if needed
-                    const spacer = document.createElement('div');
-                    spacer.style.height = '40px';
-                    spacer.style.width = '100%';
-                    buttons.parentNode.insertBefore(spacer, buttons.nextSibling);
-                }
+                // Add a wrapper for spacing if needed
+                const spacer = document.createElement('div');
+                spacer.style.height = '40px';
+                spacer.style.width = '100%';
+                buttons.parentNode.insertBefore(spacer, buttons.nextSibling);
             }
-        },
+        }
+    },
 
-            startSnow: () => {
-                const createSnowflake = () => {
-                    const flake = document.createElement('div');
-                    flake.classList.add('snowflake');
-                    flake.innerText = '❄';
-                    flake.style.left = Math.random() * 100 + 'vw';
-                    flake.style.animationDuration = Math.random() * 3 + 2 + 's';
-                    flake.style.opacity = Math.random();
-                    flake.style.fontSize = Math.random() * 10 + 10 + 'px';
+    startSnow: () => {
+        const createSnowflake = () => {
+            const flake = document.createElement('div');
+            flake.classList.add('snowflake');
+            flake.innerText = '❄';
+            flake.style.left = Math.random() * 100 + 'vw';
+            flake.style.animationDuration = Math.random() * 3 + 2 + 's';
+            flake.style.opacity = Math.random();
+            flake.style.fontSize = Math.random() * 10 + 10 + 'px';
 
-                    document.body.appendChild(flake);
+            document.body.appendChild(flake);
 
-                    setTimeout(() => {
-                        flake.remove();
-                    }, 5000);
-                };
-                setInterval(createSnowflake, 200);
-            }
+            setTimeout(() => {
+                flake.remove();
+            }, 5000);
+        };
+        setInterval(createSnowflake, 200);
+    }
 };
 
 // Auto-init
