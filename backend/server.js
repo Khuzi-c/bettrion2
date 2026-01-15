@@ -78,14 +78,4 @@ setInterval(() => {
     }
 }, 3000);
 
-// --- Dynamic Casino Pages & Redirects ---
-// path module moved to top
-// 1. Review Page: /casinos/:slug
-app.get('/casinos/:slug', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/casino-review.html'));
-});
 
-// 2. Redirect Page: /go/:slug
-app.get('/go/:slug', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/redirect.html'));
-});
