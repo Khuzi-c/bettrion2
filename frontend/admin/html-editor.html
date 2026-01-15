@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Casino HTML Editor</title>
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <style>
+        body {
+            background: #111;
+            color: #fff;
+            padding: 20px;
+            font-family: sans-serif;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        input,
+        textarea,
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            background: #222;
+            border: 1px solid #444;
+            color: #fff;
+        }
+
+        textarea {
+            height: 400px;
+            font-family: monospace;
+        }
+
+        button {
+            background: var(--primary);
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .status {
+            margin-bottom: 20px;
+            color: #ffd700;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🛠️ Custom Casino Page Editor</h1>
+        <p>Enter the slug (e.g., <code>stake</code>) to load its HTML. Editing here updates the <code>description</code>
+            and forces <code>custom-html</code> mode.</p>
+
+        <input type="text" id="slugInput" placeholder="Enter Casino Slug (e.g. stake)" value="stake">
+        <button onclick="loadCasino()">Load HTML</button>
+
+        <div id="status" class="status"></div>
+
+        <textarea id="htmlContent" placeholder="HTML Code will appear here..."></textarea>
+
+        <button onclick="saveCasino()">💾 Save Changes</button>
+        <br><br>
+        <a href="/admin/index.html">Back to Dashboard</a>
+    </div>
+
+    <script>
+        let currentId = null;
+        let currentData = null;
+
+        async function loadCasino() {
+            const slug = document.getElementById('slugInput').value;
+            const status = document.getElementById('status');
+            status.innerText = "Loading...";
+
+            try {
+                const res = await fetch(`/api/platforms/${slug}?lang=en`);
+                if (!res.ok) throw new Error("Casino not found");
+                const data = await res.json();
+
+                currentId = data.id;
+                currentData = data;
+                document.getElementById('htmlContent').value = data.description || "";
+                status.innerText = `Loaded: ${data.name}`;
+            } catch (e) {
+                status.innerText = "Error: " + e.message;
+            }
+        }
+
+        async function saveCasino() {
+            if (!currentId) return alert("Load a casino first!");
+            const html = document.getElementById('htmlContent').value;
+            const status = document.getElementById('status');
+
+            // Ensure 'custom-html' tag is present
+            let tags = currentData.tags || [];
+            if (typeof tags === 'string') tags = tags.split(',');
+            if (!tags.includes('custom-html')) tags.push('custom-html');
+
+            const payload = {
+                description: html,
+                tags: tags
+                // We only update these two
+            };
+
+            try {
+                // We need to use PUT /api/platforms/:id (Method: update)
+                // Note: The existing update controller expects specific fields. 
+                // We sent 'description' (mapped to long_description in controller usually? Let's check).
+                // Controller 'update': `if (description) updates.description = description;` -> YES.
+
+                const res = await fetch(`/api/platforms/${currentId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + localStorage.getItem('token') // Assuming admin checking requires token?
+                        // Admin panel usually has a token. If not, we might get 401. 
+                        // But I'll assume standard layout includes api.js or similar? 
+                        // I'll manually get token from storage just in case.
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (res.ok) {
+                    status.innerText = "✅ Saved Successfully! Refresh the casino page.";
+                } else {
+                    const err = await res.json();
+                    status.innerText = "Error Saving: " + err.message;
+                }
+            } catch (e) {
+                status.innerText = "Network Error: " + e.message;
+            }
+        }
+    </script>
+</body>
+
+</html>
