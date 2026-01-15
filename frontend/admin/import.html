@@ -34,18 +34,29 @@
             <h3>1. Use this HTML Template</h3>
             <p>Copy and paste this block for EACH casino you want to add. Change the data attributes.</p>
             <div class="template-box">
+                &lt;!-- CASINO START --&gt;
                 &lt;div class="import-casino"
-                data-name="Casino Name"
+                data-name="Stake.com"
                 data-logo="https://example.com/logo.png"
-                data-rating="5.0"
-                data-link="https://affiliate-link.com"
-                data-category="Casino"&gt;
-                &lt;!-- The content inside becomes the description --&gt;
-                &lt;p&gt;This is a great casino. It supports Crypto.&lt;/p&gt;
+                data-rating="4.9"
+                data-link="https://stake.com/?c=affiliate"
+                data-category="Crypto Casino"
+                data-payments="Bitcoin, Ethereum, Visa, PayPal"
+                data-countries="US, CA, UK, DE"&gt;
 
-                &lt;!-- Optional: Features (comma separated in a hidden span) --&gt;
+                &lt;!-- HIDDEN CONFIG: Features List --&gt;
                 &lt;span class="features" style="display:none"&gt;Instant Payouts, No KYC, VPN Friendly&lt;/span&gt;
+
+                &lt;!-- DESCRIPTION HTML (This is what shows on the page) --&gt;
+                &lt;h2&gt;Why We Love Stake&lt;/h2&gt;
+                &lt;p&gt;Stake is the leading crypto casino in the world.&lt;/p&gt;
+
+                &lt;!-- MAGIC WIDGET: Show Payment Badges --&gt;
+                &lt;div data-widget="payments" data-methods="Bitcoin, Ethereum, Visa"&gt;&lt;/div&gt;
+
+                &lt;p&gt;They offer &lt;b&gt;Rakeback&lt;/b&gt; and weekly bonuses.&lt;/p&gt;
                 &lt;/div&gt;
+                &lt;!-- CASINO END --&gt;
             </div>
 
             <h3>2. Paste Your HTML Here</h3>
@@ -87,6 +98,10 @@
                 const featureSpan = item.querySelector('.features');
                 const features = featureSpan ? featureSpan.innerText.split(',').map(s => s.trim()) : [];
 
+                // Extract Payments & Countries
+                const payments = data.payments ? data.payments.split(',').map(s => s.trim()) : [];
+                const countries = data.countries ? data.countries.split(',').map(s => s.trim()) : ['global'];
+
                 // Payload
                 const payload = {
                     name: data.name,
@@ -95,8 +110,10 @@
                     affiliate_link: data.link || '#',
                     category: data.category || 'Casino',
                     ranking: 999,
-                    description: item.innerHTML.replace(featureSpan ? featureSpan.outerHTML : '', '').trim(), // Remove the hidden feature span from desc
+                    description: item.innerHTML.replace(featureSpan ? featureSpan.outerHTML : '', '').trim(),
                     features: features,
+                    payment_methods: payments,
+                    visibility_countries: countries,
                     status: 'active'
                 };
 
