@@ -57,6 +57,22 @@
                 &lt;p&gt;They offer &lt;b&gt;Rakeback&lt;/b&gt; and weekly bonuses.&lt;/p&gt;
                 &lt;/div&gt;
                 &lt;!-- CASINO END --&gt;
+
+                &lt;!-- FULL CUSTOM PAGE EXAMPLE (Overrides Template) --&gt;
+                &lt;div class="import-casino"
+                data-name="My Custom Casino"
+                data-logo="..."
+                data-link="..."
+                data-mode="full-page"&gt;
+
+                &lt;html&gt;
+                &lt;head&gt;&lt;title&gt;My Custom Landing Page&lt;/title&gt;&lt;/head&gt;
+                &lt;body&gt;
+                &lt;h1&gt;Welcome to My Custom Design&lt;/h1&gt;
+                &lt;button&gt;Play Now&lt;/button&gt;
+                &lt;/body&gt;
+                &lt;/html&gt;
+                &lt;/div&gt;
             </div>
 
             <h3>2. Paste Your HTML Here</h3>
@@ -101,8 +117,12 @@
                 // Extract Payments & Countries
                 const payments = data.payments ? data.payments.split(',').map(s => s.trim()) : [];
                 const countries = data.countries ? data.countries.split(',').map(s => s.trim()) : ['global'];
+                const isFullPage = data.mode === 'full-page';
 
                 // Payload
+                const tags = data.tags ? data.tags.split(',') : [];
+                if (isFullPage) tags.push('custom-html');
+
                 const payload = {
                     name: data.name,
                     logo: data.logo || '/assets/img/default.png',
@@ -110,8 +130,10 @@
                     affiliate_link: data.link || '#',
                     category: data.category || 'Casino',
                     ranking: 999,
-                    description: item.innerHTML.replace(featureSpan ? featureSpan.outerHTML : '', '').trim(),
+                    // For Full Page: Description IS the HTML. For Standard: It's the inner content.
+                    description: isFullPage ? item.innerHTML : item.innerHTML.replace(featureSpan ? featureSpan.outerHTML : '', '').trim(),
                     features: features,
+                    tags: tags,
                     payment_methods: payments,
                     visibility_countries: countries,
                     status: 'active'
