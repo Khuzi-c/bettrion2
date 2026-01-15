@@ -61,27 +61,36 @@ app.use('/assets', express.static(path.join(__dirname, '../frontend/assets')));
 // 5a. Casino Slug Route
 app.get('/casinos/:slug', (req, res, next) => {
     // Avoid capturing static files like .js or .css if they accidentally match
-    if (req.params.slug.includes('.')) return next();
+    // Casino Detail Route (Supports Custom Overrides)
+    app.get('/casinos/:slug', (req, res) => {
+        const slug = req.params.slug;
 
-    // Serve the detail page template
-    res.sendFile(path.join(__dirname, '../frontend/platform-detail.html'));
-});
+        // 1. Check for Custom HTML File Override
+        const customPath = path.join(__dirname, '../frontend/custom-casinos', `${slug}.html`);
+        if (fs.existsSync(customPath)) {
+            return res.sendFile(customPath);
+        }
 
-// 5b. Casino Redirect Route
-app.get('/casinos/:slug/redirect', (req, res, next) => {
-    res.sendFile(path.join(__dirname, '../frontend/redirect.html'));
-});
-
-// 5. Frontend Routes (Last Priority)
-// Serve everything else from ../frontend/
-app.use(express.static(path.join(__dirname, '../frontend'), { extensions: ['html'] }));
-
-// 6. SPA Fallback / 404
-// If nothing matched, send 404 (or index.html if we were doing SPA, but we are doing separate files)
-app.use((req, res, next) => {
-    res.status(404).sendFile(path.join(__dirname, '../frontend/404.html'), (err) => {
-        if (err) res.status(404).json({ message: 'Page Not Found' });
+        // 2. Fallback to Dynamic Template
+        res.sendFile(path.join(__dirname, '../frontend/platform-detail.html'));
     });
-});
 
-module.exports = app;
+    // 5b. Casino Redirect Route
+    app.get('/casinos/:slug/redirect', (req, res, next) => {
+        res.sendFile(path.join(__dirname, '../frontend/redirect.html'));
+    });
+
+    // 5. Frontend Routes (Last Priority)
+    // Serve everything else from ../frontend/
+    app.use(express.static(path.join(__dirname, '../frontend'), { extensions: ['html'] }));
+
+    // 6. SPA Fallback / 404
+    // If nothing matched, send 404 (or index.html if we were doing SPA, but we are doing separate files)
+    app.use((req, res, next) => {
+        res.status(404).sendFile(path.join(__dirname, '../frontend/404.html'), (err) => {
+            if (err) res.status(404).json({ message: 'Page Not Found' });
+        });
+    });
+
+    module.exports = app;
+});         
