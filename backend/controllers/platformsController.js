@@ -196,6 +196,24 @@ const platformsController = {
             updates.visibility_countries = (Array.isArray(countries_visible) ? countries_visible : countries_visible.split(','));
         }
 
+        if (req.body.custom_html_content) {
+            try {
+                const fs = require('fs');
+                const path = require('path');
+                // Use slug from Update or existing data? Ideally slug is passed in body, if not we might need to fetch it.
+                // Assuming slug is updating or we use the sent slug. 
+                // Caution: If slug changes, we should rename file, but for now let's just write to the current slug.
+                const targetSlug = slug || (req.body.slug);
+
+                if (targetSlug) {
+                    const filePath = path.join(__dirname, '../../frontend/custom-casinos', `${targetSlug}.html`);
+                    const dir = path.dirname(filePath);
+                    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+                    fs.writeFileSync(filePath, req.body.custom_html_content, 'utf8');
+                }
+            } catch (err) { console.error('Write Error:', err); }
+        }
+
         const { data, error } = await supabase.from('casinos').update(updates).eq('id', id).select().single();
 
         if (error) return res.status(500).json({ message: error.message });
