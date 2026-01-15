@@ -67,11 +67,23 @@ app.get('/casinos/:slug', async (req, res) => {
     // 1. Try to Fetch from DB to check for Custom HTML
     try {
         const supabase = require('./config/supabase');
-        const { data } = await supabase.from('casinos').select('description, tags').eq('slug', slug).single();
+        const { data, error } = await supabase.from('casinos').select('description, tags').eq('slug', slug).single();
+
+        if (error) console.error('Supabase Error:', error.message);
+
+        // Debug Log
+        // console.log(`[Casino Route] Slug: ${slug}, Tags:`, data?.tags);
 
         // 2. If it's a "Custom HTML" page, serve the content directly
-        if (data && data.tags && data.tags.includes('custom-html')) {
-            return res.send(data.description);
+        if (data && data.tags) {
+            const isCustom = Array.isArray(data.tags)
+                ? data.tags.includes('custom-html')
+                : typeof data.tags === 'string' && data.tags.includes('custom-html');
+
+            if (isCustom) {
+                res.setHeader('Content-Type', 'text/html');
+                return res.send(data.description);
+            }
         }
     } catch (e) {
         console.error('Slug Lookup Error', e);
