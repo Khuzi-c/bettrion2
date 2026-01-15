@@ -59,38 +59,38 @@ app.use('/admin', express.static(path.join(__dirname, '../frontend/admin'), { ex
 app.use('/assets', express.static(path.join(__dirname, '../frontend/assets')));
 
 // 5a. Casino Slug Route
-app.get('/casinos/:slug', (req, res, next) => {
-    // Avoid capturing static files like .js or .css if they accidentally match
-    // Casino Detail Route (Supports Custom Overrides)
-    app.get('/casinos/:slug', (req, res) => {
-        const slug = req.params.slug;
+// Casino Detail Route (DB-Driven Custom Pages)
+// Casino Detail Route (DB-Driven Custom Pages)
+app.get('/casinos/:slug', async (req, res) => {
+    const slug = req.params.slug;
 
-        // 1. Check for Custom HTML File Override
-        const customPath = path.join(__dirname, '../frontend/custom-casinos', `${slug}.html`);
-        if (fs.existsSync(customPath)) {
-            return res.sendFile(customPath);
+    // 1. Try to Fetch from DB to check for Custom HTML
+    try {
+        const supabase = require('./config/supabase');
+        const { data } = await supabase.from('casinos').select('description, tags').eq('slug', slug).single();
+
+        // 2. If it's a "Custom HTML" page, serve the content directly
+        if (data && data.tags && data.tags.includes('custom-html')) {
+            return res.send(data.description);
         }
+    } catch (e) {
+        console.error('Slug Lookup Error', e);
+    }
 
-        // 2. Fallback to Dynamic Template
-        res.sendFile(path.join(__dirname, '../frontend/platform-detail.html'));
+    // 3. Fallback to Dynamic Template (Standard System)
+    res.sendFile(path.join(__dirname, '../frontend/platform-detail.html'));
+});
+
+// 5. Frontend Routes (Last Priority)
+// Serve everything else from ../frontend/
+app.use(express.static(path.join(__dirname, '../frontend'), { extensions: ['html'] }));
+
+// 6. SPA Fallback / 404
+// If nothing matched, send 404 (or index.html if we were doing SPA, but we are doing separate files)
+app.use((req, res, next) => {
+    res.status(404).sendFile(path.join(__dirname, '../frontend/404.html'), (err) => {
+        if (err) res.status(404).json({ message: 'Page Not Found' });
     });
+});
 
-    // 5b. Casino Redirect Route
-    app.get('/casinos/:slug/redirect', (req, res, next) => {
-        res.sendFile(path.join(__dirname, '../frontend/redirect.html'));
-    });
-
-    // 5. Frontend Routes (Last Priority)
-    // Serve everything else from ../frontend/
-    app.use(express.static(path.join(__dirname, '../frontend'), { extensions: ['html'] }));
-
-    // 6. SPA Fallback / 404
-    // If nothing matched, send 404 (or index.html if we were doing SPA, but we are doing separate files)
-    app.use((req, res, next) => {
-        res.status(404).sendFile(path.join(__dirname, '../frontend/404.html'), (err) => {
-            if (err) res.status(404).json({ message: 'Page Not Found' });
-        });
-    });
-
-    module.exports = app;
-});         
+module.exports = app;
