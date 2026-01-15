@@ -152,7 +152,7 @@ const platformsController = {
 
     update: async (req, res) => {
         const { id } = req.params;
-        const { name, slug, rating, ranking, is_exclusive, short_description, long_description, logo, banner, countries_visible, payment_methods, features, pros, cons, review_article_id, category, tags, affiliate_link, description } = req.body;
+        const { name, slug, rating, ranking, is_exclusive, short_description, long_description, logo, banner, countries_visible, payment_methods, features, pros, cons, review_article_id, category, tags, affiliate_link, description, custom_html } = req.body;
 
         const updates = {};
         if (name) updates.name = name;
@@ -163,6 +163,7 @@ const platformsController = {
         if (short_description) updates.short_description = short_description;
         if (long_description) updates.description = long_description;
         if (description) updates.description = description; // Handle both
+        if (custom_html) updates.custom_html = custom_html; // NEW: Dedicated HTML Column
         if (logo) updates.logo = logo;
         if (banner) updates.banner = banner;
         if (affiliate_link) updates.affiliate_link = affiliate_link;
