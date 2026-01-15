@@ -146,21 +146,6 @@ const platformsController = {
             })();
         }
 
-        if (req.body.custom_html_content) {
-            try {
-                const fs = require('fs');
-                const path = require('path');
-                const filePath = path.join(__dirname, '../../frontend/custom-casinos', `${payload.slug}.html`);
-                // Ensure dir exists
-                const dir = path.dirname(filePath);
-                if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-
-                fs.writeFileSync(filePath, req.body.custom_html_content, 'utf8');
-                console.log(`[Custom HTML] Created override for ${payload.slug}`);
-            } catch (err) {
-                console.error('[Custom HTML] Failed to write file:', err);
-            }
-        }
 
         res.status(201).json(data);
     },
